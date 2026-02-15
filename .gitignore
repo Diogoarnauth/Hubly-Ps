@@ -1,0 +1,10 @@
+# .NET
+[Bb]in/
+[Oo]bj/
+# Node
+node_modules/
+dist/
+# IDEs
+.vs/
+.vscode/
+.idea/
