@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Hubly.Api/Hubly.Api.csproj" />
+  <Project Path="Hubly.Domain/Hubly.Domain.csproj" />
+  <Project Path="Hubly.Infrastructure/Hubly.Infrastructure.csproj" />
+  <Project Path="Hubly.Services/Hubly.Services.csproj" />
+</Solution>
