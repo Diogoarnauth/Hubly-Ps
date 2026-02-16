@@ -7,12 +7,10 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=hublypass
       - POSTGRES_DB=hubly_db
-    ports:
-      - "5432:5432"
     networks:
-      - hubly-network
+      - db-net # Rede isolada
     volumes:
-      - hubly-db-data:/var/lib/postgresql/data
+      - hubly-db-data:/var/lib/postgresql/data # Volume do tipo NAMED
 
   hubly-api:
     container_name: hubly-api
@@ -22,27 +20,24 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=hubly-db;Database=hubly_db;Username=admin;Password=hublypass
-    ports:
-      - "5000:8080"
     volumes:
-      - ./code/api:/app
+      - ./code/api:/app # Volume do tipo BIND MOUNT (Hot Reload)
     depends_on:
       - hubly-db
     networks:
-      - hubly-network
+      - app-net 
+      - db-net  
 
   hubly-web:
     container_name: hubly-web
     image: node:20
     working_dir: /app
     volumes:
-      - ./code/web:/app
-      - /app/node_modules # Anonymous volume para não misturar OS
-    ports:
-      - "5173:5173"
-    command: npm run dev -- --host
+      - ./code/web:/app # Volume do tipo BIND MOUNT
+      - /app/node_modules # Evita conflitos de dependências entre Windows/Linux
     networks:
-      - hubly-network
+      - app-net
+    command: npm run dev -- --host
 
   hubly-nginx:
     container_name: hubly-nginx
@@ -50,16 +45,18 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro # Volume do tipo BIND MOUNT
     depends_on:
       - hubly-api
       - hubly-web
     networks:
-      - hubly-network
+      - app-net
 
 networks:
-  hubly-network:
+  app-net: # Rede para o tráfego Web
+    driver: bridge
+  db-net:  # Rede privada para dados
     driver: bridge
 
 volumes:
-  hubly-db-data:
+  hubly-db-data: # Definição do volume NAMED

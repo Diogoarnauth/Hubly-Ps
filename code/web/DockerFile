@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copia os ficheiros de dependências
+COPY package.json package-lock.json ./
+
+# Instala as dependências
+RUN npm install
+
+# O código será montado via Bind Mount, mas expomos a porta do Vite
+EXPOSE 5173
+
+# Comando para iniciar o Vite em modo desenvolvimento com suporte a rede externa
+CMD ["npm", "run", "dev", "--", "--host"]
