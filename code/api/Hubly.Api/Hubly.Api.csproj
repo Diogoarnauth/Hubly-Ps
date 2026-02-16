@@ -1,18 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hubly.Services\Hubly.Services.csproj" />
+    <ProjectReference Include="..\Hubly.Domain\Hubly.Domain.csproj" />
     <ProjectReference Include="..\Hubly.Infrastructure\Hubly.Infrastructure.csproj" />
+    <ProjectReference Include="..\Hubly.Services\Hubly.Services.csproj" />
   </ItemGroup>
 
 </Project>

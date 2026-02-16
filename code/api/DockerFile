@@ -1,21 +1,14 @@
-# Estágio de desenvolvimento
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
 WORKDIR /app
 
-# Copia os ficheiros de projeto (.csproj) primeiro para otimizar o cache das camadas
+# Como o Dockerfile está em code/api, os projetos estão nas subpastas
 COPY ["Hubly.Api/Hubly.Api.csproj", "Hubly.Api/"]
 COPY ["Hubly.Domain/Hubly.Domain.csproj", "Hubly.Domain/"]
 COPY ["Hubly.Services/Hubly.Services.csproj", "Hubly.Services/"]
 COPY ["Hubly.Infrastructure/Hubly.Infrastructure.csproj", "Hubly.Infrastructure/"]
 
-# Restaura as dependências NuGet
 RUN dotnet restore "Hubly.Api/Hubly.Api.csproj"
 
-# O código real será montado via volume no docker-compose, 
-# por isso não precisamos de fazer COPY . . aqui para desenvolvimento.
-
-# Expõe a porta interna (não mapeada para o exterior diretamente)
 EXPOSE 8080
 
-# Comando para rodar com Hot Reload (dotnet watch)
 ENTRYPOINT ["dotnet", "watch", "run", "--project", "Hubly.Api/Hubly.Api.csproj", "--urls", "http://0.0.0.0:8080"]
