@@ -11,6 +11,8 @@ services:
       - db-net
     volumes:
       - hubly-db-data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/10-init.sql
+      - ./docker/insert_schema.sql:/docker-entrypoint-initdb.d/20-insert.sql
 
   hubly-api:
     container_name: hubly-api
