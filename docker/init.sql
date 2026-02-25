@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS dbo.creators (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
     artistic_name VARCHAR(100),
     content TEXT,
-    audience TEXT
+    audience TEXT --text? integer 
 );
 
 CREATE TABLE IF NOT EXISTS dbo.companies (

@@ -1,0 +1,18 @@
+O Entity Framework Core (EF Core)
+O Entity Framework Core é o principal ORM (Object-Relational Mapper) para o ecossistema .NET. O seu objetivo é permitir que o programador interaja com bases de dados relacionais utilizando objetos C#, eliminando a necessidade de escrever a maior parte do código de acesso a dados (SQL manual e mapeamento de resultados).
+
+Como Funciona: Os 3 Pilares
+O Modelo (Entities): Definimos classes C# normais que representam as tabelas da base de dados. Através de Atributos (como [Table] ou [Column]), explicamos ao EF como traduzir os nomes das propriedades (PascalCase) para os nomes das colunas no Postgres (snake_case).
+
+O Contexto (DbContext): É o cérebro da operação. Ele gere a ligação à base de dados e contém os DbSet<T>, que funcionam como coleções em memória de todas as linhas de uma tabela.
+
+O Motor de Tradução (LINQ): Quando escrevemos código como .Where(u => u.Id == 1), o EF não executa isso em C#. Ele traduz essa expressão para um comando SQL real (SELECT ... WHERE id = 1) e envia-o ao PostgreSQL.
+
+Principais Vantagens para o Projeto
+Abstração de Herança (TPT): No nosso caso (User/Creator/Company), o EF gere automaticamente os JOINs entre as tabelas da hierarquia. Se pedirmos um "Creator", ele sabe que tem de ir à tabela users e creators e montar um único objeto.
+
+Segurança de Tipos: Ao contrário do SQL em strings, se mudarmos o nome de um campo no C#, o projeto não compila até que todos os erros sejam corrigidos. Isto evita erros de runtime.
+
+Mapeamento Automático: Elimina o trabalho repetitivo de ler o ResultSet coluna a coluna. O EF popula as propriedades dos objetos automaticamente com base nos metadados configurados.
+
+Gestão de Transações: Através do método SaveChanges(), o EF agrupa todas as alterações feitas num ciclo de operação e executa-as numa única transação atómica.
