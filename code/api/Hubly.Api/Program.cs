@@ -20,6 +20,8 @@ var domainConfig = new UsersDomainConfig
 };
 builder.Services.AddSingleton(domainConfig);
 
+builder.Services.AddSingleton<TokenEncoder, Sha256TokenEncoder>();
+
 builder.Services.AddScoped<UsersDomain>();
 
 builder.Services.AddControllers(); 

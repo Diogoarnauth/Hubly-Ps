@@ -10,6 +10,8 @@ public class HublyDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Creator> Creators { get; set; }
     public DbSet<Company> Companies { get; set; }
+    public DbSet<Token> Tokens { get; set; }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +22,7 @@ public class HublyDbContext : DbContext
         modelBuilder.Entity<User>().ToTable("users", "dbo");
         modelBuilder.Entity<Creator>().ToTable("creators", "dbo");
         modelBuilder.Entity<Company>().ToTable("companies", "dbo");
+        modelBuilder.Entity<Token>().ToTable("tokens", "dbo");
 
     }
 }
