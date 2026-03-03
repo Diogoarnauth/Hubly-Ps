@@ -20,12 +20,20 @@ public class UserController : ControllerBase
     [HttpPost(Uris.Uris.Users.Create)] //TODO() depois o Uris.Uris
     public async Task<IActionResult> Create([FromBody] UserCreateInputModel input)
     {
-        var res = await _userService.Register (input.Name, input.Email, input.Password)
+        var res = await _userService.Register (input.Name, input.Email, input.Password);
             
         return res.Match<IActionResult>(
-            success => CreatedAtAction(nameof(Register), success.Adapt<UserCreateOutputModel>()) 
-            error => 
-            
+            success => CreatedAtAction(nameof(Register), success.Adapt<UserCreateOutputModel>()),
+            error => error switch
+            {
+                UserError.InvalidPassword => ProblemResponse.InvalidPassword.ToResponse(),
+                UserError.InvalidUsername => ProblemResponse.InvalidUsername.ToResponse(),
+                UserError.EmailAlreadyInUse => ProblemResponse.EmailAlreadyInUse.ToResponse(),
+                UserError.FailedToCreateUser => ProblemResponse.FailedToCreateUser.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
         );
+            
+
     }
 }
