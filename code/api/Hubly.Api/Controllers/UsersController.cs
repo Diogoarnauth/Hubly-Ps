@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Hubly.Domain.Entities;
 using Hubly.api.DTOs;
-using Hubly.Services;
+using Hubly.api.Services;
 
 namespace Hubly.api.Controllers;
 

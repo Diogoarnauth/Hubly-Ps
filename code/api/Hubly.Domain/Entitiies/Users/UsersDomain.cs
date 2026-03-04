@@ -39,4 +39,33 @@ public class UsersDomain
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
+
+    public bool ValidationEmail(string email)
+    {
+        if (string.IsNullOrEmpty(email) || !email.Contains("@")) 
+        return false;
+        
+        int atIndex = email.IndexOf("@");
+        
+        if (atIndex < 1 || atIndex == email.Length - 1)
+            return false;
+
+        if (!email.Substring(atIndex).Contains("."))
+            return false;
+
+        return true;
+
+    }
+
+    public bool IsValidUsername(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username)) 
+            return false;
+
+        if (username.Length < _config.MinUsernameLength) 
+            return false;
+
+        return true;
+    }
+        
 }
