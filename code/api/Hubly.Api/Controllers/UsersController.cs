@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Hubly.Domain.Entities;
+using Hubly.api.Domain.Entities;
 using Hubly.api.DTOs;
 using Hubly.api.Services;
+using Hubly.api.Services.Problems;
+using Hubly.api.Problems;
+using Mapster; 
 
 namespace Hubly.api.Controllers;
 
@@ -11,10 +14,12 @@ public class UserController : ControllerBase
 {
     
     private readonly UsersDomain _usersDomain;
+    private readonly UserService _userService;
 
-    public UserController(UsersDomain usersDomain)
+    public UserController(UsersDomain usersDomain, UserService userService)
     {
         _usersDomain = usersDomain;
+        _userService = userService;
     }
 
     [HttpPost(Uris.Uris.Users.Create)] //TODO() depois o Uris.Uris
@@ -23,13 +28,13 @@ public class UserController : ControllerBase
         var res = await _userService.Register (input.Name, input.Email, input.Password);
             
         return res.Match<IActionResult>(
-            success => CreatedAtAction(nameof(Register), success.Adapt<UserCreateOutputModel>()),
+            success => CreatedAtAction(nameof(Create), success.Adapt<UserCreateOutputModel>()),
             error => error switch
             {
                 UserError.InvalidPassword => ProblemResponse.InvalidPassword.ToResponse(),
-                UserError.InvalidUsername => ProblemResponse.InvalidUsername.ToResponse(),
-                UserError.EmailAlreadyInUse => ProblemResponse.EmailAlreadyInUse.ToResponse(),
-                UserError.FailedToCreateUser => ProblemResponse.FailedToCreateUser.ToResponse(),
+                UserError.InvalidName => ProblemResponse.InvalidName.ToResponse(),
+                UserError.EmailAlreadyExists => ProblemResponse.EmailAlreadyExists.ToResponse(),
+                UserError.FailedUserCreation => ProblemResponse.FailedUserCreation.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

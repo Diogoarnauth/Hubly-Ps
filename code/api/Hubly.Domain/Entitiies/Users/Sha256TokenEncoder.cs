@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
-using Hubly.Domain.Entities;
+using Hubly.api.Domain.Entities;
 
-namespace Hubly.Domain.Entities;
+namespace Hubly.api.Domain.Entities;
 
 public class Sha256TokenEncoder : TokenEncoder
 {

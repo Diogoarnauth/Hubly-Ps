@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Hubly.Domain.Entities;
+namespace Hubly.api.Domain.Entities;
 
 [Table("companies", Schema = "dbo")]
 public class Company : User

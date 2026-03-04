@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using BCrypt.Net;
 
-namespace Hubly.Domain.Entities;
+namespace Hubly.api.Domain.Entities;
 
 public class UsersDomain
 {

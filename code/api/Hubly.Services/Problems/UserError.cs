@@ -7,6 +7,7 @@ namespace Hubly.api.Services.Problems
         public class InvalidEmail : UserError { }
         public class EmailAlreadyExists : UserError { }
         public class InvalidPassword : UserError { }
+        
  
     }
 }

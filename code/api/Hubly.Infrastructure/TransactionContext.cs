@@ -1,5 +1,5 @@
 using Hubly.api.Infrastructure.Interfaces;
-using Hubly.Infrastructure.Data;
+using Hubly.api.Infrastructure.Data;
 
 namespace Hubly.api.Infrastructure;
 

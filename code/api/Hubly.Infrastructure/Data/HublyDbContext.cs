@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Hubly.Domain.Entities;
+using Hubly.api.Domain.Entities;
 
-namespace Hubly.Infrastructure.Data;
+namespace Hubly.api.Infrastructure.Data;
 
 public class HublyDbContext : DbContext
 {
@@ -11,6 +11,7 @@ public class HublyDbContext : DbContext
     public DbSet<Creator> Creators { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Token> Tokens { get; set; }
+    
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

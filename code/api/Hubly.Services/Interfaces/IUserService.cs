@@ -1,4 +1,4 @@
-using Hubly.Domain.Entities;
+using Hubly.api.Domain.Entities;
 using Hubly.api.Services.Problems;
 using OneOf;
 

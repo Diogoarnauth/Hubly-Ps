@@ -1,4 +1,4 @@
-namespace Hubly.Domain.Entities;
+namespace Hubly.api.Domain.Entities;
 
 public interface TokenEncoder
 {

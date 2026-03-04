@@ -84,5 +84,13 @@ public class ProblemResponse
         "The password provided is invalid",
         400);        
 
+    public static readonly ProblemResponse InternalServerError = new(
+        "internal-server-error",
+        "InternalServerError",
+        500);   
+
+
+    
+
 
 }
