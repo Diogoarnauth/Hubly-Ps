@@ -14,4 +14,5 @@ public class TransactionContext : ITransactionContext
     }
 
     public IUserRepository UserRepository { get;}
+    public ITokenRepository TokenRepository {get;}
 }

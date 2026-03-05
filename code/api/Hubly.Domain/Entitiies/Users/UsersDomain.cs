@@ -31,7 +31,7 @@ public class UsersDomain
     {
         return BCrypt.Net.BCrypt.Verify(password, info.ValidationInfo);
     }
-
+/*
     public string GenerateTokenValue()
     {
         byte[] randomNumber = new byte[_config.TokenSizeInBytes];
@@ -39,7 +39,7 @@ public class UsersDomain
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
-
+*/
     public bool ValidationEmail(string email)
     {
         if (string.IsNullOrEmpty(email) || !email.Contains("@")) 

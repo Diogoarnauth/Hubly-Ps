@@ -6,8 +6,7 @@ namespace Hubly.api.Domain.Entities;
 [Table("tokens", Schema = "dbo")]
 public class Token
 {
-    // Precisamos de uma Chave Primária para a BD. 
-    // Geralmente usamos o próprio Hash do token ou um ID único.
+    
     [Key]
     [Column("token_validation")]
     public string TokenValidation { get; set; } = string.Empty;

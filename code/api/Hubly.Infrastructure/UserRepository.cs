@@ -17,7 +17,7 @@ namespace Hubly.api.Infrastructure
         public async Task<bool> CreateUser(User newUser)
         {
             await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); //TODO() Ver depois pq pode gerar conflito com o safe da transaction
             return true;
         }
 
