@@ -1,3 +1,12 @@
-namespace Hubly.api.Domain.Entities;
+namespace Hubly.api.Domain.Entities{
 
-public record AuthenticatedUser(User User, string Token);
+    public class AuthenticatedUser
+    {
+
+        public int Id { get; set; }
+
+        public string Token { get; set; }
+        public string Username { get; set; }
+        
+    }
+}
