@@ -6,7 +6,7 @@ using Hubly.api.Infrastructure.Interfaces;
 namespace Hubly.api.Infrastructure
 {
     public class UserRepository : IUserRepository
-        {
+    {
         private readonly HublyDbContext _context;
 
         public UserRepository(HublyDbContext context)
@@ -26,5 +26,12 @@ namespace Hubly.api.Infrastructure
             return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
+        
+
+       public async Task<User?> GetUserById(int userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+    }
 }

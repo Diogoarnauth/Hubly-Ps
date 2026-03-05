@@ -88,6 +88,11 @@ public class ProblemResponse
         "internal-server-error",
         "InternalServerError",
         500);   
+    
+    public static readonly ProblemResponse FailedToGetUserInfo = new(
+        "failed-to-get-user-info",
+        "Failed to get user information",
+        404);
 
 
     

@@ -23,17 +23,16 @@ namespace Hubly.api.Services
     }
 
     public async Task<OneOf<User,UserError>> Register(string email, string password, string userName)
-        {
-            if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
-            
-            if (!_usersDomain.IsValidUsername(userName)) return new UserError.InvalidName();
-
-            if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();
-            
-           return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
     {
-        if (await context.UserRepository.UserExistsWithEmail(email)) 
-            return new UserError.EmailAlreadyExists();
+        if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
+            
+        if (!_usersDomain.IsValidUsername(userName)) return new UserError.InvalidName();
+
+        if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();
+            
+        return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+        {
+            if (await context.UserRepository.UserExistsWithEmail(email)) return new UserError.EmailAlreadyExists();
 
         var passwordInfo = _usersDomain.CreatePasswordValidationInformation(password);
         
@@ -48,8 +47,22 @@ namespace Hubly.api.Services
         
     
         return newUser; 
-    });
-        }
+        });
+    }
+
+    public async Task<OneOf<User, UserError>> GetUserInfo(int userId)
+    {
+        return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+        {
+            var user = await context.UserRepository.GetUserById(userId);
+                if (user == null)
+                {
+                    return new UserError.FailedToGetUserInfo();
+                }
+                return user;
+        });
+    }
+  
      
 }
 }

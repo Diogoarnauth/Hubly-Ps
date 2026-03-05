@@ -8,6 +8,7 @@ namespace Hubly.api.Infrastructure.Interfaces
 
         Task<bool> UserExistsWithEmail(string email);
         
+        Task<User?> GetUserById (int user_id);
     }
 
 }

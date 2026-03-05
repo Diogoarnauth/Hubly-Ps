@@ -56,7 +56,8 @@ namespace Hubly.api.Pipeline
             return new AuthenticatedUser
             {
                 Id = userResult.AsT0.Id,
-                Token = token
+                Token = token,
+                Username = userResult.AsT0.Name
             };
             
         }
