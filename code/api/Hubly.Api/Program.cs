@@ -24,6 +24,7 @@ var domainConfig = new UsersDomainConfig
     MinPasswordLength = 8
 };
 
+builder.Services.AddSingleton(domainConfig);
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 
@@ -50,7 +51,8 @@ builder.Services.AddCors(options => //todo() maybe ngnix configuration
         });
 });
 
-builder.Services.AddScoped<TokenProcessor>();
+builder.Services.AddScoped<UsersDomain>();
+
 
 //Services
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IPasswordEncoder, Sha256PasswordEncoder>();
 //Repositories
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -78,7 +81,7 @@ if (app.Environment.IsDevelopment())
 // Middlewares
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 

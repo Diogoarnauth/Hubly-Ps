@@ -1,0 +1,15 @@
+### Variáveis de Ambiente
+@hostname = localhost
+@port = 80
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+
+### Criar um Novo Utilizador
+POST http://{{host}}/api/users
+Content-Type: {{contentType}}
+
+{
+    "name": "João Silva",
+    "email": "joao.silva@example.com",
+    "password": "PasswordSegura123!"
+}
