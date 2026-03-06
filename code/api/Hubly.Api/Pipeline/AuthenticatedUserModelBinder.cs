@@ -1,7 +1,7 @@
 using Hubly.api.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace DigitalWallet.API.Http.Interceptor
+namespace Hubly.api.Pipeline
 {
     public class AuthenticatedUserModelBinder : IModelBinder
     {
@@ -24,4 +24,18 @@ namespace DigitalWallet.API.Http.Interceptor
             return Task.CompletedTask;
         }
     }
+
+    public class AuthenticatedUserModelBinderProvider : IModelBinderProvider
+    {
+        public IModelBinder? GetBinder(ModelBinderProviderContext context)
+        {
+            if (context.Metadata.ModelType == typeof(AuthenticatedUser))
+            {
+                return new AuthenticatedUserModelBinder();
+            }
+
+            return null;
+        }
+    }
+
 }

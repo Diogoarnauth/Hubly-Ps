@@ -1,30 +1,73 @@
 using Microsoft.EntityFrameworkCore;
-using Hubly.Infrastructure.Data;
-using Hubly.Domain.Entities; 
-using Hubly.Services;
+using Hubly.api.Controllers;
+using Hubly.api.DTOs;
+using Hubly.api.Pipeline;
+using Hubly.api.Problems;
+using Hubly.api.Uris;
+using Hubly.api.Domain.Entities;
+using Hubly.api.Infrastructure.Data;
+using Hubly.api.Infrastructure.Interfaces;
+using Hubly.api.Infrastructure;
+using Hubly.api.Services.Encoder;
+using Hubly.api.Services.Interfaces;
+using Hubly.api.Services.Problems;
+using Hubly.api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+//BD
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<HublyDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 var domainConfig = new UsersDomainConfig 
 {
-    TokenSizeInBytes = 32,
-    TokenTtl = TimeSpan.FromHours(24),
-    TokenRollingTtl = TimeSpan.FromHours(1),
-    MaxTokensPerUser = 3,
     MinUsernameLength = 3,
     MinPasswordLength = 8
 };
-builder.Services.AddSingleton(domainConfig);
 
-builder.Services.AddSingleton<TokenEncoder, Sha256TokenEncoder>();
+builder.Services.AddScoped<TokenProcessor>();
+builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 
-builder.Services.AddScoped<UsersDomain>();
+//pipeline configuration
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<RequireAuthenticationAttribute>();
+})
+.AddMvcOptions(options =>
+{
+    options.ModelBinderProviders.Insert(0, new AuthenticatedUserModelBinderProvider());
+});
 
-builder.Services.AddControllers(); 
+//CORS Service
+builder.Services.AddCors(options => //todo() maybe ngnix configuration
+{
+    options.AddPolicy("AllowFrontend",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
+        });
+});
+
+builder.Services.AddScoped<TokenProcessor>();
+
+//Services
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+//Encoders
+builder.Services.AddScoped<ITokenEncoder, Sha256TokenEncoder>();
+builder.Services.AddScoped<IPasswordEncoder, Sha256PasswordEncoder>();
+
+//Repositories
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -38,6 +81,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend");
+
+app.UseAuthorization();
+
 app.MapControllers(); 
 
 app.Run();
+
+// app.UseMiddleware<ExceptionMiddleware>(); //TODO() we dont have
+
+// if (app.Environment.IsDevelopment())
+// {        
+//     app.UseSwagger();
+//     app.UseSwaggerUI(c => {
+//         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hubly API V1");
+//         c.RoutePrefix = ""; 
+//     });
+// }
