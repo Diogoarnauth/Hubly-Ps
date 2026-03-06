@@ -1,16 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Hubly.api.Controllers;
-using Hubly.api.DTOs;
 using Hubly.api.Pipeline;
-using Hubly.api.Problems;
-using Hubly.api.Uris;
+using Hubly.api.Middlewares;
 using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Data;
 using Hubly.api.Infrastructure.Interfaces;
 using Hubly.api.Infrastructure;
 using Hubly.api.Services.Encoder;
 using Hubly.api.Services.Interfaces;
-using Hubly.api.Services.Problems;
 using Hubly.api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +74,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Middlewares
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
