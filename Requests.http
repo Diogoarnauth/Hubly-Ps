@@ -11,5 +11,5 @@ Content-Type: {{contentType}}
 {
     "name": "João Silva",
     "email": "joao.silva@example.com",
-    "password": "PasswordSegura123!"
+    "password": "PasswordSegura123"
 }

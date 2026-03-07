@@ -3,6 +3,7 @@ using Hubly.api.Services.Problems;
 using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Interfaces;
 using OneOf;
+using System.Data.Common;
 
 
 namespace Hubly.api.Services
@@ -22,7 +23,7 @@ namespace Hubly.api.Services
         _usersDomain = usersDomain;
     }
 
-    public async Task<OneOf<User,UserError>> Register(string email, string password, string userName)
+    public async Task<OneOf<User,UserError>> Register(string userName, string email, string password)
     {
         if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
             
@@ -37,6 +38,7 @@ namespace Hubly.api.Services
         var passwordInfo = _usersDomain.CreatePasswordValidationInformation(password);
         
         var newUser = new User {
+            //id = Guid.NewGuid(),
             Name = userName, 
             Email = email,
             PasswordValidation = passwordInfo.ValidationInfo,

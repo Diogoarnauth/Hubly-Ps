@@ -1,10 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hubly.api.Domain.Entities;
 
 [Table("companies", Schema = "dbo")]
-public class Company : User
+public class Company
 {
+    [Key]
+    [Column("user_id")]
+    public int Id { get; set; }
+
     [Column("company_name")]
     public string CompanyName { get; set; } = string.Empty;
     public string? Description { get; set; }
@@ -18,4 +23,6 @@ public class Company : User
 
     [Column("country_headquarters")]
     public string? CountryHeadquarters { get; set; }
+
+    public virtual User User { get; set; } = null!;
 }

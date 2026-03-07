@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Hubly.api.Domain.Entities;
 using Hubly.api.DTOs;
-using Hubly.api.Services;
+using Hubly.api.Services.Interfaces;
 using Hubly.api.Services.Problems;
 using Hubly.api.Problems;
 using Mapster; 
@@ -14,9 +14,9 @@ public class UserController : ControllerBase
 {
     
     private readonly UsersDomain _usersDomain;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UserController(UsersDomain usersDomain, UserService userService)
+    public UserController(UsersDomain usersDomain, IUserService userService)
     {
         _usersDomain = usersDomain;
         _userService = userService;
