@@ -13,3 +13,13 @@ Content-Type: {{contentType}}
     "email": "joao.silva@example.com",
     "password": "PasswordSegura123"
 }
+
+### Login 
+POST http://{{host}}/api/users
+Content-Type: {{contentType}}
+
+{
+    "name": "João Silva",
+    "email": "joao.silva@example.com",
+    "password": "PasswordSegura123"
+}
