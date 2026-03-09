@@ -94,6 +94,11 @@ public class ProblemResponse
         "Failed to get user information",
         404);
 
+    public static readonly ProblemResponse InvalidCredentials = new(
+        "invalid-credentials",
+        "Invalid Credentials (email or password)",
+        409);
+
 
     
 

@@ -5,9 +5,8 @@ namespace Hubly.api.Infrastructure.Interfaces
     public interface IUserRepository
     {
         Task<bool> CreateUser (User newUser); 
-
-        Task<bool> UserExistsWithEmail(string email);
-        
+        Task<User?> GetUserByEmail(string email);
+        Task<bool> UserExistsWithEmail(string email);    
         Task<User?> GetUserById (int user_id);
     }
 

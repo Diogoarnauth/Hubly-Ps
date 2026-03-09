@@ -28,6 +28,13 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<Token>> GetTokensByUser(int userId)
+        {
+            return await _context.Tokens
+                .Where(t => t.UserId == userId)
+                .ToListAsync(); // Se não houver nada, devolve uma lista com 0 elementos
+        }
+
         public async Task<bool> CreateToken(Token token)
         {
             await _context.Tokens.AddAsync(token);

@@ -41,4 +41,34 @@ public class UserController : ControllerBase
             
 
     }
+
+
+[HttpPost(Uris.Uris.Users.Token)]
+public async Task<IActionResult> Token([FromBody] UserCreateTokenInputModel input)
+{
+    var res = await _userService.Token(input.Email, input.Password);
+
+    return res.Match<IActionResult>(
+        success =>
+        {
+            var cookieOptions = new CookieOptions
+            {
+                Path = "/",
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                MaxAge = TimeSpan.FromHours(24)
+            };
+
+            Response.Cookies.Append("token", success.TokenValidation, cookieOptions);
+
+            return Ok(success.Adapt<UserCreateTokenOutputModel>());
+        },
+        error => error switch
+        {
+            UserError.InvalidCredentials => ProblemResponse.InvalidCredentials.ToResponse(), 
+            _ => ProblemResponse.InternalServerError.ToResponse()
+        }
+    );
+}
 }

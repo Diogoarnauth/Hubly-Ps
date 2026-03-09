@@ -11,6 +11,7 @@ public class TransactionContext : ITransactionContext
     {
         _context = context;
         UserRepository = new UserRepository(context);
+        TokenRepository = new TokenRepository(context);
     }
 
     public IUserRepository UserRepository { get;}

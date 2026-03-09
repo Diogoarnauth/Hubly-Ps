@@ -9,6 +9,7 @@ namespace Hubly.api.Services.Interfaces
     {
 
         Task<OneOf<User, UserError>> Register(string email, string password, string username);
+        Task<OneOf<Token,UserError>> Token(string email, string password);
         Task<OneOf<User, UserError>>  GetUserInfo(int userId);        
 
     }

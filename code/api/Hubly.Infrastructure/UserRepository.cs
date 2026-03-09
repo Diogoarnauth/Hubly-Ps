@@ -33,5 +33,14 @@ namespace Hubly.api.Infrastructure
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+    
+
+    public async Task<User?> GetUserByEmail(string email)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
+
+
+}
 }

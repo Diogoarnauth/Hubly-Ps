@@ -12,6 +12,8 @@ public class UsersDomain
         _config = config;
     }
 
+    public int MaxTokensPerUser => _config.MaxTokensPerUser;
+
     public bool IsSafePassword(string password)
     {
         if (password.Length < _config.MinPasswordLength) return false;

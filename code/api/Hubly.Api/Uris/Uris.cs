@@ -8,11 +8,14 @@ public static class Uris
     {
         public const string Create = $"{Prefix}/users";
         public const string GetById = $"{Prefix}/users/{{id}}";
+        public const string Token = $"{Prefix}/users/token";
 
         // No C#, usamos string.Replace ou string.Format para expandir o ID
         public static string ById(int id) => GetById.Replace("{id}", id.ToString());
 
         public static string Register() => Create;
+
+        public static string Login ()=> Token;
     }
     
 }

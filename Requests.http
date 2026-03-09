@@ -14,12 +14,11 @@ Content-Type: {{contentType}}
     "password": "PasswordSegura123"
 }
 
-### Login 
-POST http://{{host}}/api/users
+### 2. Login (Obter Token e Set-Cookie)
+POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "name": "João Silva",
     "email": "joao.silva@example.com",
     "password": "PasswordSegura123"
 }

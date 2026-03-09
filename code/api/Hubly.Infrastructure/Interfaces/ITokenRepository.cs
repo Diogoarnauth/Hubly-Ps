@@ -9,6 +9,7 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<Token?> GetTokenByUserId(int userId);
 
         Task<bool> CreateToken(Token token);
+        Task<List<Token>>GetTokensByUser(int userId);
 
         Task<bool> DeleteToken(int userId, string tokenValidation);
 
