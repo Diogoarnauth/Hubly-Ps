@@ -60,10 +60,13 @@ public async Task<IActionResult> Token([FromBody] UserCreateTokenInputModel inpu
                 MaxAge = TimeSpan.FromHours(24)
             };
 
-            Response.Cookies.Append("token", success.TokenValidation, cookieOptions);
+            Response.Cookies.Append("token", success, cookieOptions);
 
-            return Ok(success.Adapt<UserCreateTokenOutputModel>());
-        },
+           return Ok(new UserCreateTokenOutputModel 
+            { 
+                Token = success 
+            });
+},
         error => error switch
         {
             UserError.InvalidCredentials => ProblemResponse.InvalidCredentials.ToResponse(), 
@@ -71,4 +74,32 @@ public async Task<IActionResult> Token([FromBody] UserCreateTokenInputModel inpu
         }
     );
 }
+
+[HttpPost(Uris.Uris.Users.Logout)]
+public async Task<IActionResult> Logout(AuthenticatedUser user)
+    {
+        var response = await _userService.Logout(user.Token);
+        if (Request.Cookies.ContainsKey("auth_token"))
+        {
+            Response.Cookies.Delete("auth_token");
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddDays(-1)
+            };
+            Response.Cookies.Append("auth_token", "", cookieOptions);
+        }
+        return response.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                UserError.FailedToLogout => ProblemResponse.FailedToLogout.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
 }

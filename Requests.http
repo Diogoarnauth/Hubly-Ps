@@ -22,3 +22,10 @@ Content-Type: {{contentType}}
     "email": "joao.silva@example.com",
     "password": "PasswordSegura123"
 }
+
+### 3. Logout 
+POST http://{{host}}/api/users/Logout
+Authorization: Bearer "3jUUnOz6ECOSeDIV00X5FdvuOdX9AZjBM4gyZWhoFAI="
+Content-Type: {{contentType}}
+
+

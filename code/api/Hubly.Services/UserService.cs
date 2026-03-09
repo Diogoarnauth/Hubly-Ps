@@ -55,12 +55,12 @@ namespace Hubly.api.Services
         });
     }
 
-public async Task<OneOf<Token, UserError>> Token(string email, string password)
+public async Task<OneOf<string, UserError>> Token(string email, string password)
 {
     if (string.IsNullOrWhiteSpace(email)) return new UserError.InvalidEmail();
     if (string.IsNullOrWhiteSpace(password)) return new UserError.InvalidPassword();
 
-    return await _transactionManager.Run<OneOf<Token, UserError>>(async (context) =>
+    return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
     {
         var user = await context.UserRepository.GetUserByEmail(email);
         
@@ -103,10 +103,19 @@ public async Task<OneOf<Token, UserError>> Token(string email, string password)
 
         await context.TokenRepository.CreateToken(newToken);
         
-        return newToken; 
+        return rawToken; 
     });
 }
 
+ public async Task<OneOf<string, UserError>> Logout(string tokenValue)
+        {
+            return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
+            {
+                await _tokenService.DeleteToken(tokenValue, context);
+                return "Logout successful";
+            });
+        }
+        
 
     public async Task<OneOf<User, UserError>> GetUserInfo(int userId)
     {

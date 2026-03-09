@@ -98,9 +98,10 @@ public class ProblemResponse
         "invalid-credentials",
         "Invalid Credentials (email or password)",
         409);
-
-
     
-
+    public static readonly ProblemResponse FailedToLogout = new(
+        "failed-to-logout",
+        "Failed To Logout",
+    400);
 
 }
