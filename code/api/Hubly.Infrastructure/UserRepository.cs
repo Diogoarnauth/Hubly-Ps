@@ -27,20 +27,23 @@ namespace Hubly.api.Infrastructure
         }
 
         
-
        public async Task<User?> GetUserById(int userId)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-    
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
 
-    public async Task<User?> GetUserByEmail(string email)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == email);
-    }
-
+        public async Task EditUser(int userId, string newUsername)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            user.Name = newUsername;
+            _context.Users.Update(user);
+        }
 
 }
 }

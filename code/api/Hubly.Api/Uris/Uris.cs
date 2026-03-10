@@ -12,8 +12,8 @@ public static class Uris
         public const string Create = $"{Prefix}/users";
         public const string GetById = $"{Prefix}/users/{{id}}";
         public const string Token = $"{Prefix}/users/token";
-        public const string Logout = $"{Prefix}/users/Logout";
-
+        public const string Logout = $"{Prefix}/users/logout";
+        public const string EditUser = $"{Prefix}/users/edit";
         // No C#, usamos string.Replace ou string.Format para expandir o ID
         public static string ById(int id) => GetById.Replace("{id}", id.ToString());
 
