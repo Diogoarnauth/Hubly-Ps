@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using Hubly.api.Domain.Entities;
 using Hubly.api.DTOs;
 using Hubly.api.Services.Interfaces;
 using Hubly.api.Services.Problems;
 using Hubly.api.Problems;
+using Hubly.api.Pipeline;
 using Mapster; 
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hubly.api.Controllers;
 
@@ -22,7 +23,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [HttpPost(Uris.Uris.Users.Create)] //TODO() depois o Uris.Uris
+    [HttpPost(Uris.Uris.Users.Create)] 
     public async Task<IActionResult> Create([FromBody] UserCreateInputModel input)
     {
         var res = await _userService.Register (input.Name, input.Email, input.Password);
@@ -101,5 +102,32 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
         );
     }
 
+    [HttpGet(Uris.Uris.Users.GetById)]
+    public async Task<IActionResult> GetUserInfo(AuthenticatedUser user)
+    {
+        var response = await _userService.GetUserInfo(user.Id);
+        return response.Match<IActionResult>(
+            success => Ok(success.Adapt<UserInfoOutputModel>()),
+            error => error switch
+            {
+                UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpPatch(Uris.Uris.Users.EditUser)]
+    public async Task<IActionResult> EditUser( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
+    {
+        var response = await _userService.EditUser(user.Id, request.NewUsername);
+        return response.Match<IActionResult>(
+            success => Ok(new EditUserInputModel { NewUsername = request.NewUsername }),
+            error => error switch
+            {
+                UserError.FailedToEditUser => ProblemResponse.FailedToEditUser.ToResponse(),
+                _=> ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 
 }

@@ -11,6 +11,7 @@ namespace Hubly.api.Services.Problems
         public class InvalidPassword : UserError { }
         public class FailedToGetUserInfo : UserError { } 
         public class InvalidCredentials : UserError { }
+        public class FailedToEditUser : UserError { }
         
         
     }

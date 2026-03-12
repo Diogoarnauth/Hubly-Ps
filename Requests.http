@@ -3,8 +3,10 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
+@token= /b4MZRDMAxrax+9ayAiLakco57vANajv164/5iDLjw0=
 
-### Criar um Novo Utilizador
+
+### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
 Content-Type: {{contentType}}
 
@@ -24,8 +26,20 @@ Content-Type: {{contentType}}
 }
 
 ### 3. Logout 
-POST http://{{host}}/api/users/Logout
-Authorization: Bearer "3jUUnOz6ECOSeDIV00X5FdvuOdX9AZjBM4gyZWhoFAI="
+POST http://{{host}}/api/users/logout
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+### 4. Get user info
+GET http://{{host}}/api/users/1
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
 
+### 5. Editar user
+POST http://{{host}}/api/users/edit
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+    "newUsername": "joaozitofofitogodito"
+}

@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Hubly.api.Pipeline;
 using Hubly.api.Middlewares;
 using Hubly.api.Domain.Entities;
@@ -6,17 +5,11 @@ using Hubly.api.Infrastructure.Data;
 using Hubly.api.Infrastructure.Interfaces;
 using Hubly.api.Infrastructure;
 using Hubly.api.Services.Encoder;
+using Microsoft.EntityFrameworkCore;
 using Hubly.api.Services.Interfaces;
 using Hubly.api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
-
-//BD
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<HublyDbContext>(options =>
-    options.UseNpgsql(connectionString));
 
 var domainConfig = new UsersDomainConfig 
 {
@@ -25,9 +18,9 @@ var domainConfig = new UsersDomainConfig
 };
 
 builder.Services.AddSingleton(domainConfig);
+builder.Services.AddScoped<UsersDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
-
 //pipeline configuration
 builder.Services.AddControllers(options =>
 {
@@ -36,8 +29,10 @@ builder.Services.AddControllers(options =>
 .AddMvcOptions(options =>
 {
     options.ModelBinderProviders.Insert(0, new AuthenticatedUserModelBinderProvider());
-});
+}); 
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 //CORS Service
 builder.Services.AddCors(options => //todo() maybe ngnix configuration
 {
@@ -50,9 +45,6 @@ builder.Services.AddCors(options => //todo() maybe ngnix configuration
                    .AllowCredentials();
         });
 });
-
-builder.Services.AddScoped<UsersDomain>();
-
 
 //Services
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -67,8 +59,12 @@ builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<HublyDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
 
 var app = builder.Build();
 
@@ -78,12 +74,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
 // Middlewares
 app.UseMiddleware<ExceptionMiddleware>();
 
-//app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
+
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

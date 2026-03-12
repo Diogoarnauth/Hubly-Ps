@@ -104,4 +104,9 @@ public class ProblemResponse
         "Failed To Logout",
     400);
 
+    public static readonly ProblemResponse FailedToEditUser = new(
+        "failed-to-edit-user",
+        "Failed To Edit User",
+    400);
+
 }

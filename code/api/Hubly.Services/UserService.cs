@@ -129,7 +129,21 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
                 return user;
         });
     }
-  
+    public async Task<OneOf<bool, UserError>> EditUser(int userId, string newUsername)
+    {
+        if (string.IsNullOrWhiteSpace(newUsername)) return new UserError.InvalidName();
+
+        return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+        {
+            var userid = await context.UserRepository.GetUserById(userId);
+                if (userid == null)
+                {
+                    return new UserError.FailedToGetUserInfo();
+                }
+            await context.UserRepository.EditUser(userId, newUsername);
+            return true;
+        });
+    }  
      
 }
 }
