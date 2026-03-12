@@ -1,5 +1,6 @@
-namespace Hubly.api.Domain.Entities{
 
+namespace Hubly.api.Domain.Entities
+{
     public class AuthenticatedUser
     {
 

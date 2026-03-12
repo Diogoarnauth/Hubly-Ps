@@ -3,7 +3,8 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= SQKj6V+BOawXgEgi5J8JZuVrHy8t5My/8pd7wF3S/sA=
+@token= /b4MZRDMAxrax+9ayAiLakco57vANajv164/5iDLjw0=
+
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -38,6 +39,7 @@ Content-Type: {{contentType}}
 POST http://{{host}}/api/users/edit
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
 {
     "newUsername": "joaozitofofitogodito"
 }

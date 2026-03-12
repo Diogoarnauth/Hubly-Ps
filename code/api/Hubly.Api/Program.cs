@@ -29,7 +29,7 @@ builder.Services.AddControllers(options =>
 .AddMvcOptions(options =>
 {
     options.ModelBinderProviders.Insert(0, new AuthenticatedUserModelBinderProvider());
-});
+}); 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -3,6 +3,7 @@ using Hubly.api.DTOs;
 using Hubly.api.Services.Interfaces;
 using Hubly.api.Services.Problems;
 using Hubly.api.Problems;
+using Hubly.api.Pipeline;
 using Mapster; 
 using Microsoft.AspNetCore.Mvc;
 
@@ -116,7 +117,7 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
     }
 
     [HttpPatch(Uris.Uris.Users.EditUser)]
-    public async Task<IActionResult> EditUser( [ModelBinder] AuthenticatedUser user, [FromBody] EditUserInputModel request)
+    public async Task<IActionResult> EditUser( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
     {
         var response = await _userService.EditUser(user.Id, request.NewUsername);
         return response.Match<IActionResult>(
