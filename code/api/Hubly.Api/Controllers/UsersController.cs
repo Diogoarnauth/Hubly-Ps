@@ -116,7 +116,7 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
         );
     }
 
-    [HttpPatch(Uris.Uris.Users.EditUser)]
+    [HttpPost(Uris.Uris.Users.EditUser)]
     public async Task<IActionResult> EditUser( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
     {
         var response = await _userService.EditUser(user.Id, request.NewUsername);
@@ -129,5 +129,23 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
             }
         );
     }
+
+     [HttpPost(Uris.Uris.Users.ChangePassword)]
+    public async Task<IActionResult> ChangePassword([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] ChangePasswordInputModel request)
+    {
+        var response = await _userService.ChangePassword(user.Id, request.OldPassword, request.NewPassword);
+        return response.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                UserError.InvalidPassword => ProblemResponse.InvalidPassword.ToResponse(),
+                UserError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                UserError.OldPasswordIsIncorrect => ProblemResponse.OldPasswordIsIncorrect.ToResponse(),
+                UserError.NewPasswordCannotBeTheSameAsTheOldPassword => ProblemResponse.NewPasswordCannotBeTheSameAsTheOldPassword.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
 
 }

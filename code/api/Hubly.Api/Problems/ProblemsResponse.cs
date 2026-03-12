@@ -108,5 +108,21 @@ public class ProblemResponse
         "failed-to-edit-user",
         "Failed To Edit User",
     400);
+    public static readonly ProblemResponse UserNotFound = new(
+    "user-not-found",
+    "User Not Found",
+    404 
+    );
+    
+    public static readonly ProblemResponse OldPasswordIsIncorrect = new(
+        "old-password-is-incorrect",
+        "Old Password Is Incorrect",
+    400);
+    public static readonly ProblemResponse NewPasswordCannotBeTheSameAsTheOldPassword = new(
+        "new-password-cannot-be-the-same-as-the-old-password",
+        "New Password Cannot Be The Same As The Old Password",
+    400);
+
+
 
 }

@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= /b4MZRDMAxrax+9ayAiLakco57vANajv164/5iDLjw0=
+@token= n8DfN3VEqI13+R6KTTdwnCl/EO8HhgW9x9fbovQ3/Gc=
 
 
 ### 1. Criar um Novo Utilizador
@@ -12,7 +12,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "João Silva",
-    "email": "joao.silva@example.com",
+    "email": "joao.silva12@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -21,7 +21,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "joao.silva@example.com",
+    "email": "joao.silva12@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -42,4 +42,14 @@ Content-Type: {{contentType}}
 
 {
     "newUsername": "joaozitofofitogodito"
+}
+
+### 5. Editar password
+POST http://{{host}}/api/users/changePassword
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+    "OldPassword": "PasswordSegura123",
+    "NewPassword": "PassworInsegura123"
 }

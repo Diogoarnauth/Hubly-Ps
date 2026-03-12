@@ -9,6 +9,8 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<bool> UserExistsWithEmail(string email);    
         Task<User?> GetUserById (int user_id);
         Task EditUser(int userId, string newUsername);
+        Task ChangePassword(int userId, string newPasswordHash);
+
     }
 
 }

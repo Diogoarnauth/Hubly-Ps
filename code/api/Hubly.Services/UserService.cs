@@ -12,17 +12,21 @@ namespace Hubly.api.Services
     public class UserService: IUserService
     {
         private readonly ITokenService _tokenService;
+        private readonly IPasswordEncoder _passwordEncoder;
+
         private readonly ITransactionManager _transactionManager;
         private readonly UsersDomain _usersDomain;
     
 
     public UserService(
         ITokenService tokenService,
+        IPasswordEncoder passwordEncoder,
         ITransactionManager transactionManager,
         UsersDomain usersDomain
     )
     {
         _tokenService = tokenService;
+        _passwordEncoder = passwordEncoder;
         _transactionManager = transactionManager;
         _usersDomain = usersDomain;
     }
@@ -144,6 +148,39 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
             return true;
         });
     }  
+
+
+      public async Task<OneOf<string, UserError>> ChangePassword(int userId, string oldPassword, string newPassword)
+        {
+            if (!_usersDomain.IsSafePassword(newPassword))
+            {
+                return new UserError.InvalidPassword();
+            }
+
+            return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetUserById(userId);
+                if (user == null)
+                {
+                    return new UserError.UserNotFound();
+                }
+
+                string oldPasswordHash = _passwordEncoder.createValidationInformation(oldPassword);
+                if (user.PasswordValidation != oldPasswordHash)
+                {
+                    return new UserError.OldPasswordIsIncorrect();
+                }
+                string newPasswordHash = _passwordEncoder.createValidationInformation(newPassword);
+                if (user.PasswordValidation == newPasswordHash)
+                {
+                    return new UserError.NewPasswordCannotBeTheSameAsTheOldPassword();
+                }
+
+                await context.UserRepository.ChangePassword(userId, newPasswordHash);
+                return "Password changed successfully";
+            });
+        }
+
      
 }
 }

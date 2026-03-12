@@ -45,5 +45,12 @@ namespace Hubly.api.Infrastructure
             _context.Users.Update(user);
         }
 
+        public async Task ChangePassword(int userId, string newPasswordHash)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            user.PasswordValidation = newPasswordHash;
+            _context.Users.Update(user);
+        }
+
 }
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics.Contracts;
+
 namespace Hubly.api.Services.Problems
 {
     public abstract class UserError
@@ -12,6 +14,11 @@ namespace Hubly.api.Services.Problems
         public class FailedToGetUserInfo : UserError { } 
         public class InvalidCredentials : UserError { }
         public class FailedToEditUser : UserError { }
+        public class UserNotFound : UserError { }
+        public class OldPasswordIsIncorrect : UserError { }
+        public class NewPasswordCannotBeTheSameAsTheOldPassword : UserError { }
+        
+
         
         
     }
