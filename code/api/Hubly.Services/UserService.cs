@@ -43,12 +43,12 @@ namespace Hubly.api.Services
         {
             if (await context.UserRepository.UserExistsWithEmail(email)) return new UserError.EmailAlreadyExists();
 
-        var passwordInfo = _usersDomain.CreatePasswordValidationInformation(password);
+        var passwordInfo = _passwordEncoder.createValidationInformation(password);
         
         var newUser = new User {
             Name = userName, 
             Email = email,
-            PasswordValidation = passwordInfo.ValidationInfo,
+            PasswordValidation = passwordInfo,
             CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
 
@@ -67,8 +67,11 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
     return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
     {
         var user = await context.UserRepository.GetUserByEmail(email);
+
+        var passwordHash = _passwordEncoder.createValidationInformation(password);
+
         
-        if (user == null || !_usersDomain.ValidatePassword(password, user.GetValidationInfo()))
+        if (user == null || (passwordHash != user.PasswordValidation))
         {
 
             return new UserError.InvalidCredentials();
@@ -165,12 +168,16 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
                     return new UserError.UserNotFound();
                 }
 
-                string oldPasswordHash = _passwordEncoder.createValidationInformation(oldPassword);
+                var oldPasswordHash = _passwordEncoder.createValidationInformation(oldPassword);
+                Console.Write("oldPassordHash:");
+                Console.Write(oldPasswordHash);
                 if (user.PasswordValidation != oldPasswordHash)
                 {
                     return new UserError.OldPasswordIsIncorrect();
                 }
-                string newPasswordHash = _passwordEncoder.createValidationInformation(newPassword);
+                var newPasswordHash = _passwordEncoder.createValidationInformation(newPassword);
+                Console.Write("newPasswordHash:");
+                Console.Write(newPasswordHash);
                 if (user.PasswordValidation == newPasswordHash)
                 {
                     return new UserError.NewPasswordCannotBeTheSameAsTheOldPassword();
