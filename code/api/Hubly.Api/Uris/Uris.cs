@@ -14,6 +14,9 @@ public static class Uris
         public const string Token = $"{Prefix}/users/token";
         public const string Logout = $"{Prefix}/users/logout";
         public const string EditUser = $"{Prefix}/users/edit";
+        public const string EmailConfirmation = $"{Prefix}/users/emailConfirmation";
+        public const string ResendEmailConfirmation = $"{Prefix}/users/resendEmailConfirmation";
+
 
         public const string ChangePassword = $"{Prefix}/users/changePassword";
         // No C#, usamos string.Replace ou string.Format para expandir o ID
@@ -26,6 +29,8 @@ public static class Uris
         public static string LogoutUser ()=> Logout;
 
         public static string PasswordChange ()=> ChangePassword;
+
+    
     }
     
 }

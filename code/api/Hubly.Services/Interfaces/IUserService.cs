@@ -13,7 +13,10 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<bool, UserError>> EditUser(int userId, string newUsername);
         Task<OneOf<User, UserError>>  GetUserInfo(int userId);
         Task<OneOf<string, UserError>> ChangePassword(int userId, string oldPassword, string newPassword);
-        
+        Task<OneOf<string, UserError>> ResendEmailConfirmation(string email);
+        Task<OneOf<string, UserError>> GenerateConfirmationCode(int userId, ITransactionContext context);
+        Task<OneOf<bool, UserError>> VerifyConfirmationCodeAsync(string email, string code);
+        Task<OneOf<bool, UserError>> ResendConfirmationCodeAsync(int userId);
 
     }
 

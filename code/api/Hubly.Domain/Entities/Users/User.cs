@@ -18,6 +18,9 @@ public class User
     //verificar com o prof
     public PasswordValidationInfo GetValidationInfo() => new PasswordValidationInfo(PasswordValidation);
 
+    [Column("is_email_confirmed")]
+    public bool IsEmailConfirmed { get; set; } = false;
+    
     [Column("created_at")]
     public long CreatedAt { get; set; }
 

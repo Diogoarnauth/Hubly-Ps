@@ -147,5 +147,38 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
         );
     }
 
+     [HttpPost(Uris.Uris.Users.verifyEmail)]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
+    {
+        var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);
+
+        return result.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                UserError.InvalidConfirmationCode => ProblemResponse.InvalidConfirmationCode.ToResponse(),
+                UserError.FailedToConfirmEmail => ProblemResponse.FailedToConfirmEmail.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+    //
+    [HttpPost(Uris.Uris.Users.ResendEmailConfirmation)]
+    public async Task<IActionResult> ResendEmailConfirmation([FromBody] ResendEmailConfirmationInputModel request)
+    {
+        var response = await _userService.ResendEmailConfirmation(request.Email);
+        return response.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                UserError.EmailAlreadyConfirmed => ProblemResponse.EmailAlreadyConfirmed.ToResponse(),
+                UserError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                UserError.CodeAlreadyExists => ProblemResponse.CodeAlreadyExists.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
 
 }

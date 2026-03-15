@@ -122,7 +122,24 @@ public class ProblemResponse
         "new-password-cannot-be-the-same-as-the-old-password",
         "New Password Cannot Be The Same As The Old Password",
     400);
+    public static readonly ProblemResponse InvalidConfirmationCode = new(
+        "invalid-confirmation-code",
+        "The provided confirmation code is invalid",
+    400);
 
+    public static readonly ProblemResponse FailedToConfirmEmail = new(
+        "failed-to-confirm-email",
+        "Failed to confirm email",
+    500);
+
+    public static readonly ProblemResponse EmailAlreadyConfirmed = new(
+        "email-already-confirmed",
+        "Email already confirmed",
+    400);
+    public static readonly ProblemResponse CodeAlreadyExists = new(
+        "code-already-exists",
+        "Code already exists",
+    400);
 
 
 }

@@ -6,11 +6,17 @@ INSERT INTO dbo.social_platforms (name_platform) VALUES ('X');
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('Telegram');
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('TikTok');
 
-INSERT INTO dbo.users (name, email, password_validation, created_at) 
-VALUES ('João Criador', 'joao@hubly.com', 'hash_password_123', 1714560000000);
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('João Criador', 'joao@hubly.com', 'hash_password_123', true, 1714560000);
 
-INSERT INTO dbo.users (name, email, password_validation, created_at) 
-VALUES ('Empresa Global', 'contact@empresa.com', 'hash_password_456', 1714560000000);
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact@empresa.com', 'hash_password_456', true, 1714560000);
+
+INSERT INTO dbo.email_confirmation (user_id, confirmation_code, created_at, expires_at, used)
+VALUES (1, '123456', 1714560000, 1714646400, true);
+
+INSERT INTO dbo.email_confirmation (user_id, confirmation_code, created_at, expires_at, used)
+VALUES (2, '123456', 1714560000, 1714646400, true);
 
 INSERT INTO dbo.creators (user_id, artistic_name, content, audience) 
 VALUES (1, 'JoaoVlogs', 'Tecnologia e Viagens', 'Jovens adultos interessados em gadgets');

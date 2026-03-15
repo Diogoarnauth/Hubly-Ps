@@ -12,24 +12,34 @@ namespace Hubly.api.Services
     public class UserService: IUserService
     {
         private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
         private readonly IPasswordEncoder _passwordEncoder;
 
         private readonly ITransactionManager _transactionManager;
         private readonly UsersDomain _usersDomain;
-    
+
+        private readonly int _expiredHours;
+        private readonly int _codeLength;
+
 
     public UserService(
         ITokenService tokenService,
         IPasswordEncoder passwordEncoder,
         ITransactionManager transactionManager,
+        IEmailService emailService,
+        IConfiguration configuration,
         UsersDomain usersDomain
     )
     {
+        _emailService = emailService;   
         _tokenService = tokenService;
         _passwordEncoder = passwordEncoder;
         _transactionManager = transactionManager;
         _usersDomain = usersDomain;
-    }
+        _expiredHours = int.Parse(configuration.GetSection("EmailSettings:ConfirmationCodeExpiryHours").Value ?? "24");
+        _codeLength = int.Parse(configuration.GetSection("EmailSettings:ConfirmationCodeLength").Value ?? "6");
+        
+        }
 
     public async Task<OneOf<User,UserError>> Register(string userName, string email, string password)
     {
@@ -49,6 +59,7 @@ namespace Hubly.api.Services
             Name = userName, 
             Email = email,
             PasswordValidation = passwordInfo,
+            IsEmailConfirmed = false,
             CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
 
@@ -188,6 +199,91 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
             });
         }
 
-     
+  public async Task<OneOf<string, UserError>> ResendEmailConfirmation(string email)
+        {
+            return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetUserByEmail(email);
+                if (user == null)
+                {
+                    return new UserError.UserNotFound();
+                }
+                if (user.IsEmailConfirmed)
+                {
+                    return new UserError.EmailAlreadyConfirmed();
+                }
+                await GenerateConfirmationCode(user.Id, context);
+                return "Email confirmation sent";
+            });
+        }
+
+//
+  public async Task<OneOf<string, UserError>> GenerateConfirmationCode(int userId, ITransactionContext context)
+        {
+            var user = await context.UserRepository.GetUserById(userId);
+            if (user == null)
+            {
+                return new UserError.UserNotFound();
+            }
+            string confirmationCode = GenerateNumericCode(_codeLength);
+            await context.EmailConfirmationRepository.CreateConfirmationCodeAsync(userId, confirmationCode, _expiredHours);
+            await _emailService.SendConfirmationEmailAsync(user.Email, user.Username, confirmationCode);
+            return confirmationCode;
+        }
+//
+    public async Task<OneOf<bool, UserError>> VerifyConfirmationCodeAsync(string email, string code)
+    {
+        return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+        {
+            var user = await context.UserRepository.GetUserByEmail(email);
+            if (user == null)
+            {
+                return new UserError.UserNotFound();
+            }
+            var confirmationCode = await context.EmailConfirmationRepository.GetConfirmationCodeAsync(code);
+
+            if (confirmationCode == null || confirmationCode.UserId != user.Id || confirmationCode.Used || confirmationCode.ExpiresAt < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            {
+                return new UserError.InvalidConfirmationCode();
+            }
+            await context.EmailConfirmationRepository.MarkConfirmationCodeAsUsedAsync(confirmationCode.Id);
+
+            bool confirmed = await context.EmailConfirmationRepository.ConfirmUserEmailAsync(user.Id);
+            if (!confirmed)
+            {
+                return new UserError.FailedToConfirmEmail();
+            }
+            return true;
+        });
+    }
+//
+    public async Task<OneOf<bool, UserError>> ResendConfirmationCodeAsync(int userId)
+    {
+        return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+        {
+            var user = await context.UserRepository.GetUserById(userId);
+            if (user == null)
+            {
+                return new UserError.UserNotFound();
+            }
+            if (user.IsEmailConfirmed)
+            {
+                return new UserError.EmailAlreadyConfirmed();
+            }
+            if (await context.EmailConfirmationRepository.CodeExists(userId))
+            {
+                return new UserError.CodeAlreadyExists();
+            }
+            var confirmationResult = await GenerateConfirmationCode(userId, context);
+
+            return confirmationResult.Match<OneOf<bool, UserError>>(
+                code => true,
+                error => error
+            );
+        });
+    }
+
+
+    
 }
 }

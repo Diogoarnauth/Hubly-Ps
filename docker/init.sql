@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS dbo.users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password_validation VARCHAR(255) NOT NULL,
+    is_email_confirmed boolean not null default false,
     created_at BIGINT NOT NULL
 );
 
@@ -47,4 +48,15 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     followers_count INTEGER DEFAULT 0 CHECK (followers_count >= 0),
     price_per_post DECIMAL(10, 2) DEFAULT 0.00 CHECK (price_per_post >= 0),
     CONSTRAINT unique_creator_platform UNIQUE(creator_id, platform_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS dbo.email_confirmation (
+    id serial primary key,
+    user_id integer not null,
+    confirmation_code varchar(255) not null,
+    created_at bigint not null,
+    expires_at bigint not null,
+    used boolean not null default false,
+    foreign key (user_id) references dbo.users(id) on delete cascade
 );
