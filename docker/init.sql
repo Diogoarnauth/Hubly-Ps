@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS dbo.creators (
 CREATE TABLE IF NOT EXISTS dbo.companies (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
     company_name VARCHAR(150) NOT NULL,
+    is_verified BOOLEAN DEFAULT false,
     description TEXT,
     sector VARCHAR(100),
     company_size INTEGER,

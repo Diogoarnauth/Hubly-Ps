@@ -49,5 +49,20 @@ public static class Uris
 
     }
 
+    public static class Companies
+    {
+        
+        public const string Create = $"{Prefix}/company";
+        public const string GetById = $"{Prefix}/creator/{{id}}";
+        public const string EditCreatorProfile = $"{Prefix}/creator/edit";
+
+
+        //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
+        
+
+
+    }
+
+
     
 }

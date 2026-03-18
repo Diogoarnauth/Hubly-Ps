@@ -154,4 +154,15 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "User Already Registered As Company",
     400);
 
+    public static readonly ProblemResponse CompanyAlreadyExists = new(
+        "company-already-exists",
+        "Company Already Exists",
+    400);
+
+    public static readonly ProblemResponse UserAlreadyRegisteredAsCreator = new(
+        "user-already-registered-as-creator",
+        "User Already Registered As Creator",
+    409);
+
+
 }

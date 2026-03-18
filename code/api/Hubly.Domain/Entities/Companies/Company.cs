@@ -12,7 +12,12 @@ public class Company
 
     [Column("company_name")]
     public string CompanyName { get; set; } = string.Empty;
+
+    [Column("is_verified")]
+    public bool IsVerified { get; set; } = false;
+    [Column("description")]
     public string? Description { get; set; }
+    [Column("sector")]
     public string? Sector { get; set; }
 
     [Column("company_size")]

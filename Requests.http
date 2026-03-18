@@ -3,15 +3,14 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= pphsEFGd81+Z6SYjx6zAJEmlK4kmeQhcNxlNku5Jkxk=
-
+@token= fKaYqwErg9c8lXDRJldY84OEbZs3PY+hRATJA4xBYPA=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
 Content-Type: {{contentType}}
 
 {
-    "name": "João Silva",
+    "name": "Bananinha Coisinha",
     "email": "Bananinha1234@example.com",
     "password": "PasswordSegura123"
 }
@@ -74,7 +73,7 @@ Content-Type: {{contentType}}
     "email": "Bananinha1234@example.com"
 }
 
-###
+### Register Creator
 POST http://{{host}}/api/creator
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
@@ -82,3 +81,19 @@ Content-Type: {{contentType}}
 {
   "artisticName": "Windohhhh"
 }
+
+### Register Company
+POST http://{{host}}/api/company
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "CompanySize": 1000,
+  "CompanyName": "Primor",
+  "Description": "This is the world largest company",
+  "Sector": "Beauty",
+  "WebsiteLink": "https://fr.primor.eu/fr_fr/",
+  "CountryHeadquarters": "France"
+}
+
+   

@@ -50,6 +50,8 @@ builder.Services.AddCors(options => //todo() maybe ngnix configuration
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICreatorService, CreatorService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 
 //Encoders
@@ -60,6 +62,8 @@ builder.Services.AddScoped<IPasswordEncoder, Sha256PasswordEncoder>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmailConfirmationRepository, EmailConfirmationRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
 
     
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
