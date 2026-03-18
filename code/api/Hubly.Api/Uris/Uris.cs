@@ -1,5 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
-using System.Runtime.CompilerServices;  
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Hubly.api.Uris;
@@ -11,7 +11,8 @@ public static class Uris
     public static class Users
     {
         public const string Create = $"{Prefix}/users";
-        public const string GetById = $"{Prefix}/users/{{id}}";
+        public const string GetById = $"{Prefix}/users/{{id:int}}";
+        public const string GetMyInfo = $"{Prefix}/users/profile/me";
         public const string Token = $"{Prefix}/users/token";
         public const string Logout = $"{Prefix}/users/logout";
         public const string EditUser = $"{Prefix}/users/edit";
@@ -26,43 +27,43 @@ public static class Uris
 
         public static string Register() => Create;
 
-        public static string Login ()=> Token;
+        public static string Login() => Token;
 
-        public static string LogoutUser ()=> Logout;
+        public static string LogoutUser() => Logout;
 
-        public static string PasswordChange ()=> ChangePassword;
+        public static string PasswordChange() => ChangePassword;
 
-    
+
     }
 
     public static class Creators
     {
-        
+
         public const string Create = $"{Prefix}/creator";
         public const string GetById = $"{Prefix}/creator/{{id}}";
         public const string EditCreatorProfile = $"{Prefix}/creator/edit";
 
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
-        
+
 
 
     }
 
     public static class Companies
     {
-        
+
         public const string Create = $"{Prefix}/company";
         public const string GetById = $"{Prefix}/creator/{{id}}";
         public const string EditCreatorProfile = $"{Prefix}/creator/edit";
 
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
-        
+
 
 
     }
 
 
-    
+
 }

@@ -8,6 +8,7 @@ namespace Hubly.api.Domain.Entities
 
         public string Token { get; set; }
         public string Username { get; set; }
+        public bool IsEmailConfirmed { get; set; }
         
     }
 }

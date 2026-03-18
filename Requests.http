@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= fKaYqwErg9c8lXDRJldY84OEbZs3PY+hRATJA4xBYPA=
+@token= wiVNGTOYoHHnRXOTmXHQ3rCAC21DqRJxvuq24Ecqhsk=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha Coisinha",
-    "email": "Bananinha1234@example.com",
+    "email": "Bananinha12345@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha1234@example.com",
+    "email": "Bananinha12345@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -29,10 +29,18 @@ POST http://{{host}}/api/users/logout
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-### 4. Get user info
-GET http://{{host}}/api/users/1
+
+### Get user info
+GET http://{{host}}/api/users/2
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
+
+### Get my info
+GET http://{{host}}/api/users/profile/me
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
 
 ### 5. Editar user
 POST http://{{host}}/api/users/edit
@@ -60,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha1234@example.com",
-    "code": "591376" 
+    "email": "Bananinha12345@example.com",
+    "code": "636237" 
 }
 
 ### 7. Reenviar Confirmação de Email

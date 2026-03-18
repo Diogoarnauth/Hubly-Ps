@@ -4,7 +4,7 @@ using Hubly.api.Services.Interfaces;
 using Hubly.api.Services.Problems;
 using Hubly.api.Problems;
 using Hubly.api.Pipeline;
-using Mapster; 
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hubly.api.Controllers;
@@ -13,7 +13,7 @@ namespace Hubly.api.Controllers;
 
 public class UserController : ControllerBase
 {
-    
+
     private readonly UsersDomain _usersDomain;
     private readonly IUserService _userService;
 
@@ -23,11 +23,11 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [HttpPost(Uris.Uris.Users.Create)] 
+    [HttpPost(Uris.Uris.Users.Create)]
     public async Task<IActionResult> Create([FromBody] UserCreateInputModel input)
     {
-        var res = await _userService.Register (input.Name, input.Email, input.Password);
-            
+        var res = await _userService.Register(input.Name, input.Email, input.Password);
+
         return res.Match<IActionResult>(
             success => CreatedAtAction(nameof(Create), success.Adapt<UserCreateOutputModel>()),
             error => error switch
@@ -39,45 +39,45 @@ public class UserController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
-            
+
 
     }
 
 
-[HttpPost(Uris.Uris.Users.Token)]
-public async Task<IActionResult> Token([FromBody] UserCreateTokenInputModel input)
-{
-    var res = await _userService.Token(input.Email, input.Password);
+    [HttpPost(Uris.Uris.Users.Token)]
+    public async Task<IActionResult> Token([FromBody] UserCreateTokenInputModel input)
+    {
+        var res = await _userService.Token(input.Email, input.Password);
 
-    return res.Match<IActionResult>(
-        success =>
-        {
-            var cookieOptions = new CookieOptions
+        return res.Match<IActionResult>(
+            success =>
             {
-                Path = "/",
-                HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
-                MaxAge = TimeSpan.FromHours(24)
-            };
+                var cookieOptions = new CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = true,
+                    Secure = false,
+                    SameSite = SameSiteMode.Lax,
+                    MaxAge = TimeSpan.FromHours(24)
+                };
 
-            Response.Cookies.Append("token", success, cookieOptions);
+                Response.Cookies.Append("token", success, cookieOptions);
 
-           return Ok(new UserCreateTokenOutputModel 
-            { 
-                Token = success 
-            });
-},
-        error => error switch
-        {
-            UserError.InvalidCredentials => ProblemResponse.InvalidCredentials.ToResponse(), 
-            _ => ProblemResponse.InternalServerError.ToResponse()
-        }
-    );
-}
+                return Ok(new UserCreateTokenOutputModel
+                {
+                    Token = success
+                });
+            },
+            error => error switch
+            {
+                UserError.InvalidCredentials => ProblemResponse.InvalidCredentials.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 
-[HttpPost(Uris.Uris.Users.Logout)]
-public async Task<IActionResult> Logout(AuthenticatedUser user)
+    [HttpPost(Uris.Uris.Users.Logout)]
+    public async Task<IActionResult> Logout(AuthenticatedUser user)
     {
         var response = await _userService.Logout(user.Token);
         if (Request.Cookies.ContainsKey("auth_token"))
@@ -103,7 +103,21 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
     }
 
     [HttpGet(Uris.Uris.Users.GetById)]
-    public async Task<IActionResult> GetUserInfo(AuthenticatedUser user)
+    public async Task<IActionResult> GetUserInfo([FromRoute] int id, AuthenticatedUser user)
+    {
+        var response = await _userService.GetUserInfo(id);
+        return response.Match<IActionResult>(
+            success => Ok(success.Adapt<UserInfoOutputModel>()),
+            error => error switch
+            {
+                UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
+                _=> ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpGet(Uris.Uris.Users.GetMyInfo)]
+    public async Task<IActionResult> GetMyInfo(AuthenticatedUser user)
     {
         var response = await _userService.GetUserInfo(user.Id);
         return response.Match<IActionResult>(
@@ -111,13 +125,13 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
             error => error switch
             {
                 UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
-                _ => ProblemResponse.InternalServerError.ToResponse()
+                _=> ProblemResponse.InternalServerError.ToResponse()
             }
         );
     }
 
     [HttpPost(Uris.Uris.Users.EditUser)]
-    public async Task<IActionResult> EditUser( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
+    public async Task<IActionResult> EditUser([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
     {
         var response = await _userService.EditUser(user.Id, request.NewUsername);
         return response.Match<IActionResult>(
@@ -125,12 +139,12 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
             error => error switch
             {
                 UserError.FailedToEditUser => ProblemResponse.FailedToEditUser.ToResponse(),
-                _=> ProblemResponse.InternalServerError.ToResponse()
+                _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
     }
 
-     [HttpPost(Uris.Uris.Users.ChangePassword)]
+    [HttpPost(Uris.Uris.Users.ChangePassword)]
     public async Task<IActionResult> ChangePassword([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] ChangePasswordInputModel request)
     {
         var response = await _userService.ChangePassword(user.Id, request.OldPassword, request.NewPassword);
@@ -147,7 +161,7 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
         );
     }
 
-     [HttpPost(Uris.Uris.Users.VerifyEmail)]
+    [HttpPost(Uris.Uris.Users.VerifyEmail)]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
     {
         var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);

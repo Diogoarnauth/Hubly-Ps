@@ -57,9 +57,10 @@ namespace Hubly.api.Pipeline
             {
                 Id = userResult.AsT0.Id,
                 Token = token,
-                Username = userResult.AsT0.Name
+                Username = userResult.AsT0.Name,
+                IsEmailConfirmed = userResult.AsT0.IsEmailConfirmed
             };
-            
+
         }
     }
 }

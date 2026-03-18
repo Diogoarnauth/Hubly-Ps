@@ -46,7 +46,16 @@ namespace Hubly.api.Pipeline
                     "Bearer");
                 return;
             }
-
+            if (!user.IsEmailConfirmed)
+            {
+                context.Result = new ObjectResult(new
+                {
+                    message = "Email confirmation required to perform this action.",
+                    code = "EMAIL_NOT_CONFIRMED"
+                })
+                { StatusCode = 403 };
+                return;
+            }
             context.HttpContext.Items["AuthenticatedUser"] = user;
         }
     }
