@@ -12,8 +12,16 @@ public class TransactionContext : ITransactionContext
         _context = context;
         UserRepository = new UserRepository(context);
         TokenRepository = new TokenRepository(context);
+        EmailConfirmationRepository = new EmailConfirmationRepository(context);
+        CreatorRepository = new CreatorRepository(context); 
+        CompanyRepository = new CompanyRepository(context); 
+
     }
 
     public IUserRepository UserRepository { get;}
     public ITokenRepository TokenRepository {get;}
+    public IEmailConfirmationRepository EmailConfirmationRepository {get;}
+    public ICreatorRepository CreatorRepository { get; } 
+    public ICompanyRepository CompanyRepository { get; } 
+
 }

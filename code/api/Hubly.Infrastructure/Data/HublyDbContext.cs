@@ -11,6 +11,7 @@ public class HublyDbContext : DbContext
     public DbSet<Creator> Creators { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Token> Tokens { get; set; }
+    public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -62,5 +63,31 @@ public class HublyDbContext : DbContext
             entity.Property(t => t.CreatedAt).HasColumnName("created_at");
             entity.Property(t => t.LastUsedAt).HasColumnName("last_used_at");
         });
+
+         // TODO() VER MELHOR
+        modelBuilder.Entity<EmailConfirmation>(entity =>
+        {
+            entity.ToTable("email_confirmation", "dbo");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(e => e.UserId).HasColumnName("user_id").IsRequired();
+            entity.Property(e => e.ConfirmationCode)
+                .HasColumnName("confirmation_code")
+                .IsRequired()
+                .HasMaxLength(255);
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at").IsRequired();
+            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at").IsRequired();
+            entity.Property(e => e.Used)
+                .HasColumnName("used")
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.EmailConfirmations)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade); 
+        });
+    
     }
 }

@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= 8M7X/hCvc3EyHF4DRFCacjXT7BKEkjC+MLOYuNS/zbI=
+@token= pphsEFGd81+Z6SYjx6zAJEmlK4kmeQhcNxlNku5Jkxk=
 
 
 ### 1. Criar um Novo Utilizador
@@ -12,7 +12,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "João Silva",
-    "email": "joao.silva12@example.com",
+    "email": "Bananinha1234@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -21,7 +21,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "joao.silva12@example.com",
+    "email": "Bananinha1234@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -41,7 +41,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "newUsername": "joaozitofofitogodito"
+    "newUsername": "banana"
 }
 
 ### 5. Editar password
@@ -52,4 +52,33 @@ Content-Type: {{contentType}}
 {
     "OldPassword": "PasswordSegura123",
     "NewPassword": "PassworInsegura123"
+}
+
+
+### 6. Verificar Email
+POST http://{{host}}/api/users/verifyEmail
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+    "email": "Bananinha1234@example.com",
+    "code": "591376" 
+}
+
+### 7. Reenviar Confirmação de Email
+POST http://{{host}}/api/users/resendEmailConfirmation
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+    "email": "Bananinha1234@example.com"
+}
+
+###
+POST http://{{host}}/api/creator
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "artisticName": "Windohhhh"
 }

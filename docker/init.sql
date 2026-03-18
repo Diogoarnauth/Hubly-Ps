@@ -24,9 +24,13 @@ CREATE TABLE IF NOT EXISTS dbo.token (
 
 CREATE TABLE IF NOT EXISTS dbo.creators (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
-    artistic_name VARCHAR(100),
-    content TEXT,
-    audience TEXT
+    artistic_name VARCHAR(100) NOT NULL,
+    is_verified BOOLEAN DEFAULT false,
+    availability_status VARCHAR(20) DEFAULT 'AVAILABLE',
+    global_rating DECIMAL(3, 2) DEFAULT 0, 
+    ratings_count INTEGER DEFAULT 0,      
+    chats_started_count INTEGER DEFAULT 0,   
+    chats_responded_count INTEGER DEFAULT 0 
 );
 
 CREATE TABLE IF NOT EXISTS dbo.companies (

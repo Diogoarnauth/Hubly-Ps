@@ -26,4 +26,5 @@ public class User
 
     public virtual Creator? Creator { get; set; }
     public virtual Company? Company { get; set; }
+    public virtual ICollection<EmailConfirmation> EmailConfirmations { get; set; } = new List<EmailConfirmation>();
 }

@@ -147,7 +147,7 @@ public async Task<IActionResult> Logout(AuthenticatedUser user)
         );
     }
 
-     [HttpPost(Uris.Uris.Users.verifyEmail)]
+     [HttpPost(Uris.Uris.Users.VerifyEmail)]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
     {
         var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);

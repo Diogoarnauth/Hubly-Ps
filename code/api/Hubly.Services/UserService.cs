@@ -3,8 +3,10 @@ using Hubly.api.Services.Problems;
 using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Interfaces;
 using OneOf;
+using Microsoft.Extensions.Configuration;
 using System.Data.Common;
 using System.Linq;
+using System.Security.Cryptography;
 
 
 namespace Hubly.api.Services
@@ -63,9 +65,12 @@ namespace Hubly.api.Services
             CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
 
-        await context.UserRepository.CreateUser(newUser);
-        
-    
+        bool created = await context.UserRepository.CreateUser(newUser);
+        if (!created)
+        {
+            return new UserError.FailedUserCreation();
+        }   
+        await GenerateConfirmationCode(newUser.Id, context);
         return newUser; 
         });
     }
@@ -227,7 +232,7 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
             }
             string confirmationCode = GenerateNumericCode(_codeLength);
             await context.EmailConfirmationRepository.CreateConfirmationCodeAsync(userId, confirmationCode, _expiredHours);
-            await _emailService.SendConfirmationEmailAsync(user.Email, user.Username, confirmationCode);
+            await _emailService.SendConfirmationEmailAsync(user.Email, user.Name, confirmationCode);
             return confirmationCode;
         }
 //
@@ -283,6 +288,21 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
         });
     }
 
+
+private string GenerateNumericCode(int length)
+    {
+        using var rng = RandomNumberGenerator.Create();
+        byte[] data = new byte[length];
+        rng.GetBytes(data);
+
+
+        char[] chars = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            chars[i] = (char)('0' + (data[i] % 10));
+        }
+        return new string(chars);
+    }
 
     
 }

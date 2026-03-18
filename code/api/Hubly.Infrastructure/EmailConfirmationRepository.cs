@@ -27,7 +27,7 @@ namespace  Hubly.api.Infrastructure
                 ExpiresAt = now + expiryHours * 3600,
                 Used = false
             };
-            await _context.EmailConfirmations.AddAsync(emailConfirmationCode);
+            await _context.AddAsync(emailConfirmationCode);
             await _context.SaveChangesAsync();
             return emailConfirmationCode;
         }
@@ -63,7 +63,6 @@ namespace  Hubly.api.Infrastructure
 
 
             user.IsEmailConfirmed = true;
-            user.UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             await _context.SaveChangesAsync();
             return true;
         }

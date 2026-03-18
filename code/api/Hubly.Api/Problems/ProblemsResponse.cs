@@ -140,6 +140,18 @@ public class ProblemResponse
         "code-already-exists",
         "Code already exists",
     400);
+    public static readonly ProblemResponse CreatorAlreadyExists = new(
+        "creator-already-exists",
+        "Creator Already Exists",
+    400);
+public static readonly ProblemResponse UserAlreadyRegisteredAsCompany = new(
+        "user-already-registered-as-company",
+        "User Already Registered As Company",
+    409);
 
+public static readonly ProblemResponse InvalidArtisticName = new(
+        "user-already-registered-as-company",
+        "User Already Registered As Company",
+    400);
 
 }

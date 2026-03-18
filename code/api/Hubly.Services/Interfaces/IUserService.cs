@@ -1,5 +1,6 @@
 using Hubly.api.Domain.Entities;
 using Hubly.api.Services.Problems;
+using Hubly.api.Infrastructure.Interfaces;
 using OneOf;
 
 namespace Hubly.api.Services.Interfaces

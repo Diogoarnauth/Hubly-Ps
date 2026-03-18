@@ -18,8 +18,8 @@ VALUES (1, '123456', 1714560000, 1714646400, true);
 INSERT INTO dbo.email_confirmation (user_id, confirmation_code, created_at, expires_at, used)
 VALUES (2, '123456', 1714560000, 1714646400, true);
 
-INSERT INTO dbo.creators (user_id, artistic_name, content, audience) 
-VALUES (1, 'JoaoVlogs', 'Tecnologia e Viagens', 'Jovens adultos interessados em gadgets');
+INSERT INTO dbo.creators (user_id, artistic_name, is_verified, availability_status, global_rating, ratings_count, chats_started_count, chats_responded_count) 
+VALUES (1, 'JoaoVlogs', false, 'AVAILABLE', 0.0, 0, 0, 0);
 
 
 INSERT INTO dbo.companies (user_id, company_name, description, sector, company_size, website_link, country_headquarters) 
