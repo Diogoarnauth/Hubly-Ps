@@ -32,6 +32,16 @@ namespace Hubly.api.Infrastructure
                 //.Include(c => c.User) // Caso precisemos dos dados do User, pensar ainda 
                 .FirstOrDefaultAsync(c => c.Id == userId);
         }
+
+        public async Task<Creator?> UpdateStatus(int userId, string newStatus)
+        {
+            var creator = await _context.Creators.FindAsync(userId);
+            if (creator == null) return null;
+            creator.AvailabilityStatus = newStatus;
+            _context.Creators.Update(creator);
+            await _context.SaveChangesAsync();
+            return creator;
+        }
     
     }
 }

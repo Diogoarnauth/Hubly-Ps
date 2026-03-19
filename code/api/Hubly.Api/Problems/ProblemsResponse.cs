@@ -164,5 +164,19 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "User Already Registered As Creator",
     409);
 
+    public static readonly ProblemResponse InvalidStatus = new(
+        "invalid-status",
+        "Invalid Status",
+    400);
+
+    public static readonly ProblemResponse FailedToUpdateStatus = new (
+        "failed-to-update-status",
+        "Failed To Update Status",
+    400);
+
+    public static readonly ProblemResponse CreatorNotFound = new (
+        "creator-not-found",
+        "Creator Not Found",
+    400);
 
 }

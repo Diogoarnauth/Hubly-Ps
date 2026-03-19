@@ -11,6 +11,8 @@ namespace Hubly.api.Services.Problems
         public class FailedToEditCreator : CreatorError { }   
         public class CreatorNotFound : CreatorError { }
         public class UserAlreadyRegisteredAsCompany : CreatorError { }
+        public class InvalidAvailabilityStatus: CreatorError{ }
+        public class FailedToUpdateStatus: CreatorError { }
         
     }
 }

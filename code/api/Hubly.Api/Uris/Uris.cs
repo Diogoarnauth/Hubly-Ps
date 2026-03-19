@@ -43,6 +43,7 @@ public static class Uris
         public const string GetById = $"{Prefix}/creator/{{id}}";
         public const string EditCreatorProfile = $"{Prefix}/creator/edit";
 
+        public const string ChangeAvailabilityStatus = $"{Prefix}/creator/status";
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
 
