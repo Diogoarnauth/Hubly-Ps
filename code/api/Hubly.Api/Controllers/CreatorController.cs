@@ -14,12 +14,12 @@ namespace Hubly.api.Controllers;
 public class CreatorController : ControllerBase
 {
     
-    //private readonly UsersDomain _usersDomain; // vamos prossivelmente precisar de ter um creator domain para gerenciar o  intervalo de valores para campos etc (lógica de negócio) 
+    //private readonly CreatorsDomain _creatorsDomain; 
     private readonly ICreatorService _creatorService;
 
-    public CreatorController(/*UsersDomain usersDomain,*/ ICreatorService creatorService)
+    public CreatorController(/*CreatorsDomain creatorsDomain,*/ ICreatorService creatorService)
     {
-        //_usersDomain = usersDomain;
+        //_creatorsDomain = creatorsDomain;
         _creatorService = creatorService;
     }
 

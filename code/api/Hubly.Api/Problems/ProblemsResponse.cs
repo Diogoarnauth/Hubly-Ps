@@ -150,8 +150,8 @@ public static readonly ProblemResponse UserAlreadyRegisteredAsCompany = new(
     409);
 
 public static readonly ProblemResponse InvalidArtisticName = new(
-        "user-already-registered-as-company",
-        "User Already Registered As Company",
+        "invalid-artistic-name",
+        "Invalid Artistic Name",
     400);
 
     public static readonly ProblemResponse CompanyAlreadyExists = new(

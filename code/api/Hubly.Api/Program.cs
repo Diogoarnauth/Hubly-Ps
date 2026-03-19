@@ -11,14 +11,21 @@ using Hubly.api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var domainConfig = new UsersDomainConfig 
+var userDomainConfig = new UsersDomainConfig 
 {
     MinUsernameLength = 3,
     MinPasswordLength = 8
 };
+var creatorDomainConfig = new CreatorsDomainConfig 
+{
+    MinArtitisticNameLength = 2
+};
 
-builder.Services.AddSingleton(domainConfig);
+builder.Services.AddSingleton(userDomainConfig);
+builder.Services.AddSingleton(creatorDomainConfig);
+
 builder.Services.AddScoped<UsersDomain>();
+builder.Services.AddScoped<CreatorsDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 //pipeline configuration

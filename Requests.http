@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= wiVNGTOYoHHnRXOTmXHQ3rCAC21DqRJxvuq24Ecqhsk=
+@token= ib8KUPdRQpLvPCqAzTps4IqOMp9ypcX8g3ytUewO7QQ=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha Coisinha",
-    "email": "Bananinha12345@example.com",
+    "email": "Bananinha123456@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha12345@example.com",
+    "email": "Bananinha123456@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha12345@example.com",
-    "code": "636237" 
+    "email": "Bananinha123456@example.com",
+    "code": "303232" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -87,7 +87,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "artisticName": "Windohhhh"
+  "artisticName": "whindowwww"
 }
 
 ### Register Company

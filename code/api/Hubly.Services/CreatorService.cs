@@ -13,31 +13,35 @@ namespace Hubly.api.Services
     public class CreatorService: ICreatorService
     {
         private readonly ITransactionManager _transactionManager;
-        //private readonly UsersDomain _usersDomain; corrigir depois
+        private readonly CreatorsDomain _creatorsDomain;
 
     public CreatorService(
         ITransactionManager transactionManager,
-        IConfiguration configuration//,
-        //UsersDomain usersDomain
+        IConfiguration configuration,
+        CreatorsDomain creatorsDomain
     )
     {
         _transactionManager = transactionManager;
-        //_usersDomain = usersDomain;
-        
-        }
+        _creatorsDomain = creatorsDomain;
+    }
 
     public async Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName)
 {
     // Validação de Domínio única agora
-    
-    /*if (!_creatorsDomain.IsValidArtisticName(artisticName)) 
-        return new CreatorError.InvalidArtisticName();*/
+            Console.WriteLine("antes no if"); 
+
+    if (!_creatorsDomain.IsValidArtisticName(artisticName)){
+        Console.WriteLine("Entrei no if"); 
+        return new CreatorError.InvalidArtisticName();
+    }
+            Console.WriteLine("SAIII no if"); 
 
     return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
     {
         // Verificações cruzadas
         if (await context.CreatorRepository.ExistsByUserId(userId)) 
             return new CreatorError.CreatorAlreadyExists();
+        Console.WriteLine("tou no sitio errado "); 
 
         if (await context.CompanyRepository.ExistsByUserId(userId)) 
             return new CreatorError.UserAlreadyRegisteredAsCompany();
