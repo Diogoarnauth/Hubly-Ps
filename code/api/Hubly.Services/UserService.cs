@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 
 namespace Hubly.api.Services
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
@@ -24,113 +24,114 @@ namespace Hubly.api.Services
         private readonly int _codeLength;
 
 
-    public UserService(
-        ITokenService tokenService,
-        IPasswordEncoder passwordEncoder,
-        ITransactionManager transactionManager,
-        IEmailService emailService,
-        IConfiguration configuration,
-        UsersDomain usersDomain
-    )
-    {
-        _emailService = emailService;   
-        _tokenService = tokenService;
-        _passwordEncoder = passwordEncoder;
-        _transactionManager = transactionManager;
-        _usersDomain = usersDomain;
-        _expiredHours = int.Parse(configuration.GetSection("EmailSettings:ConfirmationCodeExpiryHours").Value ?? "24");
-        _codeLength = int.Parse(configuration.GetSection("EmailSettings:ConfirmationCodeLength").Value ?? "6");
-        
+        public UserService(
+            ITokenService tokenService,
+            IPasswordEncoder passwordEncoder,
+            ITransactionManager transactionManager,
+            IEmailService emailService,
+            IConfiguration configuration,
+            UsersDomain usersDomain
+        )
+        {
+            _emailService = emailService;
+            _tokenService = tokenService;
+            _passwordEncoder = passwordEncoder;
+            _transactionManager = transactionManager;
+            _usersDomain = usersDomain;
+            _expiredHours = int.Parse(configuration.GetSection("EmailSettings:ConfirmationCodeExpiryHours").Value ?? "24");
+            _codeLength = int.Parse(configuration.GetSection("EmailSettings:ConfirmationCodeLength").Value ?? "6");
+
         }
 
-    public async Task<OneOf<User,UserError>> Register(string userName, string email, string password)
-    {
-        if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
-            
-        if (!_usersDomain.IsValidUsername(userName)) return new UserError.InvalidName();
-
-        if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();
-            
-        return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+        public async Task<OneOf<User, UserError>> Register(string userName, string email, string password)
         {
-            if (await context.UserRepository.UserExistsWithEmail(email)) return new UserError.EmailAlreadyExists();
+            if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
 
-        var passwordInfo = _passwordEncoder.createValidationInformation(password);
-        
-        var newUser = new User {
-            Name = userName, 
-            Email = email,
-            PasswordValidation = passwordInfo,
-            IsEmailConfirmed = false,
-            CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-        };
+            if (!_usersDomain.IsValidUsername(userName)) return new UserError.InvalidName();
 
-        bool created = await context.UserRepository.CreateUser(newUser);
-        if (!created)
-        {
-            return new UserError.FailedUserCreation();
-        }   
-        await GenerateConfirmationCode(newUser.Id, context);
-        return newUser; 
-        });
-    }
+            if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();
 
-public async Task<OneOf<string, UserError>> Token(string email, string password)
-{
-    if (string.IsNullOrWhiteSpace(email)) return new UserError.InvalidEmail();
-    if (string.IsNullOrWhiteSpace(password)) return new UserError.InvalidPassword();
-
-    return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
-    {
-        var user = await context.UserRepository.GetUserByEmail(email);
-
-        var passwordHash = _passwordEncoder.createValidationInformation(password);
-
-        
-        if (user == null || (passwordHash != user.PasswordValidation))
-        {
-
-            return new UserError.InvalidCredentials();
-        }
-
-        // 3. Gerir limite de tokens
-        var existingTokens = await context.TokenRepository.GetTokensByUser(user.Id);
-
-        int maxTokens = _usersDomain.MaxTokensPerUser; 
-
-        if (existingTokens.Count >= maxTokens)
-        {
-
-            var oldestToken = existingTokens
-                .OrderBy(t => t.LastUsedAt)
-                .FirstOrDefault();
-
-            if (oldestToken != null)
+            return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
+                if (await context.UserRepository.UserExistsWithEmail(email)) return new UserError.EmailAlreadyExists();
 
-                await context.TokenRepository.DeleteTokenByValidation(oldestToken.TokenValidation);
-            }
+                var passwordInfo = _passwordEncoder.createValidationInformation(password);
+
+                var newUser = new User
+                {
+                    Name = userName,
+                    Email = email,
+                    PasswordValidation = passwordInfo,
+                    IsEmailConfirmed = false,
+                    CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                };
+
+                bool created = await context.UserRepository.CreateUser(newUser);
+                if (!created)
+                {
+                    return new UserError.FailedUserCreation();
+                }
+                await GenerateConfirmationCode(newUser.Id, context);
+                return newUser;
+            });
         }
 
-        // 4. Gerar o novo Token usando o SERVIÇO DE TOKENS
-        var rawToken = _tokenService.GenerateTokenValue(); 
-        var validationInfo = _tokenService.CreateTokenValidationInformation(rawToken);
-
-        var newToken = new Token
+        public async Task<OneOf<string, UserError>> Token(string email, string password)
         {
-            TokenValidation = validationInfo,
-            UserId = user.Id,
-            CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            LastUsedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-        };
+            if (string.IsNullOrWhiteSpace(email)) return new UserError.InvalidEmail();
+            if (string.IsNullOrWhiteSpace(password)) return new UserError.InvalidPassword();
 
-        await context.TokenRepository.CreateToken(newToken);
-        
-        return rawToken; 
-    });
-}
+            return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetUserByEmail(email);
 
- public async Task<OneOf<string, UserError>> Logout(string tokenValue)
+                var passwordHash = _passwordEncoder.createValidationInformation(password);
+
+
+                if (user == null || (passwordHash != user.PasswordValidation))
+                {
+
+                    return new UserError.InvalidCredentials();
+                }
+
+                // 3. Gerir limite de tokens
+                var existingTokens = await context.TokenRepository.GetTokensByUser(user.Id);
+
+                int maxTokens = _usersDomain.MaxTokensPerUser;
+
+                if (existingTokens.Count >= maxTokens)
+                {
+
+                    var oldestToken = existingTokens
+                        .OrderBy(t => t.LastUsedAt)
+                        .FirstOrDefault();
+
+                    if (oldestToken != null)
+                    {
+
+                        await context.TokenRepository.DeleteTokenByValidation(oldestToken.TokenValidation);
+                    }
+                }
+
+                // 4. Gerar o novo Token usando o SERVIÇO DE TOKENS
+                var rawToken = _tokenService.GenerateTokenValue();
+                var validationInfo = _tokenService.CreateTokenValidationInformation(rawToken);
+
+                var newToken = new Token
+                {
+                    TokenValidation = validationInfo,
+                    UserId = user.Id,
+                    CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    LastUsedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                };
+
+                await context.TokenRepository.CreateToken(newToken);
+
+                return rawToken;
+            });
+        }
+
+        public async Task<OneOf<string, UserError>> Logout(string tokenValue)
         {
             return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
             {
@@ -138,38 +139,38 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
                 return "Logout successful";
             });
         }
-        
 
-    public async Task<OneOf<User, UserError>> GetUserInfo(int userId)
-    {
-        return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+
+        public async Task<OneOf<User, UserError>> GetUserInfo(int userId)
         {
-            var user = await context.UserRepository.GetUserById(userId);
+            return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetUserById(userId);
                 if (user == null)
                 {
                     return new UserError.FailedToGetUserInfo();
                 }
                 return user;
-        });
-    }
-    public async Task<OneOf<bool, UserError>> EditUser(int userId, string newUsername)
-    {
-        if (string.IsNullOrWhiteSpace(newUsername)) return new UserError.InvalidName();
-
-        return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+            });
+        }
+        public async Task<OneOf<bool, UserError>> EditUser(int userId, string newUsername)
         {
-            var userid = await context.UserRepository.GetUserById(userId);
+            if (!_usersDomain.IsValidUsername(newUsername)) return new UserError.InvalidName();
+
+            return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+            {
+                var userid = await context.UserRepository.GetUserById(userId);
                 if (userid == null)
                 {
                     return new UserError.FailedToGetUserInfo();
                 }
-            await context.UserRepository.EditUser(userId, newUsername);
-            return true;
-        });
-    }  
+                await context.UserRepository.EditUser(userId, newUsername);
+                return true;
+            });
+        }
 
 
-      public async Task<OneOf<string, UserError>> ChangePassword(int userId, string oldPassword, string newPassword)
+        public async Task<OneOf<string, UserError>> ChangePassword(int userId, string oldPassword, string newPassword)
         {
             if (!_usersDomain.IsSafePassword(newPassword))
             {
@@ -204,7 +205,7 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
             });
         }
 
-  public async Task<OneOf<string, UserError>> ResendEmailConfirmation(string email)
+        public async Task<OneOf<string, UserError>> ResendEmailConfirmation(string email)
         {
             return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
             {
@@ -222,8 +223,8 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
             });
         }
 
-//
-  public async Task<OneOf<string, UserError>> GenerateConfirmationCode(int userId, ITransactionContext context)
+        //
+        public async Task<OneOf<string, UserError>> GenerateConfirmationCode(int userId, ITransactionContext context)
         {
             var user = await context.UserRepository.GetUserById(userId);
             if (user == null)
@@ -235,75 +236,75 @@ public async Task<OneOf<string, UserError>> Token(string email, string password)
             await _emailService.SendConfirmationEmailAsync(user.Email, user.Name, confirmationCode);
             return confirmationCode;
         }
-//
-    public async Task<OneOf<bool, UserError>> VerifyConfirmationCodeAsync(string email, string code)
-    {
-        return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+        //
+        public async Task<OneOf<bool, UserError>> VerifyConfirmationCodeAsync(string email, string code)
         {
-            var user = await context.UserRepository.GetUserByEmail(email);
-            if (user == null)
+            return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
             {
-                return new UserError.UserNotFound();
-            }
-            var confirmationCode = await context.EmailConfirmationRepository.GetConfirmationCodeAsync(code);
+                var user = await context.UserRepository.GetUserByEmail(email);
+                if (user == null)
+                {
+                    return new UserError.UserNotFound();
+                }
+                var confirmationCode = await context.EmailConfirmationRepository.GetConfirmationCodeAsync(code);
 
-            if (confirmationCode == null || confirmationCode.UserId != user.Id || confirmationCode.Used || confirmationCode.ExpiresAt < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-            {
-                return new UserError.InvalidConfirmationCode();
-            }
-            await context.EmailConfirmationRepository.MarkConfirmationCodeAsUsedAsync(confirmationCode.Id);
+                if (confirmationCode == null || confirmationCode.UserId != user.Id || confirmationCode.Used || confirmationCode.ExpiresAt < DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                {
+                    return new UserError.InvalidConfirmationCode();
+                }
+                await context.EmailConfirmationRepository.MarkConfirmationCodeAsUsedAsync(confirmationCode.Id);
 
-            bool confirmed = await context.EmailConfirmationRepository.ConfirmUserEmailAsync(user.Id);
-            if (!confirmed)
-            {
-                return new UserError.FailedToConfirmEmail();
-            }
-            return true;
-        });
-    }
-//
-    public async Task<OneOf<bool, UserError>> ResendConfirmationCodeAsync(int userId)
-    {
-        return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
-        {
-            var user = await context.UserRepository.GetUserById(userId);
-            if (user == null)
-            {
-                return new UserError.UserNotFound();
-            }
-            if (user.IsEmailConfirmed)
-            {
-                return new UserError.EmailAlreadyConfirmed();
-            }
-            if (await context.EmailConfirmationRepository.CodeExists(userId))
-            {
-                return new UserError.CodeAlreadyExists();
-            }
-            var confirmationResult = await GenerateConfirmationCode(userId, context);
-
-            return confirmationResult.Match<OneOf<bool, UserError>>(
-                code => true,
-                error => error
-            );
-        });
-    }
-
-
-private string GenerateNumericCode(int length)
-    {
-        using var rng = RandomNumberGenerator.Create();
-        byte[] data = new byte[length];
-        rng.GetBytes(data);
-
-
-        char[] chars = new char[length];
-        for (int i = 0; i < length; i++)
-        {
-            chars[i] = (char)('0' + (data[i] % 10));
+                bool confirmed = await context.EmailConfirmationRepository.ConfirmUserEmailAsync(user.Id);
+                if (!confirmed)
+                {
+                    return new UserError.FailedToConfirmEmail();
+                }
+                return true;
+            });
         }
-        return new string(chars);
-    }
+        //
+        public async Task<OneOf<bool, UserError>> ResendConfirmationCodeAsync(int userId)
+        {
+            return await _transactionManager.Run<OneOf<bool, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetUserById(userId);
+                if (user == null)
+                {
+                    return new UserError.UserNotFound();
+                }
+                if (user.IsEmailConfirmed)
+                {
+                    return new UserError.EmailAlreadyConfirmed();
+                }
+                if (await context.EmailConfirmationRepository.CodeExists(userId))
+                {
+                    return new UserError.CodeAlreadyExists();
+                }
+                var confirmationResult = await GenerateConfirmationCode(userId, context);
 
-    
-}
+                return confirmationResult.Match<OneOf<bool, UserError>>(
+                    code => true,
+                    error => error
+                );
+            });
+        }
+
+
+        private string GenerateNumericCode(int length)
+        {
+            using var rng = RandomNumberGenerator.Create();
+            byte[] data = new byte[length];
+            rng.GetBytes(data);
+
+
+            char[] chars = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                chars[i] = (char)('0' + (data[i] % 10));
+            }
+            return new string(chars);
+        }
+
+
+    }
 }

@@ -20,12 +20,19 @@ var creatorDomainConfig = new CreatorsDomainConfig
 {
     MinArtitisticNameLength = 2
 };
+var companyDomainConfig = new CompaniesDomainConfig
+{
+    
+};
 
 builder.Services.AddSingleton(userDomainConfig);
 builder.Services.AddSingleton(creatorDomainConfig);
+builder.Services.AddSingleton(companyDomainConfig);
+
 
 builder.Services.AddScoped<UsersDomain>();
 builder.Services.AddScoped<CreatorsDomain>();
+builder.Services.AddScoped<CompaniesDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 //pipeline configuration

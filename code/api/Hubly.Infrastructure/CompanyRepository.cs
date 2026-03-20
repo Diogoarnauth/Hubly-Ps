@@ -32,5 +32,18 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync(com => com.Id == userId);
         }
 
+        public async Task EditProfile(int user_id, int company_size, string company_name, string description, string sector, string website_link, string country_headquarters)
+        {
+            var company = await _context.Companies.FindAsync(user_id);
+            company.CompanyName = company_name;
+            company.Description = description;
+            company.Sector = sector;
+            company.CompanySize = company_size;
+            company.WebsiteLink = website_link;
+            company.CountryHeadquarters = country_headquarters;
+            _context.Companies.Update(company);
+        }
+
+
     }
 }

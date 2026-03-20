@@ -40,6 +40,24 @@ public class CompanyController : ControllerBase
         );
         
     }
+
+    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)] 
+    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyEditInputModel input)
+    {
+        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.WebsiteLink, input.CountryHeadquarters);
+            
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<CompanyEditOutputModel>()),
+            error => error switch
+            {
+                CompanyError.InvalidSectorName => ProblemResponse.InvalidName.ToResponse(),
+                CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(), 
+                CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );  
+    }
+
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)

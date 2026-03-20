@@ -190,5 +190,6 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "self-rating-not-allowed",
         "Self Rating Not Allowed",
     400); 
+    
 
 }
