@@ -76,6 +76,8 @@ namespace Hubly.api.Services
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserId(userId);
+                
+                Console.WriteLine("creatorId:", creator);
 
                 if (creator == null) return new CreatorError.CreatorNotFound();
 

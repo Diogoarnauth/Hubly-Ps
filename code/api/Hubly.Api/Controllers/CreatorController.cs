@@ -44,13 +44,10 @@ public class CreatorController : ControllerBase
     [HttpPost(Uris.Uris.Creators.ChangeAvailabilityStatus)]
     public async Task<IActionResult> ChangeAvailabilityStatus([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] StatusChangeInputModel input)
     {
-        // 1. Chamamos o método de atualização, passando o User do token e o novo status
         var res = await _creatorService.UpdateStatus(user.Id, input.AvailabilityStatus);
 
         return res.Match<IActionResult>(
-            // 2. Se for sucesso, retornamos 200 OK ou 204 No Content
             success => Ok(success.Adapt<StatusChangeOutpuModel>()),
-            // 3. Tratamos os erros específicos desta operação
             error => error switch
             {
                 CreatorError.InvalidAvailabilityStatus => ProblemResponse.InvalidStatus.ToResponse(),
