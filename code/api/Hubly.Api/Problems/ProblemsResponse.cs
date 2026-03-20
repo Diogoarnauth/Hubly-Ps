@@ -190,6 +190,10 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "self-rating-not-allowed",
         "Self Rating Not Allowed",
     400); 
-    
+    public static readonly ProblemResponse CompanyNotFound = new (
+        "company-not-found",
+        "Company Not Found",
+    404); 
+
 
 }

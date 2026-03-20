@@ -10,7 +10,7 @@ namespace Hubly.api.Services.Problems
         public class InvalidSectorName : CompanyError { }
         public class FailedToGetCompanyInfo : CompanyError { } 
         //public class FailedToEditCreator : CompanyError { }   
-        //public class CreatorNotFound : CompanyError { }
+        public class CompanyNotFound : CompanyError { }
         public class UserAlreadyRegisteredAsCreator : CompanyError { }
         
     }

@@ -14,12 +14,10 @@ namespace Hubly.api.Controllers;
 public class CompanyController : ControllerBase
 {
     
-    //private readonly UsersDomain _usersDomain; // vamos prossivelmente precisar de ter um creator domain para gerenciar o  intervalo de valores para campos etc (lógica de negócio) 
     private readonly ICompanyService _companyService;
 
-    public CompanyController(/*UsersDomain usersDomain,*/ ICompanyService companyService)
+    public CompanyController( ICompanyService companyService)
     {
-        //_usersDomain = usersDomain;
         _companyService = companyService;
     }
 
@@ -56,6 +54,21 @@ public class CompanyController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );  
+    }
+
+     [HttpGet(Uris.Uris.Companies.GetById)] 
+    public async Task<IActionResult> GetById([FromRoute] int id)
+    {
+        var res = await _companyService.GetById(id);
+
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<GetCompanyOutputModel>()), 
+            error => error switch
+            {
+                CompanyError.CompanyNotFound => ProblemResponse.CompanyNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
     }
 
 }

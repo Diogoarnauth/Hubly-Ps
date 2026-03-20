@@ -77,5 +77,20 @@ namespace Hubly.api.Services
                 return updatedCompany; 
             });
         }
+
+         public async Task<OneOf<Company, CompanyError>> GetById(int userId)
+        {
+            return await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
+        {
+            var company = await context.CompanyRepository.GetByUserId(userId);
+
+            if (company == null)
+            {
+                return new CompanyError.CompanyNotFound();
+            }
+
+            return company;
+        });
+        }
     }
 }

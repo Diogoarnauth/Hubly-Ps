@@ -51,6 +51,32 @@ namespace Hubly.api.Infrastructure
 
             return true;
         }
+
+        public async Task<bool> IncrementChatsStarted(int userId)
+        {
+            var creator = await _context.Creators.FindAsync(userId);
+            if (creator == null) return false;
+
+            creator.ChatsStartedCount++; 
+
+            _context.Creators.Update(creator);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> IncrementChatsResponded(int userId)
+        {
+            var creator = await _context.Creators.FindAsync(userId);
+            if (creator == null) return false;
+
+            creator.ChatsRespondedCount++; 
+
+            _context.Creators.Update(creator);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     
     }
 }

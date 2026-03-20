@@ -9,7 +9,8 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<Creator?> GetByUserId(int userId);
         Task<Creator?> UpdateStatus(int userId, string newStatus);
         Task<bool> UpdateRating(Creator creator);
-
+        Task<bool> IncrementChatsStarted(int userId);
+        Task<bool> IncrementChatsResponded(int userId);
         
         // Task EditProfile(int userId, string artisticName, string availabilityStatus);        
         // Task<IEnumerable<Creator>> GetTopRatedCreators(int count);

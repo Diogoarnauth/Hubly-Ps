@@ -56,7 +56,7 @@ public static class Uris
     {
 
         public const string Create = $"{Prefix}/company";
-        public const string GetById = $"{Prefix}/creator/{{id}}";
+        public const string GetById = $"{Prefix}/company/{{id}}";
         public const string EditCompanyProfile = $"{Prefix}/company/edit";
 
 
