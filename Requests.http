@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= 9Z3idAdc6Im3SnCBEa8YsJ37zMrEQUVSJq6hagsi6SM=
+@token= BYd4WbRGYCZvBn6NPjRfRUQzJ3tW7xrTMAR3P+WCCdw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Bananinha123@example.com",
-    "code": "227359" 
+    "code": "302606" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -122,3 +122,18 @@ Content-Type: {{contentType}}
 {
   "AvailabilityStatus": "AVAILABLE"
 }
+
+### Edit Company Profile
+POST http://{{host}}/api/company/edit
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "CompanySize": 200000,
+  "CompanyName": "Hublizinho",
+  "Description": "Adoro o que faço",
+  "Sector": "Informatics",
+  "WebsiteLink": "https://www.amazon.de",
+  "CountryHeadquarters": "Faro"
+}
+

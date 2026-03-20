@@ -18,7 +18,7 @@ namespace Hubly.api.Infrastructure
         {
             await _context.Companies.AddAsync(newCompany);
             // O SaveChangesAsync será gerido pelo TransactionManager no Service
-            return true; 
+            return true;
         }
 
         public async Task<bool> ExistsByUserId(int userId)
@@ -32,9 +32,10 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync(com => com.Id == userId);
         }
 
-        public async Task EditProfile(int user_id, int company_size, string company_name, string description, string sector, string website_link, string country_headquarters)
+        public async Task<Company?> EditProfile(int user_id, int company_size, string company_name, string description, string sector, string website_link, string country_headquarters)
         {
             var company = await _context.Companies.FindAsync(user_id);
+            if (company == null) return null;
             company.CompanyName = company_name;
             company.Description = description;
             company.Sector = sector;
@@ -42,6 +43,10 @@ namespace Hubly.api.Infrastructure
             company.WebsiteLink = website_link;
             company.CountryHeadquarters = country_headquarters;
             _context.Companies.Update(company);
+            
+            await _context.SaveChangesAsync();
+
+            return company;
         }
 
 

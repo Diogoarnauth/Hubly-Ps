@@ -59,17 +59,22 @@ namespace Hubly.api.Services
                 return newCompany;
             });
         }
-        public async Task<OneOf<bool, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, string sector, string website_link, string country_headquarters)
+        public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, string sector, string website_link, string country_headquarters)
         {
             if (!_companiesDomain.IsValidSector(sector)) return new CompanyError.InvalidSectorName();
 
-            return await _transactionManager.Run<OneOf<bool, CompanyError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {
-                var company = await context.CompanyRepository.GetByUserId(user_id);
-                if (company == null) return new CompanyError.FailedToGetCompanyInfo();
-                
-                await context.CompanyRepository.EditProfile(user_id, company_size, company_name, description, sector, website_link, country_headquarters);
-                return true;
+                var companyExists = await context.CompanyRepository.GetByUserId(user_id);
+                if (companyExists == null) return new CompanyError.FailedToGetCompanyInfo();
+
+                var updatedCompany = await context.CompanyRepository.EditProfile(
+                    user_id, company_size, company_name, description, sector, website_link, country_headquarters
+                );
+
+                if (updatedCompany == null) return new CompanyError.FailedToGetCompanyInfo();
+
+                return updatedCompany; 
             });
         }
     }
