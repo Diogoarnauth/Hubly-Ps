@@ -178,5 +178,17 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "creator-not-found",
         "Creator Not Found",
     400);
+    public static readonly ProblemResponse InvalidRating = new (
+        "invalid-rating",
+        "Invalid Rating",
+    400);
+    public static readonly ProblemResponse ErrorRatingCreator = new (
+        "error rating creator",
+        "Error Rating Creator",
+    400);  
+     public static readonly ProblemResponse SelfRatingNotAllowed = new (
+        "self-rating-not-allowed",
+        "Self Rating Not Allowed",
+    400); 
 
 }

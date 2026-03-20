@@ -60,6 +60,31 @@ public class CreatorController : ControllerBase
         );
     }
 
+    [HttpPost(Uris.Uris.Creators.RateCreator)]
+    public async Task<IActionResult> RateCreator(
+   [FromRoute] int id,
+   [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+   [FromBody] RateCreatorInputModel request)
+    {
+        if (user.Id == id)
+        {
+            return ProblemResponse.SelfRatingNotAllowed.ToResponse();
+        }
+
+        var response = await _creatorService.RateCreator(id, request.Rate);
+
+        return response.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                CreatorError.InvalidRating => ProblemResponse.InvalidRating.ToResponse(),
+                CreatorError.ErrorRatingCreator => ProblemResponse.ErrorRatingCreator.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+
+    }
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
