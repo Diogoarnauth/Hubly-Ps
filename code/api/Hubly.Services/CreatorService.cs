@@ -88,5 +88,39 @@ namespace Hubly.api.Services
                 return creator;
             });
         }
+
+         public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
+        {
+            if (!_creatorsDomain.IsValidRating(rating)) return new CreatorError.InvalidRating();
+
+
+            return await _transactionManager.Run<OneOf<bool, CreatorError>>(async (context) =>
+            {
+                var creator = await context.CreatorRepository.GetByUserId(creatorId);
+
+                if (creator == null)
+                {
+                    return new CreatorError.CreatorNotFound();
+                }
+
+                var (newGlobalRating, newRatingsCount) = _creatorsDomain.CalculateNewRating(
+                    creator.GlobalRating,
+                    creator.RatingsCount,
+                    rating
+                );
+
+                creator.GlobalRating = newGlobalRating;
+                creator.RatingsCount = newRatingsCount;
+
+                var success = await context.CreatorRepository.UpdateRating(creator);
+
+                if (!success)
+                {
+                    return new CreatorError.ErrorRatingCreator();
+                }
+
+                return true;
+            });
+        }
     }
 }

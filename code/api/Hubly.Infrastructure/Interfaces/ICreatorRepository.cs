@@ -8,6 +8,8 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<bool> ExistsByUserId(int userId);
         Task<Creator?> GetByUserId(int userId);
         Task<Creator?> UpdateStatus(int userId, string newStatus);
+        Task<bool> UpdateRating(Creator creator);
+
         
         // Task EditProfile(int userId, string artisticName, string availabilityStatus);        
         // Task<IEnumerable<Creator>> GetTopRatedCreators(int count);

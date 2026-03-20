@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= ib8KUPdRQpLvPCqAzTps4IqOMp9ypcX8g3ytUewO7QQ=
+@token= i7yX+Uu3l9cSyPrfpeyf8NBXWCubiHxqvXGP65nrVU4=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha Coisinha",
-    "email": "Bananinha123456@example.com",
+    "email": "Bananinha1234569@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha123456@example.com",
+    "email": "Bananinha1234569@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha123456@example.com",
-    "code": "303232" 
+    "email": "Bananinha1234569@example.com",
+    "code": "402864" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -104,4 +104,12 @@ Content-Type: {{contentType}}
   "CountryHeadquarters": "France"
 }
 
-   
+
+### Register Creator
+POST http://{{host}}/api/creator/rateCreator/1
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "Rate": 5
+}

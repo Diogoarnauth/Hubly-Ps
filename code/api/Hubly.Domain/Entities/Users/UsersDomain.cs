@@ -1,3 +1,4 @@
+
 using System.Security.Cryptography;
 using BCrypt.Net;
 
@@ -6,10 +7,14 @@ namespace Hubly.api.Domain.Entities;
 public class UsersDomain
 {
     private readonly UsersDomainConfig _config;
+    private readonly ProfanityFilter.ProfanityFilter _profanityFilter;
+
 
     public UsersDomain(UsersDomainConfig config)
     {
         _config = config;
+        _profanityFilter = new ProfanityFilter.ProfanityFilter();
+
     }
 
     public int MaxTokensPerUser => _config.MaxTokensPerUser;
@@ -45,6 +50,12 @@ public class UsersDomain
 
         if (username.Length < _config.MinUsernameLength) 
             return false;
+
+         if (_profanityFilter.IsProfanity(username))
+        {
+            return false;
+        }
+
 
         return true;
     }

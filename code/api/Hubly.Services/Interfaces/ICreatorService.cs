@@ -9,6 +9,8 @@ namespace Hubly.api.Services.Interfaces
     {
         Task<OneOf<Creator, CreatorError>> Register(int userId, string ArtisticName);
         Task<OneOf<Creator, CreatorError>> UpdateStatus(int userId, string newStatus);
+        Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating);
+
     }
 
 }   

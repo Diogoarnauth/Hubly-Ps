@@ -42,6 +42,15 @@ namespace Hubly.api.Infrastructure
             await _context.SaveChangesAsync();
             return creator;
         }
+
+          public async Task<bool> UpdateRating(Creator creator)
+        {
+            _context.Creators.Update(creator);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     
     }
 }

@@ -1,4 +1,6 @@
 using System.Diagnostics.Contracts;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Hubly.api.Services.Problems
 {
@@ -13,6 +15,8 @@ namespace Hubly.api.Services.Problems
         public class UserAlreadyRegisteredAsCompany : CreatorError { }
         public class InvalidAvailabilityStatus: CreatorError{ }
         public class FailedToUpdateStatus: CreatorError { }
-        
+        public class InvalidRating: CreatorError{ }
+        public class ErrorRatingCreator : CreatorError { }
+
     }
 }

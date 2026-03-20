@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Profanity.Detector" Version="0.1.8" />
+
   </ItemGroup>
 
 </Project>
