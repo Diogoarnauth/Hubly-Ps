@@ -58,6 +58,7 @@ public static class Uris
         public const string Create = $"{Prefix}/company";
         public const string GetById = $"{Prefix}/company/{{id}}";
         public const string EditCompanyProfile = $"{Prefix}/company/edit";
+        public const string Search = $"{Prefix}/companies";
 
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 

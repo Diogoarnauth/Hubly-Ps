@@ -50,6 +50,8 @@ public class CompanyController : ControllerBase
             {
                 CompanyError.InvalidSectorName => ProblemResponse.InvalidName.ToResponse(),
                 CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(), 
+                CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
+                CompanyError.InvalidCountryHeadquarters => ProblemResponse.InvalidCountryHeadquarters.ToResponse(),
                 CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
@@ -66,6 +68,28 @@ public class CompanyController : ControllerBase
             error => error switch
             {
                 CompanyError.CompanyNotFound => ProblemResponse.CompanyNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
+    [HttpGet(Uris.Uris.Companies.Search)] 
+    public async Task<IActionResult> Search([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromQuery] CompanySearchInputModel input)
+    {
+        var res = await _companyService.Search(input.Name, input.Sector, input.CompanySize, input.CountryHeadquarters , input.Page, input.PageSize);
+
+        return res.Match<IActionResult>(
+            success => Ok(new {
+                Items = success.Items.Adapt<List<GetCompanyOutputModel>>(),
+                TotalItems = success.TotalItems,
+                Page = success.Page,
+                PageSize = success.PageSize
+            }),
+            error => error switch
+            {
+                CompanyError.FailedToGetCompanyInfo => ProblemResponse.FailedToGetCompanyInfo.ToResponse(),
+                CompanyError.InvalidSectorName => ProblemResponse.InvalidName.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

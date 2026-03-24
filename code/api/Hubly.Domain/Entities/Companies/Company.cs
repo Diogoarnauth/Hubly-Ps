@@ -21,7 +21,7 @@ public class Company
     public string? Sector { get; set; }
 
     [Column("company_size")]
-    public int? CompanySize { get; set; }
+    public string? CompanySize { get; set; }
 
     [Column("website_link")]
     public string? WebsiteLink { get; set; }

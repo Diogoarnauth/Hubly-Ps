@@ -194,6 +194,17 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "company-not-found",
         "Company Not Found",
     404); 
-
-
+public static readonly ProblemResponse InvalidWebSiteLink = new (
+        "invalid-web-site-link",
+        "Invalid Web Site Link",
+    404); 
+    public static readonly ProblemResponse InvalidCountryHeadquarters = new (
+        "invalid-country-headquarters",
+        "Invalid Country Headquarters",
+    400); 
+    public static readonly ProblemResponse FailedToGetCompanyInfo = new (
+        "invalid-country-headquarters",
+        "Invalid Country Headquarters",
+    500); 
+  
 }

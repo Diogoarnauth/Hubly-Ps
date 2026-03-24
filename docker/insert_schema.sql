@@ -23,8 +23,10 @@ VALUES (1, 'JoaoVlogs', false, 'AVAILABLE', 0.0, 0, 0, 0);
 
 
 INSERT INTO dbo.companies (user_id, company_name, description, sector, company_size, website_link, country_headquarters) 
-VALUES (2, 'Tech Solutions', 'Agência de Marketing Digital', 'Publicidade', 50, 'https://techsolutions.com', 'Portugal');
+VALUES (2, 'Tech Solutions', 'Agência de Marketing Digital', 'Publicidade', '0 a 100', 'https://techsolutions.com', 'Portugal');
 
+INSERT INTO dbo.companies (user_id, company_name, description, sector, company_size, website_link, country_headquarters) 
+VALUES (2, 'Republica dos macacos', 'Plantamos bananas', 'Publicidade', '100 a 1000', 'https://banana.com', 'Spain');
 
 INSERT INTO dbo.creator_social_profiles (creator_id, platform_id, platform_user_name, link, followers_count, price_per_post) 
 VALUES (1, 2, 'joaovlogs_oficial', 'https://instagram.com/joaovlogs_oficial', 15000, 250.00);

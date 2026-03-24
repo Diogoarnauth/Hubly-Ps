@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= SA6ZyKyEu5viSDAcMCVsV9LvSBIrOBkragvx1wxW7Lc=
+@token= WwozQs7xxVHfNDiYrmbQo9rR18WV5xKBvG3APdHLioU=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Bananinha1235@example.com",
-    "code": "142910" 
+    "code": "081232" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -125,18 +125,37 @@ Content-Type: {{contentType}}
 
 ### Edit Company Profile
 POST http://{{host}}/api/company/edit
-Authorization: Bearer {{token}}
+Authorization: Bearer {Q{token}}
 Content-Type: {{contentType}}
 
 {
   "CompanySize": 200000,
   "CompanyName": "Hublizinho",
   "Description": "Adoro o que faço",
-  "Sector": "Informatics",
-  "WebsiteLink": "https://www.amazon.de",
-  "CountryHeadquarters": "Faro"
+  "Sector": "hubly",
+  "WebsiteLink": "http://www.bananinha.ed",
+  "CountryHeadquarters": "Spain"
 }
 
+##n esta a funcionar
 ### Get company info
-GET http://{{host}}/api/company/2
+GET http://{{host}}/api/company/1
+Content-Type: {{contentType}}
+
+### 
+GET http://{{host}}/api/companies?page=1&pageSize=10
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+###
+GET http://{{host}}/api/companies?name=Hub&sector=Beauty
+Content-Type: {{contentType}}
+###
+GET http://{{host}}/api/companies?companySize=100%20a%201000
+Content-Type: {{contentType}}
+###
+GET http://{{host}}/api/companies?countryHeadquarters=Portugal
+Content-Type: {{contentType}}
+###
+GET http://{{host}}/api/companies?name=Primor&sector=Beauty&page=1&pageSize=5
 Content-Type: {{contentType}}

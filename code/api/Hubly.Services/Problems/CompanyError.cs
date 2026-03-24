@@ -12,6 +12,8 @@ namespace Hubly.api.Services.Problems
         //public class FailedToEditCreator : CompanyError { }   
         public class CompanyNotFound : CompanyError { }
         public class UserAlreadyRegisteredAsCreator : CompanyError { }
-        
+        public class InvalidWebSiteLink : CompanyError { }
+        public class InvalidCountryHeadquarters : CompanyError { }
+
     }
 }
