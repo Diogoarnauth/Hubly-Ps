@@ -33,12 +33,25 @@ CREATE TABLE IF NOT EXISTS dbo.creators (
     chats_responded_count INTEGER DEFAULT 0 
 );
 
+CREATE TABLE IF NOT EXISTS dbo.sectors (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE 
+);
+
+CREATE TABLE IF NOT EXISTS dbo.sub_sectors (
+    id SERIAL PRIMARY KEY,
+    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    UNIQUE(sector_id, name) 
+);
+
 CREATE TABLE IF NOT EXISTS dbo.companies (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
     company_name VARCHAR(150) NOT NULL,
     is_verified BOOLEAN DEFAULT false,
     description TEXT,
-    sector VARCHAR(100),
+    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id),
+    sub_sector_id INTEGER REFERENCES dbo.sub_sectors(id),
     company_size VARCHAR(100),    
     website_link VARCHAR(100),
     country_headquarters VARCHAR(100)
@@ -65,3 +78,4 @@ CREATE TABLE IF NOT EXISTS dbo.email_confirmation (
     used boolean not null default false,
     foreign key (user_id) references dbo.users(id) on delete cascade
 );
+
