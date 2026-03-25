@@ -35,13 +35,13 @@ CREATE TABLE IF NOT EXISTS dbo.creators (
 
 CREATE TABLE IF NOT EXISTS dbo.sectors (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE 
+    sector_name VARCHAR(100) NOT NULL UNIQUE 
 );
 
 CREATE TABLE IF NOT EXISTS dbo.sub_sectors (
     id SERIAL PRIMARY KEY,
     sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
-    name VARCHAR(100) NOT NULL,
+    subsector_name VARCHAR(100) NOT NULL,
     UNIQUE(sector_id, name) 
 );
 

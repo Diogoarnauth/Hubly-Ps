@@ -12,9 +12,8 @@ public class HublyDbContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<Token> Tokens { get; set; }
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
-    //public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
-
-    //public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
+    public DbSet<Sector> Sectors { get; set; }
+    public DbSet<SubSector> SubSectors { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +41,36 @@ public class HublyDbContext : DbContext
                   .WithOne(u => u.Creator)
                   .HasForeignKey<Creator>(c => c.Id)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Sector>(entity =>
+        {
+            entity.ToTable("sectors", "dbo");
+            entity.HasKey(s => s.Id);
+
+            entity.Property(s => s.Id).HasColumnName("id");
+            entity.Property(s => s.SectorName).HasColumnName("sector_name");
+
+            entity.HasIndex(s => s.SectorName).IsUnique();
+        });
+
+
+        modelBuilder.Entity<SubSector>(entity =>
+        {
+            entity.ToTable("sub_sectors", "dbo");
+            entity.HasKey(ss => ss.Id);
+
+            entity.Property(ss => ss.Id).HasColumnName("id");
+            entity.Property(ss => ss.SubSectorName).HasColumnName("subsector_name");
+
+            entity.Property(ss => ss.SectorId).HasColumnName("sector_id");
+
+            entity.HasOne(ss => ss.Sector)
+                  .WithMany(s => s.SubSectors)
+                  .HasForeignKey(ss => ss.SectorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ss => new { ss.SectorId, ss.SubSectorName }).IsUnique();
         });
 
         // CONFIGURAÇÃO: Company (PK é FK do User)
