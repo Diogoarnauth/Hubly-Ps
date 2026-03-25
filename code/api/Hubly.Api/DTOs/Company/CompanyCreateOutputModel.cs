@@ -10,7 +10,7 @@ public class CompanyCreateOutputModel
     public bool IsVerified { get; set; } = false;
     public string? Description { get; set; }
     public string? Sector { get; set; }
-    public int? CompanySize { get; set; }
+    public string? CompanySize { get; set; }
     public string? WebsiteLink { get; set; }
     public string? CountryHeadquarters { get; set; }
 

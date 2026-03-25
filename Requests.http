@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= WwozQs7xxVHfNDiYrmbQo9rR18WV5xKBvG3APdHLioU=
+@token= NW51dVip4FSl9THOY2BT94HDzvyWt67Ds6XR5xWwpSQ=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Bananinha1235@example.com",
+    "email": "Carolzinha0102@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha1235@example.com",
+    "email": "Carolzinha0102@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha1235@example.com",
-    "code": "081232" 
+    "email": "Carolzinha0102@example.com",
+    "code": "259529" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -97,15 +97,15 @@ Content-Type: {{contentType}}
 
 {
   "CompanySize": 1000,
-  "CompanyName": "Primor",
-  "Description": "This is the world largest company",
+  "CompanyName": "carolzinhaCompany",
+  "Description": "é isso",
   "Sector": "Beauty",
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
 }
 
 
-### Register Creator
+### Rate Creator
 POST http://{{host}}/api/creator/rateCreator/1
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
@@ -125,7 +125,7 @@ Content-Type: {{contentType}}
 
 ### Edit Company Profile
 POST http://{{host}}/api/company/edit
-Authorization: Bearer {Q{token}}
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
@@ -139,7 +139,7 @@ Content-Type: {{contentType}}
 
 ##n esta a funcionar
 ### Get company info
-GET http://{{host}}/api/company/1
+GET http://{{host}}/api/company/34
 Content-Type: {{contentType}}
 
 ### 
@@ -148,14 +148,21 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?name=Hub&sector=Beauty
+GET http://{{host}}/api/companies?name=Hub&sector=hubly
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
 ###
 GET http://{{host}}/api/companies?companySize=100%20a%201000
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
 ###
 GET http://{{host}}/api/companies?countryHeadquarters=Portugal
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
 ###
 GET http://{{host}}/api/companies?name=Primor&sector=Beauty&page=1&pageSize=5
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

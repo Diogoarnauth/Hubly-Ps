@@ -33,22 +33,14 @@ CREATE TABLE IF NOT EXISTS dbo.creators (
     chats_responded_count INTEGER DEFAULT 0 
 );
 
-CREATE TYPE company_size_range AS ENUM (
-    '0 a 100', 
-    '100 a 1000', 
-    '1000 a 10000', 
-    '10000 a 100000', 
-    '100000 a 1000000', 
-    '+1M'
-);
-
 CREATE TABLE IF NOT EXISTS dbo.companies (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
     company_name VARCHAR(150) NOT NULL,
     is_verified BOOLEAN DEFAULT false,
     description TEXT,
     sector VARCHAR(100),
-    company_size company_size_range, 
+    company_size VARCHAR(100),    
+    website_link VARCHAR(100),
     country_headquarters VARCHAR(100)
 );
 
