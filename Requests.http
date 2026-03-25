@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= A4d4cf+5WhpWlrtb8w430SPU17K0B/SvURI+oz3cYE8=
+@token= aMDzsrylqmL4foaYCy5d2egLLS7NB+1Gv41GwpJMeUA=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha0102@example.com",
+    "email": "Carolzinha01@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha0102@example.com",
+    "email": "Carolzinha01@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha0102@example.com",
-    "code": "310539" 
+    "email": "Carolzinha01@example.com",
+    "code": "392414" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -101,7 +101,7 @@ Content-Type: {{contentType}}
   "CompanyName": "carolzinhaCompany",
   "Description": "é isso",
   "Sector": "Technology & SaaS",
-  "SubSector": "Cybersecurity" ,
+  "SubSector": null ,
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
 }

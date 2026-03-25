@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS dbo.sub_sectors (
     id SERIAL PRIMARY KEY,
     sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
     subsector_name VARCHAR(100) NOT NULL,
-    UNIQUE(sector_id, name) 
+    UNIQUE(sector_id, subsector_name) 
 );
 
 CREATE TABLE IF NOT EXISTS dbo.companies (

@@ -17,8 +17,7 @@ public class CompanyEditInputModel
     public string Sector { get; set; } = null!;
     
     [Required]
-    public string SubSector { get; set; } = null!;
-
+    public string? SubSector { get; set; } = null!;
 
     [Required]
     public string WebsiteLink { get; set; } = null!;

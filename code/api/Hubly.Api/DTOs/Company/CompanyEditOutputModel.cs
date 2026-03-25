@@ -9,7 +9,8 @@ public class CompanyEditOutputModel
     public string? CompanySize { get; set; }
     public string CompanyName { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string? Sector { get; set; }
+    public string Sector { get; set; } = null!;
+    public string SubSector { get; set; } = null!;
     public string? WebsiteLink { get; set; }
     public string? CountryHeadquarters { get; set; }
 

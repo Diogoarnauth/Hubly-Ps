@@ -8,12 +8,14 @@ public class HublyDbContext : DbContext
     public HublyDbContext(DbContextOptions<HublyDbContext> options) : base(options) { }
 
     public DbSet<User> Users { get; set; }
-    public DbSet<Creator> Creators { get; set; }
-    public DbSet<Company> Companies { get; set; }
+
     public DbSet<Token> Tokens { get; set; }
-    public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
+    public DbSet<Creator> Creators { get; set; }
     public DbSet<Sector> Sectors { get; set; }
     public DbSet<SubSector> SubSectors { get; set; }
+    public DbSet<Company> Companies { get; set; }
+    public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,6 +28,20 @@ public class HublyDbContext : DbContext
             entity.ToTable("users", "dbo");
             entity.HasKey(u => u.Id);
             entity.Property(u => u.Id).HasColumnName("id").ValueGeneratedOnAdd();
+        });
+
+
+        // CONFIGURAÇÃO: Token
+        modelBuilder.Entity<Token>(entity =>
+        {
+            // Nota: No teu SQL está "dbo.token" (singular)
+            entity.ToTable("token", "dbo");
+            entity.HasKey(t => t.TokenValidation);
+
+            entity.Property(t => t.TokenValidation).HasColumnName("token_validation");
+            entity.Property(t => t.UserId).HasColumnName("user_id");
+            entity.Property(t => t.CreatedAt).HasColumnName("created_at");
+            entity.Property(t => t.LastUsedAt).HasColumnName("last_used_at");
         });
 
         // CONFIGURAÇÃO: Creator (PK é FK do User)
@@ -86,19 +102,6 @@ public class HublyDbContext : DbContext
                   .WithOne(u => u.Company)
                   .HasForeignKey<Company>(c => c.Id)
                   .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // CONFIGURAÇÃO: Token
-        modelBuilder.Entity<Token>(entity =>
-        {
-            // Nota: No teu SQL está "dbo.token" (singular)
-            entity.ToTable("token", "dbo");
-            entity.HasKey(t => t.TokenValidation);
-
-            entity.Property(t => t.TokenValidation).HasColumnName("token_validation");
-            entity.Property(t => t.UserId).HasColumnName("user_id");
-            entity.Property(t => t.CreatedAt).HasColumnName("created_at");
-            entity.Property(t => t.LastUsedAt).HasColumnName("last_used_at");
         });
 
         // TODO() VER MELHOR
