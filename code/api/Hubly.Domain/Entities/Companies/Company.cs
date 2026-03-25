@@ -33,5 +33,7 @@ public class Company
     [Column("country_headquarters")]
     public string? CountryHeadquarters { get; set; }
 
+    public virtual Sector Sector { get; set; } = null!;
+    public virtual SubSector? SubSector { get; set; }
     public virtual User User { get; set; } = null!;
 }

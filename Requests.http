@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= aMDzsrylqmL4foaYCy5d2egLLS7NB+1Gv41GwpJMeUA=
+@token= Nvs0anKo0oqbErpAnO2lxKYYXRwpSuOlyll/J4aFIVo=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha01@example.com",
+    "email": "Carolzinha011@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha01@example.com",
+    "email": "Carolzinha011@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha01@example.com",
-    "code": "392414" 
+    "email": "Carolzinha011@example.com",
+    "code": "261551" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -90,7 +90,7 @@ Content-Type: {{contentType}}
   "artisticName": "Kazio"
 }
 
-//quando se mete um sector ou subSector name que nao existe ele rebenta
+//dá null no sector e no subsector sempre que se cria uma company, com 200
 ### Register Company
 POST http://{{host}}/api/company
 Authorization: Bearer {{token}}
@@ -100,8 +100,8 @@ Content-Type: {{contentType}}
   "CompanySize": 1000,
   "CompanyName": "carolzinhaCompany",
   "Description": "é isso",
-  "Sector": "Technology & SaaS",
-  "SubSector": null ,
+  "Sector": "Education & E-learning",
+  "SubSector": "Language Courses",
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
 }
@@ -134,14 +134,16 @@ Content-Type: {{contentType}}
   "CompanySize": 200000,
   "CompanyName": "Hublizinho",
   "Description": "Adoro o que faço",
-  "Sector": "hubly",
+  "Sector": "Gaming & E-sports",
+  "SubSector": "Mobile Gaming",  
   "WebsiteLink": "http://www.bananinha.ed",
   "CountryHeadquarters": "Spain"
 }
 
+
 ##n esta a funcionar
 ### Get company info
-GET http://{{host}}/api/company/34
+GET http://{{host}}/api/company/3
 Content-Type: {{contentType}}
 
 ### 

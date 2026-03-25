@@ -8,21 +8,23 @@ using Hubly.api.Services.Encoder;
 using Microsoft.EntityFrameworkCore;
 using Hubly.api.Services.Interfaces;
 using Hubly.api.Services;
+using Mapster;
+using Hubly.api.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var userDomainConfig = new UsersDomainConfig 
+var userDomainConfig = new UsersDomainConfig
 {
     MinUsernameLength = 3,
     MinPasswordLength = 8
 };
-var creatorDomainConfig = new CreatorsDomainConfig 
+var creatorDomainConfig = new CreatorsDomainConfig
 {
     MinArtitisticNameLength = 2
 };
 var companyDomainConfig = new CompaniesDomainConfig
 {
-    
+
 };
 
 builder.Services.AddSingleton(userDomainConfig);
@@ -43,7 +45,7 @@ builder.Services.AddControllers(options =>
 .AddMvcOptions(options =>
 {
     options.ModelBinderProviders.Insert(0, new AuthenticatedUserModelBinderProvider());
-}); 
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -79,7 +81,21 @@ builder.Services.AddScoped<IEmailConfirmationRepository, EmailConfirmationReposi
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
 
-    
+TypeAdapterConfig<Company, CompanyCreateOutputModel>
+    .NewConfig()
+    .Map(dest => dest.Sector, src => src.Sector != null ? src.Sector.SectorName : string.Empty)
+    .Map(dest => dest.SubSector, src => src.SubSector != null ? src.SubSector.SubSectorName : null);
+
+TypeAdapterConfig<Company, CompanyEditOutputModel>
+    .NewConfig()
+    .Map(dest => dest.Sector, src => src.Sector.SectorName)
+    .Map(dest => dest.SubSector, src => src.SubSector.SubSectorName);
+
+TypeAdapterConfig<Company, GetCompanyOutputModel>
+    .NewConfig()
+    .Map(dest => dest.Sector, src => src.Sector != null ? src.Sector.SectorName : string.Empty)
+    .Map(dest => dest.SubSector, src => src.SubSector != null ? src.SubSector.SubSectorName : null);
+
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -107,7 +123,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers(); 
+app.MapControllers();
 
 app.Run();
 

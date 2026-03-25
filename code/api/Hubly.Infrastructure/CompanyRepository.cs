@@ -29,16 +29,20 @@ namespace Hubly.api.Infrastructure
             return await _context.Companies.AnyAsync(com => com.Id == userId);
         }
 
-        public async Task<Company?> GetByUserId(int userId)
-        {
-            return await _context.Companies
-                .FirstOrDefaultAsync(com => com.Id == userId);
-        }
-//ALTERAR DEPOIS
+       public async Task<Company?> GetByUserId(int userId)
+{
+    return await _context.Companies
+        .Include(c => c.Sector)  
+        .Include(c => c.SubSector) 
+        .AsNoTracking() 
+        .FirstOrDefaultAsync(com => com.Id == userId);
+}
+
         public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, int sectorId, int? subSectorId, string website_link, string country_headquarters)
         {
             var company = await _context.Companies.FindAsync(user_id);
             if (company == null) return null;
+
             company.CompanyName = company_name;
             company.Description = description;
             company.SectorId = sectorId;
@@ -46,14 +50,14 @@ namespace Hubly.api.Infrastructure
             company.CompanySize = company_size;
             company.WebsiteLink = website_link;
             company.CountryHeadquarters = country_headquarters;
-            _context.Companies.Update(company);
 
+            _context.Companies.Update(company);
             await _context.SaveChangesAsync();
 
+            _context.Entry(company).State = EntityState.Detached; 
+            
             return company;
         }
-
-
 
         //About Sectors
         public async Task<int?> GetSectorIdByName(string sectorName)
