@@ -206,5 +206,12 @@ public static readonly ProblemResponse InvalidWebSiteLink = new (
         "invalid-country-headquarters",
         "Invalid Country Headquarters",
     500); 
-  
+    public static readonly ProblemResponse InvalidSubSectorName = new (
+        "invalid-subSector-name",
+        "Invalid SubSector Name",
+    400); 
+     public static readonly ProblemResponse InvalidSectorName = new (
+        "invalid-sector-name",
+        "Invalid Sector Name",
+    400); 
 }

@@ -17,8 +17,12 @@ public class Company
     public bool IsVerified { get; set; } = false;
     [Column("description")]
     public string? Description { get; set; }
-    [Column("sector")]
-    public string? Sector { get; set; }
+  
+    [Column("sector_id")]
+    public int SectorId { get; set; }
+
+    [Column("sub_sector_id")]
+    public int? SubSectorId { get; set; }
 
     [Column("company_size")]
     public string? CompanySize { get; set; }

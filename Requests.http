@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= NW51dVip4FSl9THOY2BT94HDzvyWt67Ds6XR5xWwpSQ=
+@token= A4d4cf+5WhpWlrtb8w430SPU17K0B/SvURI+oz3cYE8=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha0102@example.com",
-    "code": "259529" 
+    "code": "310539" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -90,6 +90,7 @@ Content-Type: {{contentType}}
   "artisticName": "Kazio"
 }
 
+//quando se mete um sector ou subSector name que nao existe ele rebenta
 ### Register Company
 POST http://{{host}}/api/company
 Authorization: Bearer {{token}}
@@ -99,7 +100,8 @@ Content-Type: {{contentType}}
   "CompanySize": 1000,
   "CompanyName": "carolzinhaCompany",
   "Description": "é isso",
-  "Sector": "Beauty",
+  "Sector": "Technology & SaaS",
+  "SubSector": "Cybersecurity" ,
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
 }

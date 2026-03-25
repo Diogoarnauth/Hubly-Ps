@@ -34,28 +34,45 @@ namespace Hubly.api.Infrastructure
             return await _context.Companies
                 .FirstOrDefaultAsync(com => com.Id == userId);
         }
-
-        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, string sector, string website_link, string country_headquarters)
+//ALTERAR DEPOIS
+        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, int sectorId, int? subSectorId, string website_link, string country_headquarters)
         {
             var company = await _context.Companies.FindAsync(user_id);
             if (company == null) return null;
             company.CompanyName = company_name;
             company.Description = description;
-            company.Sector = sector;
+            company.SectorId = sectorId;
+            company.SubSectorId = subSectorId;
             company.CompanySize = company_size;
             company.WebsiteLink = website_link;
             company.CountryHeadquarters = country_headquarters;
             _context.Companies.Update(company);
-            
+
             await _context.SaveChangesAsync();
 
             return company;
         }
 
 
-    
 
-    public async Task<PagedResponse<Company>> Search( string Name, string sector, string CompanySize, string CountryHeadquarters , int Page, int PageSize)
+        //About Sectors
+        public async Task<int?> GetSectorIdByName(string sectorName)
+        {
+            var sector = await _context.Sectors
+                .FirstOrDefaultAsync(s => s.SectorName.ToLower() == sectorName.ToLower());
+            return sector?.Id;
+        }
+
+        public async Task<int?> GetSubSectorIdByName(int sectorId, string subSectorName)
+        {
+            var subSector = await _context.SubSectors
+                .FirstOrDefaultAsync(s => s.SectorId == sectorId && s.SubSectorName.ToLower() == subSectorName.ToLower());
+            return subSector?.Id;
+        }
+
+
+
+  /*    public async Task<PagedResponse<Company>> Search(string Name, string sector, string CompanySize, string CountryHeadquarters, int Page, int PageSize)
         {
             var query = _context.Companies.AsQueryable();
 
@@ -82,7 +99,7 @@ namespace Hubly.api.Infrastructure
             var totalItems = await query.CountAsync();
 
             var items = await query
-                .OrderBy(c => c.CompanyName) 
+                .OrderBy(c => c.CompanyName)
                 .Skip((Page - 1) * PageSize)
                 .Take(PageSize)
                 .ToListAsync();
@@ -94,7 +111,7 @@ namespace Hubly.api.Infrastructure
                 Page = Page,
                 PageSize = PageSize
             };
-        }
-    
+        }*/
+
     }
 }

@@ -13,8 +13,12 @@ public class CompanyEditInputModel
     [Required]
     public string Description { get; set; } = null!;
 
-    [Required]
+   [Required]
     public string Sector { get; set; } = null!;
+    
+    [Required]
+    public string SubSector { get; set; } = null!;
+
 
     [Required]
     public string WebsiteLink { get; set; } = null!;

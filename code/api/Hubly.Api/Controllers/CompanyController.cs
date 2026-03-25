@@ -4,7 +4,7 @@ using Hubly.api.Services.Interfaces;
 using Hubly.api.Services.Problems;
 using Hubly.api.Problems;
 using Hubly.api.Pipeline;
-using Mapster; 
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hubly.api.Controllers;
@@ -13,58 +13,61 @@ namespace Hubly.api.Controllers;
 
 public class CompanyController : ControllerBase
 {
-    
+
     private readonly ICompanyService _companyService;
 
-    public CompanyController( ICompanyService companyService)
+    public CompanyController(ICompanyService companyService)
     {
         _companyService = companyService;
     }
 
-    [HttpPost(Uris.Uris.Companies.Create)] 
+    [HttpPost(Uris.Uris.Companies.Create)]
     public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyCreateInputModel input)
     {
-        var res = await _companyService.Register (user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.WebsiteLink, input.CountryHeadquarters);
-            
+        var res = await _companyService.Register(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.SubSector, input.WebsiteLink, input.CountryHeadquarters);
+
         return res.Match<IActionResult>(
             success => CreatedAtAction(nameof(Create), success.Adapt<CompanyCreateOutputModel>()),
             error => error switch
             {
+                CompanyError.InvalidSubSectorName => ProblemResponse.InvalidSubSectorName.ToResponse(),
+                CompanyError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 CompanyError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
-                CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(), 
+                CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(),
                 CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
-        
+
     }
 
-    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)] 
+    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)]
     public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyEditInputModel input)
     {
-        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.WebsiteLink, input.CountryHeadquarters);
-            
+        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.SubSector, input.WebsiteLink, input.CountryHeadquarters);
+
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<CompanyEditOutputModel>()),
             error => error switch
             {
-                CompanyError.InvalidSectorName => ProblemResponse.InvalidName.ToResponse(),
-                CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(), 
+                CompanyError.InvalidSubSectorName => ProblemResponse.InvalidSubSectorName.ToResponse(),
+                CompanyError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
+                CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(),
                 CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CompanyError.InvalidCountryHeadquarters => ProblemResponse.InvalidCountryHeadquarters.ToResponse(),
                 CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
-        );  
+        );
     }
 
-     [HttpGet(Uris.Uris.Companies.GetById)] 
+    [HttpGet(Uris.Uris.Companies.GetById)]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var res = await _companyService.GetById(id);
 
         return res.Match<IActionResult>(
-            success => Ok(success.Adapt<GetCompanyOutputModel>()), 
+            success => Ok(success.Adapt<GetCompanyOutputModel>()),
             error => error switch
             {
                 CompanyError.CompanyNotFound => ProblemResponse.CompanyNotFound.ToResponse(),
@@ -74,13 +77,14 @@ public class CompanyController : ControllerBase
     }
 
 
-    [HttpGet(Uris.Uris.Companies.Search)] 
+    /*[HttpGet(Uris.Uris.Companies.Search)]
     public async Task<IActionResult> Search([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromQuery] CompanySearchInputModel input)
     {
-        var res = await _companyService.Search(input.Name, input.Sector, input.CompanySize, input.CountryHeadquarters , input.Page, input.PageSize);
+        var res = await _companyService.Search(input.Name, input.Sector, input.CompanySize, input.CountryHeadquarters, input.Page, input.PageSize);
 
         return res.Match<IActionResult>(
-            success => Ok(new {
+            success => Ok(new
+            {
                 Items = success.Items.Adapt<List<GetCompanyOutputModel>>(),
                 TotalItems = success.TotalItems,
                 Page = success.Page,
@@ -93,7 +97,7 @@ public class CompanyController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
-    }
+    }*/
 
 }
 

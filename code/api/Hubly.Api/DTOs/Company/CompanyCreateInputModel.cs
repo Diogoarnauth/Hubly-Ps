@@ -15,6 +15,9 @@ public class CompanyCreateInputModel
 
     [Required]
     public string Sector { get; set; } = null!;
+    
+    [Required]
+    public string SubSector { get; set; } = null!;
 
     [Required]
     public string WebsiteLink { get; set; } = null!;
