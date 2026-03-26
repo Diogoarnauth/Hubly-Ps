@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= Nvs0anKo0oqbErpAnO2lxKYYXRwpSuOlyll/J4aFIVo=
+@token= m2jfcxXYQpb/p9TCF+kg/BIn0eY69yYSVOE9wZTxfpc=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha011@example.com",
-    "code": "261551" 
+    "code": "568397" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -152,12 +152,12 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?name=Hub&sector=hubly
+GET http://{{host}}/api/companies?name=So
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?companySize=100%20a%201000
+GET http://{{host}}/api/companies?companySize=0%20a%20100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

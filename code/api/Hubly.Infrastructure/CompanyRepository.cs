@@ -29,14 +29,14 @@ namespace Hubly.api.Infrastructure
             return await _context.Companies.AnyAsync(com => com.Id == userId);
         }
 
-       public async Task<Company?> GetByUserId(int userId)
-{
-    return await _context.Companies
-        .Include(c => c.Sector)  
-        .Include(c => c.SubSector) 
-        .AsNoTracking() 
-        .FirstOrDefaultAsync(com => com.Id == userId);
-}
+        public async Task<Company?> GetByUserId(int userId)
+        {
+            return await _context.Companies
+                .Include(c => c.Sector)
+                .Include(c => c.SubSector)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(com => com.Id == userId);
+        }
 
         public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, int sectorId, int? subSectorId, string website_link, string country_headquarters)
         {
@@ -54,8 +54,8 @@ namespace Hubly.api.Infrastructure
             _context.Companies.Update(company);
             await _context.SaveChangesAsync();
 
-            _context.Entry(company).State = EntityState.Detached; 
-            
+            _context.Entry(company).State = EntityState.Detached;
+
             return company;
         }
 
@@ -76,9 +76,13 @@ namespace Hubly.api.Infrastructure
 
 
 
-  /*    public async Task<PagedResponse<Company>> Search(string Name, string sector, string CompanySize, string CountryHeadquarters, int Page, int PageSize)
+        public async Task<PagedResponse<Company>> Search(string? Name, string? sector, List<string>? subSectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
         {
-            var query = _context.Companies.AsQueryable();
+            var query = _context.Companies
+                .Include(c => c.Sector)
+                .Include(c => c.SubSector)
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(Name))
             {
@@ -87,7 +91,13 @@ namespace Hubly.api.Infrastructure
 
             if (!string.IsNullOrWhiteSpace(sector))
             {
-                query = query.Where(c => c.Sector == sector);
+                query = query.Where(c => c.Sector.SectorName.ToLower() == sector.ToLower());
+            }
+
+            if (subSectors != null && subSectors.Any())
+            {
+                var subSectorsLower = subSectors.Select(s => s.ToLower()).ToList();
+                query = query.Where(c => subSectorsLower.Contains(c.SubSector.SubSectorName.ToLower()));
             }
 
             if (!string.IsNullOrWhiteSpace(CompanySize))
@@ -95,9 +105,10 @@ namespace Hubly.api.Infrastructure
                 query = query.Where(c => c.CompanySize == CompanySize);
             }
 
-            if (!string.IsNullOrWhiteSpace(CountryHeadquarters))
+            if (countries != null && countries.Any())
             {
-                query = query.Where(c => c.CountryHeadquarters == CountryHeadquarters);
+                var countriesLower = countries.Select(c => c.ToLower()).ToList();
+                query = query.Where(c => countriesLower.Contains(c.CountryHeadquarters.ToLower()));
             }
 
             var totalItems = await query.CountAsync();
@@ -115,7 +126,7 @@ namespace Hubly.api.Infrastructure
                 Page = Page,
                 PageSize = PageSize
             };
-        }*/
+        }
 
     }
 }

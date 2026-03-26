@@ -132,47 +132,48 @@ namespace Hubly.api.Services
             return result;
         }
 
-       public async Task<OneOf<Company, CompanyError>> GetById(int userId)
-{
-    var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
-    {
-        var company = await context.CompanyRepository.GetByUserId(userId);
-        if (company == null) return new CompanyError.CompanyNotFound();
+        public async Task<OneOf<Company, CompanyError>> GetById(int userId)
+        {
+            var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
+            {
+                var company = await context.CompanyRepository.GetByUserId(userId);
+                if (company == null) return new CompanyError.CompanyNotFound();
 
-        return company;
-    });
+                return company;
+            });
 
-    return result;
-}
+            return result;
+        }
 
 
-        /*public async Task<OneOf<PagedResponse<Company>, CompanyError>> Search(string? Name, string? sector, string? CompanySize, string? CountryHeadquarters, int Page, int PageSize)
+        public async Task<OneOf<PagedResponse<Company>, CompanyError>> Search( string? Name, string? sector, List<string>? subSectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
         {
             Page = Page <= 0 ? 1 : Page;
             PageSize = PageSize <= 0 ? 10 : (PageSize > 100 ? 100 : PageSize);
 
-            if (Name != null)
-            {
-                if (!_companiesDomain.IsSafeText(Name))
-                    return new CompanyError.InvalidSectorName();
-            }
+            if (Name != null && !_companiesDomain.IsSafeText(Name))
+                return new CompanyError.InvalidSectorName();
 
-            if (sector != null)
-            {
-                if (!_companiesDomain.IsSafeText(sector))
-                    return new CompanyError.InvalidSectorName();
-            }
+            if (sector != null && !_companiesDomain.IsSafeText(sector))
+                return new CompanyError.InvalidSectorName();
 
             return await _transactionManager.Run<OneOf<PagedResponse<Company>, CompanyError>>(async (context) =>
             {
-
-                var results = await context.CompanyRepository.Search(Name, sector, CompanySize, CountryHeadquarters, Page, PageSize);
+                var results = await context.CompanyRepository.Search(
+                    Name,
+                    sector,
+                    subSectors,
+                    CompanySize,
+                    countries,
+                    Page,
+                    PageSize
+                );
 
                 if (results == null)
                     return new CompanyError.FailedToGetCompanyInfo();
 
                 return results;
             });
-        }*/
+        }
     }
 }

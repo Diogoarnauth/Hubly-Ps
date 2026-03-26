@@ -77,14 +77,26 @@ public class CompanyController : ControllerBase
     }
 
 
-    /*[HttpGet(Uris.Uris.Companies.Search)]
-    public async Task<IActionResult> Search([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromQuery] CompanySearchInputModel input)
+    [HttpGet(Uris.Uris.Companies.Search)]
+    public async Task<IActionResult> Search(
+    [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+    [FromQuery] CompanySearchInputModel input)
     {
-        var res = await _companyService.Search(input.Name, input.Sector, input.CompanySize, input.CountryHeadquarters, input.Page, input.PageSize);
+        // Passamos os novos campos (Countries e SubSector) que são List<string>
+        var res = await _companyService.Search(
+            input.Name,
+            input.Sector,
+            input.SubSector,
+            input.CompanySize,
+            input.Countries,
+            input.Page,
+            input.PageSize
+        );
 
         return res.Match<IActionResult>(
             success => Ok(new
             {
+                // O Mapster vai usar as regras que definimos no Program.cs para cada item da lista
                 Items = success.Items.Adapt<List<GetCompanyOutputModel>>(),
                 TotalItems = success.TotalItems,
                 Page = success.Page,
@@ -97,7 +109,7 @@ public class CompanyController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
-    }*/
+    }
 
 }
 
