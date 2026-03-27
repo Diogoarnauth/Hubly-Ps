@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= m2jfcxXYQpb/p9TCF+kg/BIn0eY69yYSVOE9wZTxfpc=
+@token= P48JggnkGzKrOG8Fmc8+bJYo+xjf87+9K9u9qKYIOP0=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha011@example.com",
-    "code": "568397" 
+    "code": "379441" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -143,7 +143,7 @@ Content-Type: {{contentType}}
 
 ##n esta a funcionar
 ### Get company info
-GET http://{{host}}/api/company/3
+GET http://{{host}}/api/company/8
 Content-Type: {{contentType}}
 
 ### 
@@ -151,8 +151,8 @@ GET http://{{host}}/api/companies?page=1&pageSize=10
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-###
-GET http://{{host}}/api/companies?name=So
+### deveria de funcionar melhor com pesquisas minusculas
+GET http://{{host}}/api/companies?name=ma
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -162,11 +162,17 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?countryHeadquarters=Portugal
+GET http://{{host}}/api/companies?Countries=portugal&Countries=spain
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-###
-GET http://{{host}}/api/companies?name=Primor&sector=Beauty&page=1&pageSize=5
+### 
+GET http://{{host}}/api/companies?sector=Technology%20%26%20SaaS&page=1&pageSize=5
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+
+### 
+GET http://{{host}}/api/companies?subSector=Game Development&page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

@@ -1,4 +1,3 @@
-
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('YouTube');
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('Instagram');
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('Facebook');
@@ -6,12 +5,55 @@ INSERT INTO dbo.social_platforms (name_platform) VALUES ('X');
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('Telegram');
 INSERT INTO dbo.social_platforms (name_platform) VALUES ('TikTok');
 
+--user -> creator 1
 INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
 VALUES ('João Criador', 'joao@hubly.com', 'hash_password_123', true, 1714560000);
 
+
+
+--user -> company 1
 INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
 VALUES ('Empresa Global', 'contact@empresa.com', 'hash_password_456', true, 1714560000);
 
+--user -> company 2
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact1@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 3
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact2@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 4
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact3@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 5
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact4@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 6
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact5@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 7
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact6@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 8
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact7@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 9
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact8@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 10
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact9@empresa.com', 'hash_password_456', true, 1714560000);
+
+--user -> company 11
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES ('Empresa Global', 'contact10@empresa.com', 'hash_password_456', true, 1714560000);
 
 INSERT INTO dbo.email_confirmation (user_id, confirmation_code, created_at, expires_at, used)
 VALUES (1, '123456', 1714560000, 1714646400, true);
@@ -203,9 +245,50 @@ INSERT INTO dbo.sub_sectors (sector_id, subsector_name) VALUES
 (20, 'Event Photography & Videography'),
 (20, 'Event Catering & Gastronomy'),
 (20, 'Workshops & Leisure Experiences');
-
 INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
-VALUES (2, 'Tech Solutions', 'Agência de Marketing Digital', 18, 86, '0 a 100', 'https://techsolutions.com', 'Portugal');
+VALUES (2, 'NeuroLogic AI', 'Soluções de inteligência artificial para análise preditiva.', 1, 1, '100 a 1000', 'https://neurologic.ai', 'Portugal');
+
+-- Company 2: Fashion (Luxury) - Boutique exclusiva
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (3, 'Aura Atelier', 'Alta costura e acessórios de luxo feitos à mão.', 2, 7, '0 a 100', 'https://aura-atelier.fr', 'France');
+
+-- Company 3: Finance (Crypto) - Fintech disruptiva
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (4, 'ChainVault', 'Plataforma segura para gestão de ativos digitais e Web3.', 5, 22, '100 a 1000', 'https://chainvault.io', 'Switzerland');
+
+-- Company 4: Food & Beverages (Vegan) - Marca de retalho
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (5, 'Rooted Bites', 'Snacks 100% vegetais e biológicos para o dia-a-dia.', 7, 34, '0 a 100', 'https://rootedbites.pt', 'Portugal');
+
+-- Company 5: Gaming (Indie Dev) - Estúdio criativo
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (6, 'Pixel Horizon', 'Desenvolvimento de jogos indie focados em narrativa.', 9, 41, '0 a 100', 'https://pixelhorizon.games', 'Spain');
+
+-- Company 6: Sustainability (Energy) - Grande empresa
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (7, 'EcoFlow Solar', 'Instalação e manutenção de painéis solares residenciais.', 15, 71, '100 a 1000', 'https://ecoflow.com', 'Germany');
+
+-- Company 7: Pets (Health) - Rede de clínicas
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (8, 'HappyPaws Clinic', 'Rede de cuidados veterinários e bem-estar animal.', 17, 83, '1000 a 1000', 'https://happypaws.com', 'United Kingdom');
+
+-- Company 8: Marketing (SEO) - Agência especializada
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (9, 'RankMaster', 'Especialistas em tráfego pago e posicionamento orgânico.', 18, 89, '0 a 100', 'https://rankmaster.net', 'USA');
+
+-- Company 9: Travel (Adventure) - Agência de nicho
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (10, 'PeakQuest', 'Experiências de trekking e turismo de aventura radical.', 8, 38, '0 a 100', 'https://peakquest.com', 'Nepal');
+
+-- Company 10: Education (Bootcamps) - EdTech
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (11, 'CodeForge Academy', 'Bootcamps intensivos de programação e UX Design.', 6, 27, '0 a 100', 'https://codeforge.edu', 'Portugal');
+
+-- Company 11: Real Estate (Management) - PropTech
+INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_sector_id, company_size, website_link, country_headquarters) 
+VALUES (12, 'SkyRent Digital', 'Gestão automatizada de arrendamentos de curta duração.', 14, 68, '100 a 1000', 'https://skyrent.io', 'Italy');
+
+
 
 INSERT INTO dbo.creator_social_profiles (creator_id, platform_id, platform_user_name, link, followers_count, price_per_post) 
 VALUES (1, 2, 'joaovlogs_oficial', 'https://instagram.com/joaovlogs_oficial', 15000, 250.00);

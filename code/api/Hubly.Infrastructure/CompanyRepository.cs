@@ -86,7 +86,7 @@ namespace Hubly.api.Infrastructure
 
             if (!string.IsNullOrWhiteSpace(Name))
             {
-                query = query.Where(c => EF.Functions.Like(c.CompanyName, $"%{Name}%"));
+                query = query.Where(c => EF.Functions.ILike(c.CompanyName, $"%{Name}%"));
             }
 
             if (!string.IsNullOrWhiteSpace(sector))
