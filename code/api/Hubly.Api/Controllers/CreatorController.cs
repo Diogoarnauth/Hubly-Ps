@@ -82,6 +82,26 @@ public class CreatorController : ControllerBase
         );
 
     }
+
+
+//--- Social Platforms ---
+
+
+[HttpPost(Uris.Uris.Creators.AddSocialProfile)]
+    public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
+    {
+        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.min, input.Platform);
+
+        return res.Match<IActionResult>(
+            success => CreatedAtAction(nameof(Create), success.Adapt</*AddSocialProfileOutputModel*/>()),
+            error => error switch
+            {
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+
+    }
+    
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
