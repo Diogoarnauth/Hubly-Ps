@@ -8,15 +8,14 @@ public class HublyDbContext : DbContext
     public HublyDbContext(DbContextOptions<HublyDbContext> options) : base(options) { }
 
     public DbSet<User> Users { get; set; }
-
     public DbSet<Token> Tokens { get; set; }
     public DbSet<Creator> Creators { get; set; }
     public DbSet<Sector> Sectors { get; set; }
     public DbSet<SubSector> SubSectors { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
-
-
+    public DbSet<SocialPlatform> SocialPlatforms { get; set; }
+    public DbSet<CreatorSocialProfile> CreatorSocialProfiles { get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,6 +56,43 @@ public class HublyDbContext : DbContext
                   .WithOne(u => u.Creator)
                   .HasForeignKey<Creator>(c => c.Id)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SocialPlatform>(entity =>
+        {
+            entity.ToTable("social_platforms", "dbo");
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(p => p.NamePlatform).HasColumnName("name_platform").IsRequired();
+            
+            entity.HasIndex(p => p.NamePlatform).IsUnique();
+        });
+
+        modelBuilder.Entity<CreatorSocialProfile>(entity =>
+        {
+            entity.ToTable("creator_social_profiles", "dbo");
+            entity.HasKey(csp => csp.Id);
+            entity.Property(csp => csp.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(csp => csp.CreatorId).HasColumnName("creator_id");
+            entity.Property(csp => csp.PlatformId).HasColumnName("platform_id");
+            entity.Property(csp => csp.PlatformUserName).HasColumnName("platform_user_name");
+            entity.Property(csp => csp.Link).HasColumnName("link");
+            entity.Property(csp => csp.FollowersCount).HasColumnName("followers_count");
+
+            entity.Property(csp => csp.PriceMin).HasColumnName("price_min").HasPrecision(10, 2);
+            entity.Property(csp => csp.PriceMax).HasColumnName("price_max").HasPrecision(10, 2);
+
+            entity.HasOne(csp => csp.Creator)
+                  .WithMany(c => c.SocialProfiles) 
+                  .HasForeignKey(csp => csp.CreatorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(csp => csp.Platform)
+                  .WithMany(p => p.CreatorProfiles)
+                  .HasForeignKey(csp => csp.PlatformId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(csp => new { csp.CreatorId, csp.PlatformId }).IsUnique();
         });
 
         modelBuilder.Entity<Sector>(entity =>

@@ -4,29 +4,29 @@ namespace Hubly.api.Problems;
 
 public class ProblemResponse
 {
-    
+
     private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/";
     private const string MEDIA_TYPE = "application/problem+json";
 
-        public string Type { get; }
-        public string Message { get; }
-        public int Status { get; }
+    public string Type { get; }
+    public string Message { get; }
+    public int Status { get; }
 
     private ProblemResponse(string type, string message, int status) // private constuctor 
-        {
-            Type = $"{BASE_URL}{type}";
-            Message = message;
-            Status = status;
-        }
+    {
+        Type = $"{BASE_URL}{type}";
+        Message = message;
+        Status = status;
+    }
 
     public IActionResult ToResponse()//todo penso que seja a fun de criar o json completo(ver depois )
+    {
+        return new ObjectResult(this)
         {
-            return new ObjectResult(this)
-            {
-                StatusCode = Status,
-                ContentTypes = { MEDIA_TYPE },
-            };
-        }
+            StatusCode = Status,
+            ContentTypes = { MEDIA_TYPE },
+        };
+    }
 
     public IActionResult ToResponseWithLocation(string location)
     {
@@ -68,7 +68,7 @@ public class ProblemResponse
         "invalid-name",
         "The provided name is invalid",
         400);
-    
+
     public static readonly ProblemResponse InvalidEmail = new(
         "invalid-email",
         "The provided email is invalid",
@@ -82,13 +82,13 @@ public class ProblemResponse
     public static readonly ProblemResponse InvalidPassword = new(
         "invalid-password",
         "The password provided is invalid",
-        400);        
+        400);
 
     public static readonly ProblemResponse InternalServerError = new(
         "internal-server-error",
         "InternalServerError",
-        500);   
-    
+        500);
+
     public static readonly ProblemResponse FailedToGetUserInfo = new(
         "failed-to-get-user-info",
         "Failed to get user information",
@@ -98,7 +98,7 @@ public class ProblemResponse
         "invalid-credentials",
         "Invalid Credentials (email or password)",
         409);
-    
+
     public static readonly ProblemResponse FailedToLogout = new(
         "failed-to-logout",
         "Failed To Logout",
@@ -111,9 +111,9 @@ public class ProblemResponse
     public static readonly ProblemResponse UserNotFound = new(
     "user-not-found",
     "User Not Found",
-    404 
+    404
     );
-    
+
     public static readonly ProblemResponse OldPasswordIsIncorrect = new(
         "old-password-is-incorrect",
         "Old Password Is Incorrect",
@@ -144,15 +144,15 @@ public class ProblemResponse
         "creator-already-exists",
         "Creator Already Exists",
     400);
-public static readonly ProblemResponse UserAlreadyRegisteredAsCompany = new(
-        "user-already-registered-as-company",
-        "User Already Registered As Company",
-    409);
+    public static readonly ProblemResponse UserAlreadyRegisteredAsCompany = new(
+            "user-already-registered-as-company",
+            "User Already Registered As Company",
+        409);
 
-public static readonly ProblemResponse InvalidArtisticName = new(
-        "invalid-artistic-name",
-        "Invalid Artistic Name",
-    400);
+    public static readonly ProblemResponse InvalidArtisticName = new(
+            "invalid-artistic-name",
+            "Invalid Artistic Name",
+        400);
 
     public static readonly ProblemResponse CompanyAlreadyExists = new(
         "company-already-exists",
@@ -169,49 +169,64 @@ public static readonly ProblemResponse InvalidArtisticName = new(
         "Invalid Status",
     400);
 
-    public static readonly ProblemResponse FailedToUpdateStatus = new (
+    public static readonly ProblemResponse FailedToUpdateStatus = new(
         "failed-to-update-status",
         "Failed To Update Status",
     400);
 
-    public static readonly ProblemResponse CreatorNotFound = new (
+    public static readonly ProblemResponse CreatorNotFound = new(
         "creator-not-found",
         "Creator Not Found",
     400);
-    public static readonly ProblemResponse InvalidRating = new (
+    public static readonly ProblemResponse InvalidRating = new(
         "invalid-rating",
         "Invalid Rating",
     400);
-    public static readonly ProblemResponse ErrorRatingCreator = new (
+    public static readonly ProblemResponse ErrorRatingCreator = new(
         "error rating creator",
         "Error Rating Creator",
-    400);  
-     public static readonly ProblemResponse SelfRatingNotAllowed = new (
-        "self-rating-not-allowed",
-        "Self Rating Not Allowed",
-    400); 
-    public static readonly ProblemResponse CompanyNotFound = new (
+    400);
+    public static readonly ProblemResponse SelfRatingNotAllowed = new(
+       "self-rating-not-allowed",
+       "Self Rating Not Allowed",
+   400);
+    public static readonly ProblemResponse CompanyNotFound = new(
         "company-not-found",
         "Company Not Found",
-    404); 
-public static readonly ProblemResponse InvalidWebSiteLink = new (
-        "invalid-web-site-link",
-        "Invalid Web Site Link",
-    404); 
-    public static readonly ProblemResponse InvalidCountryHeadquarters = new (
+    404);
+    public static readonly ProblemResponse InvalidWebSiteLink = new(
+            "invalid-web-site-link",
+            "Invalid Web Site Link",
+        404);
+    public static readonly ProblemResponse InvalidCountryHeadquarters = new(
         "invalid-country-headquarters",
         "Invalid Country Headquarters",
-    400); 
-    public static readonly ProblemResponse FailedToGetCompanyInfo = new (
+    400);
+    public static readonly ProblemResponse FailedToGetCompanyInfo = new(
         "invalid-country-headquarters",
         "Invalid Country Headquarters",
-    500); 
-    public static readonly ProblemResponse InvalidSubSectorName = new (
+    500);
+    public static readonly ProblemResponse InvalidSubSectorName = new(
         "invalid-subSector-name",
         "Invalid SubSector Name",
-    400); 
-     public static readonly ProblemResponse InvalidSectorName = new (
-        "invalid-sector-name",
-        "Invalid Sector Name",
-    400); 
+    400);
+    public static readonly ProblemResponse InvalidSectorName = new(
+       "invalid-sector-name",
+       "Invalid Sector Name",
+   400);
+
+    public static readonly ProblemResponse InvalidPriceRange = new(
+       "invalid-price-range",
+       "Invalid Price Range",
+   400);
+
+   public static readonly ProblemResponse PlatformNotFound = new(
+       "platform-not-found",
+       "Platform Not Found",
+   400);
+
+   public static readonly ProblemResponse SocialProfileAlreadyExists = new(
+       "social-profile-already-exists",
+       "Social Profile Already Exists",
+   400);
 }

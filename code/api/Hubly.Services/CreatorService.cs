@@ -76,7 +76,7 @@ namespace Hubly.api.Services
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserId(userId);
-                
+
                 Console.WriteLine("creatorId:", creator);
 
                 if (creator == null) return new CreatorError.CreatorNotFound();
@@ -91,7 +91,7 @@ namespace Hubly.api.Services
             });
         }
 
-         public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
+        public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
         {
             if (!_creatorsDomain.IsValidRating(rating)) return new CreatorError.InvalidRating();
 
@@ -124,5 +124,50 @@ namespace Hubly.api.Services
                 return true;
             });
         }
+
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id)
+        {
+            if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax))
+            {
+                return new CreatorError.InvalidPriceRange();
+            }
+            return await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
+            {
+                var creator = await context.CreatorRepository.GetByUserId(userId);
+                if (creator == null)
+                {
+                    return new CreatorError.CreatorNotFound();
+                }
+
+                if (!await context.SocialPlatformRepository.Exists(platform_id))
+                {
+                    return new CreatorError.PlatformNotFound();
+                }
+
+                // 5. Verificar se o criador já tem esta plataforma associada (Unique Constraint)
+                if (await context.CreatorSocialRepository.HasProfileInPlatform(userId, platform_id))
+                {
+                    return new CreatorError.SocialProfileAlreadyExists();
+                }
+
+                var newProfile = new CreatorSocialProfile
+                {
+                    CreatorId = userId,
+                    PlatformId = platform_id,
+                    PlatformUserName = user_name,
+                    Link = link,
+                    FollowersCount = followers_count,
+                    PriceMin = priceMin,
+                    PriceMax = priceMax
+                };
+
+                await context.CreatorSocialRepository.Add(newProfile);
+
+                return newProfile;
+            });
+
+        }
+
     }
+
 }

@@ -7,5 +7,6 @@ public interface ITransactionContext
         IEmailConfirmationRepository EmailConfirmationRepository {get; }
         ICreatorRepository CreatorRepository { get; }
         ICompanyRepository CompanyRepository { get; }
-
+        ISocialPlatformRepository SocialPlatformRepository {get; }
+        ICreatorSocialRepository CreatorSocialRepository {get; }
 }

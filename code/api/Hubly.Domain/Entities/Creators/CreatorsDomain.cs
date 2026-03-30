@@ -57,8 +57,6 @@ public class CreatorsDomain
         return false;
     }
 
-
-
     public (decimal NewGlobalRating, int NewRatingsCount) CalculateNewRating(decimal currentRating, int currentCount, int newRate)
     {
         int newCount = currentCount + 1;
@@ -66,5 +64,28 @@ public class CreatorsDomain
         decimal newGlobalRating = ((currentRating * currentCount) + newRate) / newCount;
 
         return (newGlobalRating, newCount);
+    }
+
+    public bool IsValidPriceRange(decimal? priceMin, decimal? priceMax)
+    {
+        if (priceMin == null && priceMax == null)
+        {
+            return true;
+        }
+
+        if ((priceMin.HasValue && priceMin.Value < 0) || (priceMax.HasValue && priceMax.Value < 0))
+        {
+            return false;
+        }
+
+        if (priceMin.HasValue && priceMax.HasValue)
+        {
+            if (priceMax.Value < priceMin.Value)
+            {
+                return false; 
+            }
+        }
+        
+        return true;
     }
 }

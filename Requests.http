@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= P48JggnkGzKrOG8Fmc8+bJYo+xjf87+9K9u9qKYIOP0=
+@token= 49X6TZdWA4Y0wApyZ0vKNcgCVFquDknrV6qrPbsRuDw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha011@example.com",
-    "code": "379441" 
+    "code": "368692" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -176,3 +176,17 @@ Content-Type: {{contentType}}
 GET http://{{host}}/api/companies?subSector=Game Development&page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
+### Criar platform do creator
+POST http://{{host}}/api/creator/socialProfile
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "Platform_user_name": "Kazziozinho",
+  "Link": "https://www.youtube.com/@KazzioProva",
+  "Followers_count": 4,
+  "PriceMin": 10.00,
+  "PriceMax": 20.00,  
+  "PlatformId": 2
+}

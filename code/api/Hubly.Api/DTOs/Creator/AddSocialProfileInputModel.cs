@@ -11,12 +11,12 @@ public class AddSocialProfileInputModel
     public string Link { get; set; } = null!;
 
     [Required]
-    public int Followers_count { get; set; } = null!;  
+    public int Followers_count { get; set; }   
 
     public decimal? PriceMin { get; set; } = null;
 
     public decimal? PriceMax { get; set; } = null;
     
     [Required]
-    public string Platform { get; set; } = null!;
+    public int PlatformId { get; set; } 
 }

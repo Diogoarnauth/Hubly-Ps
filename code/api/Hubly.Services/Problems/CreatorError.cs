@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Hubly.api.Domain.Entities;
 
 namespace Hubly.api.Services.Problems
 {
@@ -17,6 +18,9 @@ namespace Hubly.api.Services.Problems
         public class FailedToUpdateStatus: CreatorError { }
         public class InvalidRating: CreatorError{ }
         public class ErrorRatingCreator : CreatorError { }
+        public class InvalidPriceRange : CreatorError { }
+        public class PlatformNotFound : CreatorError { }
+        public class SocialProfileAlreadyExists: CreatorError { }
 
     }
 }
