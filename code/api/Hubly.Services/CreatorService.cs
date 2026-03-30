@@ -92,19 +92,19 @@ namespace Hubly.api.Services
         }
 
 
-       /* public async Task<OneOf<Creator, CompanyError>> GetById(int userId)
-        {
-            var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
-            {
-                var company = await context.CreatorRepository.GetByUserId(userId);
-                if (company == null) return new CreatorError.CreatorNotFound();
+        /* public async Task<OneOf<Creator, CompanyError>> GetById(int userId)
+         {
+             var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
+             {
+                 var company = await context.CreatorRepository.GetByUserId(userId);
+                 if (company == null) return new CreatorError.CreatorNotFound();
 
-                return Creator;
-            });
+                 return Creator;
+             });
 
-            return result;
-        }
-*/
+             return result;
+         }
+ */
         public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
         {
             if (!_creatorsDomain.IsValidRating(rating)) return new CreatorError.InvalidRating();
@@ -139,6 +139,22 @@ namespace Hubly.api.Services
             });
         }
 
+
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> GetSocialProfileById(int creatorProfileId, int userId)
+        {
+            return await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
+            {
+                var profile = await context.CreatorSocialRepository.GetById(creatorProfileId);
+
+                if (profile == null)
+                {
+                    return new CreatorError.SocialProfileNotFound();
+                }
+                
+                return profile;
+            });
+        }
+
         public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax))
@@ -158,10 +174,15 @@ namespace Hubly.api.Services
                     return new CreatorError.PlatformNotFound();
                 }
 
-                if (await context.CreatorSocialRepository.HasProfileInPlatform(userId, platform_id))
+                if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(platform_id, user_name))
                 {
                     return new CreatorError.SocialProfileAlreadyExists();
                 }
+
+                /*if (await context.CreatorSocialRepository.HasProfileInPlatform(userId, platform_id))
+                {
+                    return new CreatorError.SocialProfileAlreadyExists();
+                }*/
 
                 var newProfile = new CreatorSocialProfile
                 {

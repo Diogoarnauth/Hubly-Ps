@@ -93,7 +93,7 @@ public class HublyDbContext : DbContext
                   .WithMany(p => p.CreatorProfiles)
                   .HasForeignKey(csp => csp.PlatformId)
                   .OnDelete(DeleteBehavior.Cascade);
-            entity.HasIndex(csp => new { csp.CreatorId, csp.PlatformId }).IsUnique();
+            entity.HasIndex(csp => new { csp.PlatformId, csp.PlatformUserName }).IsUnique();
         });
 
         modelBuilder.Entity<Sector>(entity =>

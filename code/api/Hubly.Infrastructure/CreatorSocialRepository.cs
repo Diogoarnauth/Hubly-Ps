@@ -35,5 +35,11 @@ namespace Hubly.api.Infrastructure
             _context.CreatorSocialProfiles.Remove(profile);
         }
 
+        public async Task<bool> ExistsByPlatformAndUsername(int platformId, string username)
+        {
+            return await _context.CreatorSocialProfiles
+                .AnyAsync(p => p.PlatformId == platformId && p.PlatformUserName == username);
+        }
+
     }
 }

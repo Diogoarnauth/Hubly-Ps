@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= nnG/g7Jy8NUfIdu9V65getlwncN+AWn4CLLC4VwzRCA=
+@token= GNoZ1Eew0414qZbiwn4WF3lKTOOU9ZVXFvfEihEyZ94=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "077708" 
+    "code": "844795" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -189,7 +189,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Platform_user_name": "Kazziozinho",
+  "Platform_user_name": "Kazozi",
   "Link": "https://www.youtube.com/@KazzioProva",
   "Followers_count": 4,
   "PriceMin": 10.00,
@@ -204,5 +204,11 @@ Content-Type: {{contentType}}
 
 ### apagar platform do creator
 DELETE http://{{host}}/api/creator/socialProfile/2
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+
+### Get platform do creator
+GET http://{{host}}/api/creator/socialProfile/3
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

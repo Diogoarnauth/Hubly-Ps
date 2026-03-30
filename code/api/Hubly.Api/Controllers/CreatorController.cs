@@ -58,7 +58,7 @@ public class CreatorController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Creators.RateCreator)]
-    public async Task<IActionResult> RateCreator( [FromRoute] int id, [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] RateCreatorInputModel request)
+    public async Task<IActionResult> RateCreator([FromRoute] int id, [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] RateCreatorInputModel request)
     {
         if (user.Id == id)
         {
@@ -80,62 +80,81 @@ public class CreatorController : ControllerBase
 
     }
 
-//IMPLEMENTAR QUANDO SE TIVER A CENA DOS PROFILES FEITA 
-  /*  [HttpGet(Uris.Uris.Creators.GetById)]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    //IMPLEMENTAR QUANDO SE TIVER A CENA DOS PROFILES FEITA 
+    /*  [HttpGet(Uris.Uris.Creators.GetById)]
+      public async Task<IActionResult> GetById([FromRoute] int id)
+      {
+          var res = await _creatorService.GetById(id);
+
+          return res.Match<IActionResult>(
+              success => Ok(success.Adapt<GetCreatorOutputModel>()),
+              error => error switch
+              {
+                  CompanyError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                  _ => ProblemResponse.InternalServerError.ToResponse()
+              }
+          );
+      }
+  */
+    //--- Social Platforms ---
+
+    [HttpGet(Uris.Uris.Creators.GetSocialProfileById)]
+    public async Task<IActionResult> GetById(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromRoute] int profileId)
     {
-        var res = await _creatorService.GetById(id);
+        var res = await _creatorService.GetSocialProfileById(profileId, user.Id);
 
         return res.Match<IActionResult>(
-            success => Ok(success.Adapt<GetCreatorOutputModel>()),
+            success => Ok(success.Adapt<GetSocialProfileOutputModel>()),
             error => error switch
             {
-                CompanyError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
     }
-*/
-//--- Social Platforms ---
+
+
 
     [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
-        public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
-        {
-            var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId);
+    public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
+    {
+        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId);
 
-            return res.Match<IActionResult>(
-                success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),
-                error => error switch
-                {
-                    CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
-                    CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),    
-                    CreatorError.PlatformNotFound => ProblemResponse.PlatformNotFound.ToResponse(),
-                    CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
-                    _ => ProblemResponse.InternalServerError.ToResponse()
-                }
-            );
+        return res.Match<IActionResult>(
+            success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),
+            error => error switch
+            {
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),
+                CreatorError.PlatformNotFound => ProblemResponse.PlatformNotFound.ToResponse(),
+                CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
 
-        }
+    }
 
-    
+
 
     [HttpDelete(Uris.Uris.Creators.RemoveSocialProfile)]
-        public async Task<IActionResult> RemoveSocialProfile(
+    public async Task<IActionResult> RemoveSocialProfile(
             [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
             [FromRoute] int profileId)
-        {
-            var res = await _creatorService.RemoveSocialProfile(user.Id, profileId);
+    {
+        var res = await _creatorService.RemoveSocialProfile(user.Id, profileId);
 
 
-            return res.Match<IActionResult>(
-                success => NoContent(),
-                error => error switch
-                {
-                    CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
-                    _=> ProblemResponse.InternalServerError.ToResponse()
-                }
-            );
-        }
+        return res.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)

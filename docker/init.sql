@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     followers_count INTEGER DEFAULT 0 CHECK (followers_count >= 0),
     price_min DECIMAL DEFAULT NULL,
     price_max DECIMAL DEFAULT NULL,
-    CONSTRAINT unique_creator_platform UNIQUE(creator_id, platform_id)
+    CONSTRAINT unique_platform_username UNIQUE(platform_id, platform_user_name)
 );
 
 
