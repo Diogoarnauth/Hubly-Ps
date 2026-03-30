@@ -76,7 +76,7 @@ namespace Hubly.api.Services
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserId(userId);
-                
+
                 Console.WriteLine("creatorId:", creator);
 
                 if (creator == null) return new CreatorError.CreatorNotFound();
@@ -91,7 +91,21 @@ namespace Hubly.api.Services
             });
         }
 
-         public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
+
+       /* public async Task<OneOf<Creator, CompanyError>> GetById(int userId)
+        {
+            var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
+            {
+                var company = await context.CreatorRepository.GetByUserId(userId);
+                if (company == null) return new CreatorError.CreatorNotFound();
+
+                return Creator;
+            });
+
+            return result;
+        }
+*/
+        public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
         {
             if (!_creatorsDomain.IsValidRating(rating)) return new CreatorError.InvalidRating();
 

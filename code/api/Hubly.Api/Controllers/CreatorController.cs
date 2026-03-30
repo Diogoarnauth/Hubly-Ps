@@ -83,17 +83,32 @@ public class CreatorController : ControllerBase
 
     }
 
+//IMPLEMENTAR QUANDO SE TIVER A CENA DOS PROFILES FEITA 
+  /*  [HttpGet(Uris.Uris.Creators.GetById)]
+    public async Task<IActionResult> GetById([FromRoute] int id)
+    {
+        var res = await _creatorService.GetById(id);
 
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<GetCreatorOutputModel>()),
+            error => error switch
+            {
+                CompanyError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+*/
 //--- Social Platforms ---
 
-
+/*
 [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
     public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
     {
         var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.min, input.Platform);
 
         return res.Match<IActionResult>(
-            success => CreatedAtAction(nameof(Create), success.Adapt</*AddSocialProfileOutputModel*/>()),
+            success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),
             error => error switch
             {
                 _ => ProblemResponse.InternalServerError.ToResponse()
@@ -101,7 +116,7 @@ public class CreatorController : ControllerBase
         );
 
     }
-    
+    */
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)

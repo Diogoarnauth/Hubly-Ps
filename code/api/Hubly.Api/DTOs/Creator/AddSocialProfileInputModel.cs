@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Hubly.api.DTOs;
+/*namespace Hubly.api.DTOs;
 
 public class AddSocialProfileInputModel
 {
@@ -20,3 +20,4 @@ public class AddSocialProfileInputModel
     [Required]
     public string Platform { get; set; } = null!;
 }
+*/

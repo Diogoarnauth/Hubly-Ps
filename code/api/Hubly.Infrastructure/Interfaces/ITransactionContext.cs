@@ -7,5 +7,7 @@ public interface ITransactionContext
         IEmailConfirmationRepository EmailConfirmationRepository {get; }
         ICreatorRepository CreatorRepository { get; }
         ICompanyRepository CompanyRepository { get; }
+        IHistoryRepository HistoryRepository { get; }
+
 
 }

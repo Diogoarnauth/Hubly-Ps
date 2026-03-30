@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= P48JggnkGzKrOG8Fmc8+bJYo+xjf87+9K9u9qKYIOP0=
+@token= hakE723ke46Gr2Q03OKWz6Bx051Dn2AX1OWejKgZrWw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha011@example.com",
+    "email": "Carolzinha012@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha011@example.com",
+    "email": "Carolzinha012@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha011@example.com",
-    "code": "379441" 
+    "email": "Carolzinha012@example.com",
+    "code": "198911" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -143,7 +143,13 @@ Content-Type: {{contentType}}
 
 ##n esta a funcionar
 ### Get company info
-GET http://{{host}}/api/company/8
+GET http://{{host}}/api/company/10
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### ver historico de pesquisas
+GET http://{{host}}/api/users/getHistory
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### 
@@ -176,3 +182,4 @@ Content-Type: {{contentType}}
 GET http://{{host}}/api/companies?subSector=Game Development&page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+

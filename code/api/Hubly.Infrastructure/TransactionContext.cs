@@ -15,6 +15,7 @@ public class TransactionContext : ITransactionContext
         EmailConfirmationRepository = new EmailConfirmationRepository(context);
         CreatorRepository = new CreatorRepository(context); 
         CompanyRepository = new CompanyRepository(context); 
+        HistoryRepository = new HistoryRepository(context);
 
     }
 
@@ -23,5 +24,7 @@ public class TransactionContext : ITransactionContext
     public IEmailConfirmationRepository EmailConfirmationRepository {get;}
     public ICreatorRepository CreatorRepository { get; } 
     public ICompanyRepository CompanyRepository { get; } 
+    public IHistoryRepository HistoryRepository { get; } 
+
 
 }

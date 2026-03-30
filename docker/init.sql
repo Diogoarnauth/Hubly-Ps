@@ -64,7 +64,9 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     platform_user_name VARCHAR(100), 
     link VARCHAR(255),
     followers_count INTEGER DEFAULT 0 CHECK (followers_count >= 0),
-    price_per_post_range VARCHAR(100) DEFAULT NULL
+    -- Novos campos para flexibilidade e pesquisa
+    price_min DECIMAL(10, 2) DEFAULT NULL,
+    price_max DECIMAL(10, 2) DEFAULT NULL,
     CONSTRAINT unique_creator_platform UNIQUE(creator_id, platform_id)
 );
 
@@ -79,3 +81,16 @@ CREATE TABLE IF NOT EXISTS dbo.email_confirmation (
     foreign key (user_id) references dbo.users(id) on delete cascade
 );
 
+CREATE TABLE IF NOT EXISTS dbo.profile_views_history (
+    id SERIAL PRIMARY KEY,
+    viewer_user_id INTEGER NOT NULL REFERENCES dbo.users(id),
+    viewed_company_id INTEGER REFERENCES dbo.companies(user_id),
+    viewed_creator_id INTEGER REFERENCES dbo.creators(user_id),
+    viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Garante a lógica 1-0 ou 0-1 (XOR)
+    CONSTRAINT chk_only_one_viewed CHECK (
+        (viewed_company_id IS NOT NULL AND viewed_creator_id IS NULL) OR 
+        (viewed_company_id IS NULL AND viewed_creator_id IS NOT NULL)
+    )
+);

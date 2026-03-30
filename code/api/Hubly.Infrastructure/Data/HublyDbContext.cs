@@ -15,6 +15,7 @@ public class HublyDbContext : DbContext
     public DbSet<SubSector> SubSectors { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
+    public DbSet<ProfileViewHistory> ProfileViewsHistory { get; set; }
 
 
 
@@ -129,5 +130,23 @@ public class HublyDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<ProfileViewHistory>(entity =>
+        {
+            entity.ToTable("profile_views_history", "dbo");
+            entity.HasKey(h => h.Id);
+            entity.Property(h => h.Id).HasColumnName("id");
+            entity.Property(h => h.ViewerUserId).HasColumnName("viewer_user_id");
+            entity.Property(h => h.ViewedCompanyId).HasColumnName("viewed_company_id");
+            entity.Property(h => h.ViewedCreatorId).HasColumnName("viewed_creator_id");
+            entity.Property(h => h.ViewedAt).HasColumnName("viewed_at");
+
+            entity.HasOne(h => h.ViewedCompany)
+          .WithMany()
+          .HasForeignKey(h => h.ViewedCompanyId);
+
+            entity.HasOne(h => h.ViewedCreator)
+                  .WithMany()
+                  .HasForeignKey(h => h.ViewedCreatorId);
+        });
     }
 }

@@ -289,6 +289,16 @@ namespace Hubly.api.Services
             });
         }
 
+        public async Task<OneOf<List<ProfileViewHistory>, UserError>> GetHistory(int userId)
+        {
+            return await _transactionManager.Run<OneOf<List<ProfileViewHistory>, UserError>>(async (context) =>
+            {
+                var history = await context.HistoryRepository.GetUserHistory(userId);
+
+                return history;
+            });
+        }
+
 
         private string GenerateNumericCode(int length)
         {
