@@ -24,5 +24,16 @@ namespace Hubly.api.Infrastructure
             return await _context.CreatorSocialProfiles.AnyAsync(p => p.CreatorId == userId && p.PlatformId == platformId);
         }
 
+        public async Task<CreatorSocialProfile?> GetById(int profileId)
+        {
+            return await _context.CreatorSocialProfiles
+                .FirstOrDefaultAsync(p => p.Id == profileId);
+        }
+
+        public void Delete(CreatorSocialProfile profile)
+        {
+            _context.CreatorSocialProfiles.Remove(profile);
+        }
+
     }
 }

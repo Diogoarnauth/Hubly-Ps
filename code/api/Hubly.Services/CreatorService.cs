@@ -181,6 +181,28 @@ namespace Hubly.api.Services
 
         }
 
+        public async Task<OneOf<bool, CreatorError>> RemoveSocialProfile(int userId, int profileId)
+        {
+            return await _transactionManager.Run<OneOf<bool, CreatorError>>(async (context) =>
+            {
+                var profile = await context.CreatorSocialRepository.GetById(profileId);
+
+                if (profile == null)
+                {
+                    return new CreatorError.SocialProfileNotFound();
+                }
+
+                if (profile.CreatorId != userId)
+                {
+                    return new CreatorError.SocialProfileNotFound();
+                }
+
+                context.CreatorSocialRepository.Delete(profile);
+
+                return true;
+            });
+        }
+
     }
 
 }

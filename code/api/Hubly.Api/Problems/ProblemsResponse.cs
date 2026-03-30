@@ -234,4 +234,8 @@ public class ProblemResponse
        "failed-to-get-platforms",
        "Failed To Get Platforms",
    404);
+   public static readonly ProblemResponse SocialProfileNotFound = new(
+       "social-profile-not-found",
+       "Social Profile Not Found",
+   404);
 }

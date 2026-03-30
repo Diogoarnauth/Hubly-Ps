@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= kBfFgN0EYao18W0udyVhmmPQ7M+mkmXZwqS1Xwzo0u0=
+@token= nnG/g7Jy8NUfIdu9V65getlwncN+AWn4CLLC4VwzRCA=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -199,5 +199,10 @@ Content-Type: {{contentType}}
 
 ### Get all platforms
 GET http://{{host}}/api/socialPlatform
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### apagar platform do creator
+DELETE http://{{host}}/api/creator/socialProfile/2
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

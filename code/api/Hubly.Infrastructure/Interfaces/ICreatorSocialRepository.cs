@@ -6,6 +6,8 @@ namespace Hubly.api.Infrastructure.Interfaces
     {
         Task Add(CreatorSocialProfile profile);
         Task<bool> HasProfileInPlatform(int userId, int platformId);
+        Task<CreatorSocialProfile?> GetById(int profileId);
+        void Delete(CreatorSocialProfile profile);
     }   
 
 }
