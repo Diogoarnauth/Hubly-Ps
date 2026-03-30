@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= Ef/DMDksr7kun/e8mgporjQxU+saO7Iw4mz+yMrR4Cg=
+@token= F2dUJ4+GRQdg4QDpgZItl0nkgtq6lWDtc8TH1nWvIVw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "257274" 
+    "code": "463322" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -196,3 +196,8 @@ Content-Type: {{contentType}}
   "PriceMax": 20.00,  
   "PlatformId": 2
 }
+
+### Get all platforms
+GET http://{{host}}/api/socialPlatform
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

@@ -229,4 +229,9 @@ public class ProblemResponse
        "social-profile-already-exists",
        "Social Profile Already Exists",
    409);
+
+   public static readonly ProblemResponse FailedToGetPlatforms = new(
+       "failed-to-get-platforms",
+       "Failed To Get Platforms",
+   404);
 }

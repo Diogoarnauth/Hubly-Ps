@@ -18,7 +18,11 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.SocialPlatforms.AnyAsync(p => p.Id == platformId);
         }
-       
+
+        public async Task<List<SocialPlatform>> GetAll()
+        {
+            return await _context.SocialPlatforms.AsNoTracking().ToListAsync();
+        }
     
     }
 }

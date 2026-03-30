@@ -21,6 +21,7 @@ namespace Hubly.api.Services.Problems
         public class InvalidPriceRange : CreatorError { }
         public class PlatformNotFound : CreatorError { }
         public class SocialProfileAlreadyExists: CreatorError { }
+        public class FailedToGetPlatforms: CreatorError { }
 
     }
 }
