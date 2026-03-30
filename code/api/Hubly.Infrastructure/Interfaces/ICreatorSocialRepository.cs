@@ -1,0 +1,11 @@
+using Hubly.api.Domain.Entities;
+
+namespace Hubly.api.Infrastructure.Interfaces
+{
+    public interface ICreatorSocialRepository
+    {
+        Task Add(CreatorSocialProfile profile);
+        Task<bool> HasProfileInPlatform(int userId, int platformId);
+    }   
+
+}

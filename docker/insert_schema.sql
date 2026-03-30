@@ -289,10 +289,9 @@ INSERT INTO dbo.companies (user_id, company_name, description, sector_id, sub_se
 VALUES (12, 'SkyRent Digital', 'Gestão automatizada de arrendamentos de curta duração.', 14, 68, '100 a 1000', 'https://skyrent.io', 'Italy');
 
 
-INSERT INTO dbo.creator_social_profiles 
-(creator_id, platform_id, platform_user_name, link, followers_count, price_min, price_max) 
-VALUES 
-(1, 2, 'joaovlogs_oficial', 'https://instagram.com/joaovlogs_oficial', 15000, 250.00, 250.00);
+
+INSERT INTO dbo.creator_social_profiles (creator_id, platform_id, platform_user_name, link, followers_count, price_min, price_max) 
+VALUES (1, 2, 'joaovlogs_oficial', 'https://instagram.com/joaovlogs_oficial', 15000, 10.00, 40.00 );
 
 
 INSERT INTO dbo.token (token_validation, created_at, last_used_at, user_id) 

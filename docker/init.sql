@@ -64,9 +64,8 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     platform_user_name VARCHAR(100), 
     link VARCHAR(255),
     followers_count INTEGER DEFAULT 0 CHECK (followers_count >= 0),
-    -- Novos campos para flexibilidade e pesquisa
-    price_min DECIMAL(10, 2) DEFAULT NULL,
-    price_max DECIMAL(10, 2) DEFAULT NULL,
+    price_min DECIMAL DEFAULT NULL,
+    price_max DECIMAL DEFAULT NULL,
     CONSTRAINT unique_creator_platform UNIQUE(creator_id, platform_id)
 );
 

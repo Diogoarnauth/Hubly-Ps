@@ -58,10 +58,7 @@ public class CreatorController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Creators.RateCreator)]
-    public async Task<IActionResult> RateCreator(
-   [FromRoute] int id,
-   [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-   [FromBody] RateCreatorInputModel request)
+    public async Task<IActionResult> RateCreator( [FromRoute] int id, [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] RateCreatorInputModel request)
     {
         if (user.Id == id)
         {
@@ -105,7 +102,7 @@ public class CreatorController : ControllerBase
 [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
     public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
     {
-        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.min, input.Platform);
+        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId);
 
         return res.Match<IActionResult>(
             success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),

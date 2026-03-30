@@ -80,6 +80,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmailConfirmationRepository, EmailConfirmationRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
+builder.Services.AddScoped<ISocialPlatformRepository, SocialPlatformRepository>();
+builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 
 TypeAdapterConfig<Company, CompanyCreateOutputModel>
     .NewConfig()

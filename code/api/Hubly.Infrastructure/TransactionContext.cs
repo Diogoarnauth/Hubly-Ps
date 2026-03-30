@@ -1,5 +1,6 @@
 using Hubly.api.Infrastructure.Interfaces;
 using Hubly.api.Infrastructure.Data;
+using Hubly.api.Domain.Entities;
 
 namespace Hubly.api.Infrastructure;
 
@@ -16,6 +17,8 @@ public class TransactionContext : ITransactionContext
         CreatorRepository = new CreatorRepository(context); 
         CompanyRepository = new CompanyRepository(context); 
         HistoryRepository = new HistoryRepository(context);
+        SocialPlatformRepository = new SocialPlatformRepository(context);
+        CreatorSocialRepository = new CreatorSocialRepository(context);
 
     }
 
@@ -26,5 +29,7 @@ public class TransactionContext : ITransactionContext
     public ICompanyRepository CompanyRepository { get; } 
     public IHistoryRepository HistoryRepository { get; } 
 
+    public ISocialPlatformRepository SocialPlatformRepository {get; }
+    public ICreatorSocialRepository CreatorSocialRepository {get; }
 
 }
