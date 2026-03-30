@@ -177,7 +177,7 @@ public class ProblemResponse
     public static readonly ProblemResponse CreatorNotFound = new(
         "creator-not-found",
         "Creator Not Found",
-    400);
+    404);
     public static readonly ProblemResponse InvalidRating = new(
         "invalid-rating",
         "Invalid Rating",
@@ -218,15 +218,15 @@ public class ProblemResponse
     public static readonly ProblemResponse InvalidPriceRange = new(
        "invalid-price-range",
        "Invalid Price Range",
-   400);
+   401);
 
    public static readonly ProblemResponse PlatformNotFound = new(
        "platform-not-found",
        "Platform Not Found",
-   400);
+   404);
 
    public static readonly ProblemResponse SocialProfileAlreadyExists = new(
        "social-profile-already-exists",
        "Social Profile Already Exists",
-   400);
+   409);
 }

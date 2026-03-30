@@ -16,6 +16,7 @@ public class HublyDbContext : DbContext
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
     public DbSet<SocialPlatform> SocialPlatforms { get; set; }
     public DbSet<CreatorSocialProfile> CreatorSocialProfiles { get; set;}
+    public DbSet<ProfileViewHistory> ProfileViewHistory { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

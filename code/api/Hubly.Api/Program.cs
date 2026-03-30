@@ -82,6 +82,8 @@ builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
 builder.Services.AddScoped<ISocialPlatformRepository, SocialPlatformRepository>();
 builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
+builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
+
 
 TypeAdapterConfig<Company, CompanyCreateOutputModel>
     .NewConfig()

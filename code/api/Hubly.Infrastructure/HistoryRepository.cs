@@ -22,7 +22,7 @@ namespace Hubly.api.Infrastructure
 
         public async Task<List<ProfileViewHistory>> GetUserHistory(int userId, int limit = 20)
         {
-            return await _context.ProfileViewsHistory
+            return await _context.ProfileViewHistory
                 .Include(h => h.ViewedCompany)
                 .Include(h => h.ViewedCreator)
                 .Where(h => h.ViewerUserId == userId)

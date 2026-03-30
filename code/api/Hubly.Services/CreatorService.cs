@@ -158,7 +158,6 @@ namespace Hubly.api.Services
                     return new CreatorError.PlatformNotFound();
                 }
 
-                // 5. Verificar se o criador já tem esta plataforma associada (Unique Constraint)
                 if (await context.CreatorSocialRepository.HasProfileInPlatform(userId, platform_id))
                 {
                     return new CreatorError.SocialProfileAlreadyExists();

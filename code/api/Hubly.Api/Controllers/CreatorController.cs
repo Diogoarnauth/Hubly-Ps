@@ -98,7 +98,6 @@ public class CreatorController : ControllerBase
 */
 //--- Social Platforms ---
 
-/*
 [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
     public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
     {
@@ -108,12 +107,16 @@ public class CreatorController : ControllerBase
             success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),
             error => error switch
             {
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),    
+                CreatorError.PlatformNotFound => ProblemResponse.PlatformNotFound.ToResponse(),
+                CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
 
     }
-    */
+
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
