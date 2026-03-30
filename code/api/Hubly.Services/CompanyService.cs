@@ -132,13 +132,29 @@ namespace Hubly.api.Services
             return result;
         }
 
-        public async Task<OneOf<Company, CompanyError>> GetById(int userId)
+        public async Task<OneOf<Company, CompanyError>> GetById(int targetCompanyId, int viewerId)
         {
             var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {
-                var company = await context.CompanyRepository.GetByUserId(userId);
+                var company = await context.CompanyRepository.GetByUserId(targetCompanyId);
                 if (company == null) return new CompanyError.CompanyNotFound();
 
+                    try
+                    {
+                        var historyEntry = new ProfileViewHistory
+                        {
+                            ViewerUserId = viewerId,
+                            ViewedCompanyId = targetCompanyId,
+                            ViewedAt = DateTime.UtcNow
+                        };
+
+                        await context.HistoryRepository.AddView(historyEntry);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                    }
+                
                 return company;
             });
 
@@ -146,7 +162,7 @@ namespace Hubly.api.Services
         }
 
 
-        public async Task<OneOf<PagedResponse<Company>, CompanyError>> Search( string? Name, string? sector, List<string>? subSectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
+        public async Task<OneOf<PagedResponse<Company>, CompanyError>> Search(string? Name, string? sector, List<string>? subSectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
         {
             Page = Page <= 0 ? 1 : Page;
             PageSize = PageSize <= 0 ? 10 : (PageSize > 100 ? 100 : PageSize);

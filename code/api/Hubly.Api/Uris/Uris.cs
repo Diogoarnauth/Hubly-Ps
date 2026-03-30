@@ -19,9 +19,10 @@ public static class Uris
         public const string EmailConfirmation = $"{Prefix}/users/emailConfirmation";
         public const string ResendEmailConfirmation = $"{Prefix}/users/resendEmailConfirmation";
         public const string VerifyEmail = $"{Prefix}/users/verifyEmail";
+        public const string GetHistory = $"{Prefix}/users/getHistory";
 
 
-        public const string ChangePassword = $"{Prefix}/users/changePassword";
+        public const string ChangePassword = $"{Prefix}/users/changePassword";  
         // No C#, usamos string.Replace ou string.Format para expandir o ID
         public static string ById(int id) => GetById.Replace("{id}", id.ToString());
 
@@ -41,7 +42,7 @@ public static class Uris
 
         public const string Create = $"{Prefix}/creator";
         public const string GetById = $"{Prefix}/creator/{{id}}";
-        public const string EditCreatorProfile = $"{Prefix}/creator/edit";
+        public const string EditCreatorProfile = $"{Prefix}/creator/edit"; //falta fazer
         public const string ChangeAvailabilityStatus = $"{Prefix}/creator/status";
         public const string RateCreator = $"{Prefix}/creator/rateCreator/{{id:int}}";
         public const string AddSocialProfile = $"{Prefix}/creator/socialProfile";

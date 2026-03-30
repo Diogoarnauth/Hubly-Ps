@@ -62,9 +62,9 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Companies.GetById)]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    public async Task<IActionResult> GetById( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,[FromRoute] int id)
     {
-        var res = await _companyService.GetById(id);
+        var res = await _companyService.GetById(id, user.Id);
 
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<GetCompanyOutputModel>()),

@@ -111,7 +111,7 @@ public class UserController : ControllerBase
             error => error switch
             {
                 UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
-                _=> ProblemResponse.InternalServerError.ToResponse()
+                _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
     }
@@ -125,7 +125,7 @@ public class UserController : ControllerBase
             error => error switch
             {
                 UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
-                _=> ProblemResponse.InternalServerError.ToResponse()
+                _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
     }
@@ -193,6 +193,26 @@ public class UserController : ControllerBase
         );
     }
 
+    [HttpGet(Uris.Uris.Users.GetHistory)]
+public async Task<IActionResult> GetHistory([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+{
+    var res = await _userService.GetHistory(user.Id);
 
+    return res.Match<IActionResult>(
+        success => {
+            // Transformamos a Entidade no DTO aqui
+            var output = success.Select(h => new ProfileHistoryOutputModel
+            {
+                Id = h.Id,
+                ViewedAt = h.ViewedAt,
+                TargetId = h.ViewedCompanyId ?? h.ViewedCreatorId ?? 0,
+                TargetType = h.ViewedCompanyId.HasValue ? "Company" : "Creator",
+                TargetName = h.ViewedCompany?.CompanyName ?? h.ViewedCreator?.ArtisticName ?? "Desconhecido"
+            }).ToList();
 
+            return Ok(output);
+        },
+        error => ProblemResponse.InternalServerError.ToResponse()
+    );
+}
 }

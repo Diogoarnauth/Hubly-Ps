@@ -80,10 +80,25 @@ public class CreatorController : ControllerBase
 
     }
 
+//IMPLEMENTAR QUANDO SE TIVER A CENA DOS PROFILES FEITA 
+  /*  [HttpGet(Uris.Uris.Creators.GetById)]
+    public async Task<IActionResult> GetById([FromRoute] int id)
+    {
+        var res = await _creatorService.GetById(id);
 
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<GetCreatorOutputModel>()),
+            error => error switch
+            {
+                CompanyError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+*/
 //--- Social Platforms ---
 
-
+/*
 [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
     public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
     {
@@ -98,7 +113,7 @@ public class CreatorController : ControllerBase
         );
 
     }
-    
+    */
 }
 
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)

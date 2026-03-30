@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+/*using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hubly.api.Domain.Entities;
@@ -41,4 +41,4 @@ public class CreatorSocialProfile
 
     [ForeignKey("PlatformId")]
     public virtual SocialPlatform Platform { get; set; } = null!;
-}
+}*/ 
