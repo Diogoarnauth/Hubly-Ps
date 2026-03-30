@@ -23,6 +23,10 @@ namespace Hubly.api.Services.Problems
         public class SocialProfileAlreadyExists: CreatorError { }
         public class FailedToGetPlatforms: CreatorError { }
         public class SocialProfileNotFound : CreatorError { }
+        public class InvalidWebSiteLink : CreatorError { } 
+        public class FailedToGetCreatorSocialProfileInfo : CreatorError { }
+        public class InvalidFollowersCount : CreatorError { }
+        public class ProfileDoesntBellongToYou : CreatorError { }
 
     }
 }

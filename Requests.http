@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= GNoZ1Eew0414qZbiwn4WF3lKTOOU9ZVXFvfEihEyZ94=
+@token= m3iguLteBE2pYOQiDQnHFZdG+I9XVJNt2Q4ZLCR9FJk=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -189,7 +189,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Platform_user_name": "Kazozi",
+  "Platform_user_name": "Kazoziiii",
   "Link": "https://www.youtube.com/@KazzioProva",
   "Followers_count": 4,
   "PriceMin": 10.00,
@@ -212,3 +212,17 @@ Content-Type: {{contentType}}
 GET http://{{host}}/api/creator/socialProfile/3
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
+
+### Edit CreateSocialProfile erro 500 quando tentamos edi
+POST http://{{host}}/api/creator/socialProfile/edit/5
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "PlatformUserName": "abfiuabw",
+  "Link": "https://www.youtube.com/@titio",
+  "FollowersCount": 1,
+  "PriceMin": 10.00,
+  "PriceMax": 70.00
+}

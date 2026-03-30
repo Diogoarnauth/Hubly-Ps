@@ -127,15 +127,41 @@ public class CreatorController : ControllerBase
             error => error switch
             {
                 CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
+                CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),
                 CreatorError.PlatformNotFound => ProblemResponse.PlatformNotFound.ToResponse(),
                 CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
+                CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
 
     }
 
+
+    [HttpPost(Uris.Uris.Creators.EditCreatorSocialProfile)]
+    public async Task<IActionResult> EditCreatorSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int socialProfileId, [FromBody] EditPlatformsInputModel input)
+    {
+        var res = await _creatorService.EditCreatorSocialProfile(user.Id, socialProfileId, input.PlatformUserName, input.Link, input.FollowersCount, input.PriceMin, input.PriceMax);
+
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<EditPlatformsOutputModel>()),
+            error => error switch
+            {
+                CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),
+                CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
+                CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
+                CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
+                CreatorError.ProfileDoesntBellongToYou => ProblemResponse.ProfileDoesntBellongToYou.ToResponse(),
+                CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
+                CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
+                CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(), 
+                CreatorError.FailedToGetCreatorSocialProfileInfo => ProblemResponse.FailedToGetCreatorSocialProfileInfo.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 
 
     [HttpDelete(Uris.Uris.Creators.RemoveSocialProfile)]
@@ -154,6 +180,7 @@ public class CreatorController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
+
     }
 }
 

@@ -88,4 +88,22 @@ public class CreatorsDomain
         
         return true;
     }
+
+        public bool IsValidSocialLink(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return true;
+
+        if (_profanityFilter.IsProfanity(url)) return false;
+
+        string pattern = @"^(https?:\/\/)?(www\.)?[\da-z\.-]+\.[a-z\.]{2,6}([\/\w \.-@?&=]*)*\/?$";
+        
+        return Regex.IsMatch(url, pattern, RegexOptions.IgnoreCase);
+    }
+
+    public bool IsValidFollowersCount(int followers_count)
+    {
+        if(followers_count< 0) return false;
+
+        return true;
+    }
 }

@@ -48,6 +48,7 @@ public static class Uris
         public const string AddSocialProfile = $"{Prefix}/creator/socialProfile";
         public const string RemoveSocialProfile = $"{Prefix}/creator/socialProfile/{{profileId:int}}"; 
         public const string GetSocialProfileById = $"{Prefix}/creator/socialProfile/{{profileId:int}}";
+        public const string EditCreatorSocialProfile = $"{Prefix}/creator/socialProfile/edit/{{socialProfileId}}";
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
 

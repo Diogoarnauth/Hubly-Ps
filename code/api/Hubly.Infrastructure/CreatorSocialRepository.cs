@@ -40,6 +40,24 @@ namespace Hubly.api.Infrastructure
             return await _context.CreatorSocialProfiles
                 .AnyAsync(p => p.PlatformId == platformId && p.PlatformUserName == username);
         }
+        public async Task<CreatorSocialProfile?> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, int followers_count, decimal? priceMin, decimal? priceMax)
+        {
+            var creatorSocialProfile = await _context.CreatorSocialProfiles.FindAsync(socialProfileId);
+            if (creatorSocialProfile == null) return null;
+
+            creatorSocialProfile.PlatformUserName = user_name;
+            creatorSocialProfile.Link = link;
+            creatorSocialProfile.FollowersCount = followers_count;
+            creatorSocialProfile.PriceMin = priceMin;
+            creatorSocialProfile.PriceMax = priceMax;
+
+            _context.CreatorSocialProfiles.Update(creatorSocialProfile);
+            await _context.SaveChangesAsync();
+
+            _context.Entry(creatorSocialProfile).State = EntityState.Detached;
+
+            return creatorSocialProfile;
+        }
 
     }
 }

@@ -220,22 +220,37 @@ public class ProblemResponse
        "Invalid Price Range",
    401);
 
-   public static readonly ProblemResponse PlatformNotFound = new(
-       "platform-not-found",
-       "Platform Not Found",
-   404);
+    public static readonly ProblemResponse PlatformNotFound = new(
+        "platform-not-found",
+        "Platform Not Found",
+    404);
 
-   public static readonly ProblemResponse SocialProfileAlreadyExists = new(
-       "social-profile-already-exists",
-       "Social Profile Already Exists",
-   409);
+    public static readonly ProblemResponse SocialProfileAlreadyExists = new(
+        "social-profile-already-exists",
+        "Social Profile Already Exists",
+    409);
 
-   public static readonly ProblemResponse FailedToGetPlatforms = new(
-       "failed-to-get-platforms",
-       "Failed To Get Platforms",
-   404);
-   public static readonly ProblemResponse SocialProfileNotFound = new(
-       "social-profile-not-found",
-       "Social Profile Not Found",
-   404);
+    public static readonly ProblemResponse FailedToGetCreatorSocialProfileInfo = new(
+        "failed-to-get-platforms",
+        "Failed To Get Platforms",
+    404);
+
+    public static readonly ProblemResponse FailedToGetPlatforms = new(
+        "failed-to-get-platforms",
+        "Failed To Get Platforms",
+    404);
+    public static readonly ProblemResponse SocialProfileNotFound = new(
+        "social-profile-not-found",
+        "Social Profile Not Found",
+    404);
+
+    public static readonly ProblemResponse InvalidFollowersCount = new(
+           "invalid-followers-count",
+           "Invalid Followers Count",
+       401);
+
+    public static readonly ProblemResponse ProfileDoesntBellongToYou = new(
+              "profile-doesnt-bellong-to-you",
+              "Profile Doesnt Bellong To You",
+          403);
 }

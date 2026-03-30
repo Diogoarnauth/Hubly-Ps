@@ -150,7 +150,7 @@ namespace Hubly.api.Services
                 {
                     return new CreatorError.SocialProfileNotFound();
                 }
-                
+
                 return profile;
             });
         }
@@ -161,6 +161,15 @@ namespace Hubly.api.Services
             {
                 return new CreatorError.InvalidPriceRange();
             }
+
+            if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
+
+            if (!_creatorsDomain.IsValidArtisticName(user_name)) return new CreatorError.InvalidArtisticName();
+
+            if (!_creatorsDomain.IsValidSocialLink(link)) return new CreatorError.InvalidWebSiteLink();
+
+            if (!_creatorsDomain.IsValidFollowersCount(followers_count)) return new CreatorError.InvalidFollowersCount();
+
             return await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserId(userId);
@@ -222,6 +231,35 @@ namespace Hubly.api.Services
 
                 return true;
             });
+        }
+
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, int followers_count, decimal? priceMin, decimal? priceMax)
+        {
+            if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
+            if (!_creatorsDomain.IsValidArtisticName(user_name)) return new CreatorError.InvalidArtisticName();
+            if (!_creatorsDomain.IsValidSocialLink(link)) return new CreatorError.InvalidWebSiteLink();
+            if (!_creatorsDomain.IsValidFollowersCount(followers_count)) return new CreatorError.InvalidFollowersCount();
+           
+            var result = await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
+            {
+                if (await context.CompanyRepository.ExistsByUserId(userId)) return new CreatorError.UserAlreadyRegisteredAsCompany();
+                
+                var creatorSocialProfile= await context.CreatorSocialRepository.GetById(socialProfileId);
+                if(creatorSocialProfile == null) return new CreatorError.SocialProfileNotFound();
+
+                if(creatorSocialProfile.CreatorId != userId) return new CreatorError.ProfileDoesntBellongToYou();
+
+                if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(creatorSocialProfile.PlatformId, user_name))  return new CreatorError.SocialProfileAlreadyExists();
+                
+                var updatedCreatorSocialProfile = await context.CreatorSocialRepository.EditCreatorSocialProfile(
+                    userId, socialProfileId, user_name, link, followers_count, priceMin, priceMax);
+
+                if (updatedCreatorSocialProfile == null) return new CreatorError.FailedToGetCreatorSocialProfileInfo();
+                
+                return updatedCreatorSocialProfile;
+            });
+
+            return result;
         }
 
     }
