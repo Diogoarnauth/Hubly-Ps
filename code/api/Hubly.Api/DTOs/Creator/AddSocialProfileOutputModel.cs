@@ -4,6 +4,7 @@ namespace Hubly.api.DTOs;
 
 public class AddSocialProfileOutputModel
 {
+    public int Id {get; set;}
     public string PlatformUserName { get; set; } = null!;  
     public string Link { get; set; } = null!;
     public int FollowersCount { get; set; }   

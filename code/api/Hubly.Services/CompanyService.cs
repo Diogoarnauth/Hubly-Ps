@@ -84,16 +84,16 @@ namespace Hubly.api.Services
         }
         public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, string sector, string subSector, string website_link, string country_headquarters)
         {
-            // 1. Validações iniciais
             if (!_companiesDomain.IsSafeText(sector)) return new CompanyError.InvalidSectorName();
             if (!_companiesDomain.IsValidWebsite(website_link)) return new CompanyError.InvalidWebSiteLink();
             if (!_companiesDomain.IsValidCountry(country_headquarters)) return new CompanyError.InvalidCountryHeadquarters();
 
             string sizeCategory = _companiesDomain.ConvertCompanySize(company_size);
 
-            // 2. Execução da transação na BD
             var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {
+                if (await context.CreatorRepository.ExistsByUserId(user_id)) return new CompanyError.UserAlreadyRegisteredAsCreator();
+
                 var sectorId = await context.CompanyRepository.GetSectorIdByName(sector);
                 if (sectorId == null) return new CompanyError.InvalidSectorName();
 

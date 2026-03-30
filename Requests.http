@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= F2dUJ4+GRQdg4QDpgZItl0nkgtq6lWDtc8TH1nWvIVw=
+@token= kBfFgN0EYao18W0udyVhmmPQ7M+mkmXZwqS1Xwzo0u0=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "463322" 
+    "code": "077708" 
 }
 
 ### 7. Reenviar Confirmação de Email
