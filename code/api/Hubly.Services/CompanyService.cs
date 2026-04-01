@@ -26,7 +26,7 @@ namespace Hubly.api.Services
 
         }
 
-        public async Task<OneOf<Company, CompanyError>> Register(int userId, int company_size, string company_name, string description, string sector, string subSector, string website_link, string country_headquarters)
+        public async Task<OneOf<Company, CompanyError>> Register(int userId, int company_size, string company_name, string description, List<string> sectors, string website_link, string country_headquarters)
         {
             if (!_companiesDomain.IsValidWebsite(website_link)) return new CompanyError.InvalidWebSiteLink();
             if (!_companiesDomain.IsValidCountry(country_headquarters)) return new CompanyError.InvalidCountryHeadquarters();
@@ -35,15 +35,9 @@ namespace Hubly.api.Services
 
             var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {
-                var sectorId = await context.CompanyRepository.GetSectorIdByName(sector);
-                if (sectorId == null) return new CompanyError.InvalidSectorName();
+                var foundSectors = await context.CompanyRepository.GetSectorByName(sectors);
 
-                int? subSectorId = null;
-                if (!string.IsNullOrWhiteSpace(subSector))
-                {
-                    subSectorId = await context.CompanyRepository.GetSubSectorIdByName(sectorId.Value, subSector);
-                    if (subSectorId == null) return new CompanyError.InvalidSubSectorName();
-                }
+                if (foundSectors.Count != sectors.Count) return new CompanyError.InvalidSectorName();
 
                 if (await context.CompanyRepository.ExistsByUserId(userId))
                     return new CompanyError.CompanyAlreadyExists();
@@ -57,8 +51,7 @@ namespace Hubly.api.Services
                     CompanyName = company_name,
                     IsVerified = false,
                     Description = description,
-                    SectorId = sectorId.Value,
-                    SubSectorId = subSectorId,
+                    Sectors = foundSectors,
                     CompanySize = sizeCategory,
                     WebsiteLink = website_link,
                     CountryHeadquarters = country_headquarters
@@ -69,22 +62,10 @@ namespace Hubly.api.Services
                 return newCompany;
             });
 
-            if (result.IsT0)
-            {
-                var company = result.AsT0;
-
-                company.Sector = new Sector { Id = company.SectorId, SectorName = sector };
-                if (company.SubSectorId.HasValue)
-                {
-                    company.SubSector = new SubSector { Id = company.SubSectorId.Value, SubSectorName = subSector };
-                }
-            }
-
             return result;
         }
-        public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, string sector, string subSector, string website_link, string country_headquarters)
+        public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, List<string> sectors, string website_link, string country_headquarters)
         {
-            if (!_companiesDomain.IsSafeText(sector)) return new CompanyError.InvalidSectorName();
             if (!_companiesDomain.IsValidWebsite(website_link)) return new CompanyError.InvalidWebSiteLink();
             if (!_companiesDomain.IsValidCountry(country_headquarters)) return new CompanyError.InvalidCountryHeadquarters();
 
@@ -94,40 +75,20 @@ namespace Hubly.api.Services
             {
                 if (await context.CreatorRepository.ExistsByUserId(user_id)) return new CompanyError.UserAlreadyRegisteredAsCreator();
 
-                var sectorId = await context.CompanyRepository.GetSectorIdByName(sector);
-                if (sectorId == null) return new CompanyError.InvalidSectorName();
-
-                int? subSectorId = null;
-                if (!string.IsNullOrWhiteSpace(subSector))
-                {
-                    subSectorId = await context.CompanyRepository.GetSubSectorIdByName(sectorId.Value, subSector);
-                    if (subSectorId == null) return new CompanyError.InvalidSubSectorName();
-                }
-
                 var companyExists = await context.CompanyRepository.GetByUserId(user_id);
                 if (companyExists == null) return new CompanyError.FailedToGetCompanyInfo();
+                
+                var foundSectors = await context.CompanyRepository.GetSectorByName(sectors);
+                if (foundSectors.Count != sectors.Count) return new CompanyError.InvalidSectorName();
 
                 var updatedCompany = await context.CompanyRepository.EditProfile(
-                    user_id, sizeCategory, company_name, description, sectorId.Value, subSectorId, website_link, country_headquarters
+                    user_id, sizeCategory, company_name, description, foundSectors, website_link, country_headquarters
                 );
 
                 if (updatedCompany == null) return new CompanyError.FailedToGetCompanyInfo();
 
                 return updatedCompany;
             });
-
-            if (result.IsT0)
-            {
-                var company = result.AsT0;
-
-                company.Sector = new Sector { Id = company.SectorId, SectorName = sector };
-                if (company.SubSectorId.HasValue)
-                {
-                    company.SubSector = new SubSector { Id = company.SubSectorId.Value, SubSectorName = subSector };
-                }
-
-                return company;
-            }
 
             return result;
         }
@@ -162,31 +123,23 @@ namespace Hubly.api.Services
         }
 
 
-        public async Task<OneOf<PagedResponse<Company>, CompanyError>> Search(string? Name, string? sector, List<string>? subSectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
+        public async Task<OneOf<PagedResponse<Company>, CompanyError>> Search(string? Name, List<string>? sectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
         {
             Page = Page <= 0 ? 1 : Page;
             PageSize = PageSize <= 0 ? 10 : (PageSize > 100 ? 100 : PageSize);
-
-            if (Name != null && !_companiesDomain.IsSafeText(Name))
-                return new CompanyError.InvalidSectorName();
-
-            if (sector != null && !_companiesDomain.IsSafeText(sector))
-                return new CompanyError.InvalidSectorName();
 
             return await _transactionManager.Run<OneOf<PagedResponse<Company>, CompanyError>>(async (context) =>
             {
                 var results = await context.CompanyRepository.Search(
                     Name,
-                    sector,
-                    subSectors,
+                    sectors,
                     CompanySize,
                     countries,
                     Page,
                     PageSize
                 );
 
-                if (results == null)
-                    return new CompanyError.FailedToGetCompanyInfo();
+                if (results == null) return new CompanyError.FailedToGetCompanyInfo();
 
                 return results;
             });

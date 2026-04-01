@@ -88,20 +88,18 @@ builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>
     .NewConfig()
     .Map(dest => dest.PlatformName, src => src.Platform.NamePlatform);
-TypeAdapterConfig<Company, CompanyCreateOutputModel>
+TypeAdapterConfig<Creator, CreatorCreateOutputModel>
     .NewConfig()
-    .Map(dest => dest.Sector, src => src.Sector != null ? src.Sector.SectorName : string.Empty)
-    .Map(dest => dest.SubSector, src => src.SubSector != null ? src.SubSector.SubSectorName : null);
-
-TypeAdapterConfig<Company, CompanyEditOutputModel>
+    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
+TypeAdapterConfig<Creator, GetCreatorOutputModel>
     .NewConfig()
-    .Map(dest => dest.Sector, src => src.Sector.SectorName)
-    .Map(dest => dest.SubSector, src => src.SubSector.SubSectorName);
-
-TypeAdapterConfig<Company, GetCompanyOutputModel>
+    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
+TypeAdapterConfig<Company, CompanyOutputModel>
     .NewConfig()
-    .Map(dest => dest.Sector, src => src.Sector != null ? src.Sector.SectorName : string.Empty)
-    .Map(dest => dest.SubSector, src => src.SubSector != null ? src.SubSector.SubSectorName : null);
+    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
+TypeAdapterConfig<Company, CompanyOutputModel>
+    .NewConfig()
+    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
 
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 

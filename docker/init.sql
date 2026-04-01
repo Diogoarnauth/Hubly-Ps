@@ -38,23 +38,26 @@ CREATE TABLE IF NOT EXISTS dbo.sectors (
     sector_name VARCHAR(100) NOT NULL UNIQUE 
 );
 
-CREATE TABLE IF NOT EXISTS dbo.sub_sectors (
-    id SERIAL PRIMARY KEY,
-    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
-    subsector_name VARCHAR(100) NOT NULL,
-    UNIQUE(sector_id, subsector_name) 
-);
-
 CREATE TABLE IF NOT EXISTS dbo.companies (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
     company_name VARCHAR(150) NOT NULL,
     is_verified BOOLEAN DEFAULT false,
     description TEXT,
-    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id),
-    sub_sector_id INTEGER REFERENCES dbo.sub_sectors(id),
     company_size VARCHAR(100),    
     website_link VARCHAR(100),
     country_headquarters VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS dbo.company_sectors (
+    company_user_id INTEGER NOT NULL REFERENCES dbo.companies(user_id) ON DELETE CASCADE,
+    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
+    PRIMARY KEY (company_user_id, sector_id)
+);
+
+CREATE TABLE IF NOT EXISTS dbo.creator_sectors (
+    creator_user_id INTEGER NOT NULL REFERENCES dbo.creators(user_id) ON DELETE CASCADE,
+    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
+    PRIMARY KEY (creator_user_id, sector_id)
 );
 
 CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (

@@ -7,7 +7,7 @@ namespace Hubly.api.Services.Interfaces
 
     public interface ICreatorService
     {
-        Task<OneOf<Creator, CreatorError>> Register(int userId, string ArtisticName);
+        Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName, List<string> sectorNames);
         Task<OneOf<Creator, CreatorError>> UpdateStatus(int userId, string newStatus);
         Task<OneOf<Creator, CreatorError>> GetById(int targetCreatorId, int viewerId);
         Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating);

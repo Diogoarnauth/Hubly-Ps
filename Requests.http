@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= w6FtRzlSKjgggBtwIty5/+6/yyEO8KmJBLA7wfx3MeA=
+@token= UI7A7tfr/cML2pDlRhaWd906RBmqmNNq1zSKmrLcWrQ=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "164695" 
+    "code": "182122" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -87,7 +87,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "artisticName": "Kazio"
+  "artisticName": "Kazio",
+  "sectors": ["Gaming & E-sports", "Lifestyle"]
 }
 
 ### Get creator info
@@ -106,8 +107,10 @@ Content-Type: {{contentType}}
   "CompanySize": 1000,
   "CompanyName": "carolzinhaCompany",
   "Description": "é isso",
-  "Sector": "Education & E-learning",
-  "SubSector": "Language Courses",
+  "Sectors": [
+    "Education & E-learning",
+    "Technology & SaaS"
+  ],
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
 }
@@ -140,8 +143,7 @@ Content-Type: {{contentType}}
   "CompanySize": 200000,
   "CompanyName": "Hublizinho",
   "Description": "Adoro o que faço",
-  "Sector": "Gaming & E-sports",
-  "SubSector": "Mobile Gaming",  
+  "Sectors": ["Gaming & E-sports", "Technology & SaaS"],
   "WebsiteLink": "http://www.bananinha.ed",
   "CountryHeadquarters": "Spain"
 }

@@ -25,24 +25,18 @@ namespace Hubly.api.Services
             _creatorsDomain = creatorsDomain;
         }
 
-        public async Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName)
+        public async Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName, List<string> sectorNames)
         {
-            // Validação de Domínio única agora
-            Console.WriteLine("antes no if");
 
-            if (!_creatorsDomain.IsValidArtisticName(artisticName))
-            {
-                Console.WriteLine("Entrei no if");
-                return new CreatorError.InvalidArtisticName();
-            }
-            Console.WriteLine("SAIII no if");
-
+            if (!_creatorsDomain.IsValidArtisticName(artisticName)) return new CreatorError.InvalidArtisticName();
+            
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
-                // Verificações cruzadas
+                var foundSectors = await context.CompanyRepository.GetSectorByName(sectorNames);
+                if (foundSectors.Count != sectorNames.Count) return new CreatorError.InvalidSectorName();
+
                 if (await context.CreatorRepository.ExistsByUserId(userId))
                     return new CreatorError.CreatorAlreadyExists();
-                Console.WriteLine("tou no sitio errado ");
 
                 if (await context.CompanyRepository.ExistsByUserId(userId))
                     return new CreatorError.UserAlreadyRegisteredAsCompany();
@@ -51,14 +45,13 @@ namespace Hubly.api.Services
                 {
                     Id = userId,
                     ArtisticName = artisticName,
-                    // Os outros campos (rating, counts) são inicializados 
-                    // pelos defaults da BD ou pelos valores padrão da classe.
                     IsVerified = false,
                     AvailabilityStatus = "AVAILABLE",
                     GlobalRating = 0,
                     RatingsCount = 0,
                     ChatsStartedCount = 0,
-                    ChatsRespondedCount = 0
+                    ChatsRespondedCount = 0,
+                    Sectors = foundSectors
                 };
 
                 await context.CreatorRepository.RegisterCreator(newCreator);
@@ -173,26 +166,16 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id)
         {
-            if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax))
-            {
-                return new CreatorError.InvalidPriceRange();
-            }
-
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
-
+            if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
             if (!_creatorsDomain.IsValidArtisticName(user_name)) return new CreatorError.InvalidArtisticName();
-
             if (!_creatorsDomain.IsValidSocialLink(link)) return new CreatorError.InvalidWebSiteLink();
-
             if (!_creatorsDomain.IsValidFollowersCount(followers_count)) return new CreatorError.InvalidFollowersCount();
 
             return await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserId(userId);
-                if (creator == null)
-                {
-                    return new CreatorError.CreatorNotFound();
-                }
+                if (creator == null) return new CreatorError.CreatorNotFound();
 
                 if (!await context.SocialPlatformRepository.Exists(platform_id))
                 {

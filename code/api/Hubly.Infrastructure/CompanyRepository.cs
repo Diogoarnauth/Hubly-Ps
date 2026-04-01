@@ -32,21 +32,19 @@ namespace Hubly.api.Infrastructure
         public async Task<Company?> GetByUserId(int userId)
         {
             return await _context.Companies
-                .Include(c => c.Sector)
-                .Include(c => c.SubSector)
+                .Include(c => c.Sectors)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(com => com.Id == userId);
         }
 
-        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, int sectorId, int? subSectorId, string website_link, string country_headquarters)
+        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, List<Sector> sectors,string website_link, string country_headquarters)
         {
             var company = await _context.Companies.FindAsync(user_id);
             if (company == null) return null;
 
             company.CompanyName = company_name;
             company.Description = description;
-            company.SectorId = sectorId;
-            company.SubSectorId = subSectorId;
+            company.Sectors = sectors;
             company.CompanySize = company_size;
             company.WebsiteLink = website_link;
             company.CountryHeadquarters = country_headquarters;
@@ -59,28 +57,20 @@ namespace Hubly.api.Infrastructure
             return company;
         }
 
-        //About Sectors
-        public async Task<int?> GetSectorIdByName(string sectorName)
+        //About Sector
+        public async Task<List<Sector>> GetSectorByName(List<string> sectorName)
         {
-            var sector = await _context.Sectors
-                .FirstOrDefaultAsync(s => s.SectorName.ToLower() == sectorName.ToLower());
-            return sector?.Id;
-        }
-
-        public async Task<int?> GetSubSectorIdByName(int sectorId, string subSectorName)
-        {
-            var subSector = await _context.SubSectors
-                .FirstOrDefaultAsync(s => s.SectorId == sectorId && s.SubSectorName.ToLower() == subSectorName.ToLower());
-            return subSector?.Id;
+            return await _context.Sectors
+                .Where(s => sectorName.Contains(s.SectorName))
+                .ToListAsync();
         }
 
 
 
-        public async Task<PagedResponse<Company>> Search(string? Name, string? sector, List<string>? subSectors, string? CompanySize, List<string>? countries, int Page, int PageSize)
+        public async Task<PagedResponse<Company>> Search(string? Name, List<string>? sectors, string? CompanySize, List<string>? countries, int page, int pageSize)
         {
             var query = _context.Companies
-                .Include(c => c.Sector)
-                .Include(c => c.SubSector)
+                .Include(c => c.Sectors)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -89,15 +79,10 @@ namespace Hubly.api.Infrastructure
                 query = query.Where(c => EF.Functions.ILike(c.CompanyName, $"%{Name}%"));
             }
 
-            if (!string.IsNullOrWhiteSpace(sector))
+            if (sectors != null && sectors.Any())
             {
-                query = query.Where(c => c.Sector.SectorName.ToLower() == sector.ToLower());
-            }
-
-            if (subSectors != null && subSectors.Any())
-            {
-                var subSectorsLower = subSectors.Select(s => s.ToLower()).ToList();
-                query = query.Where(c => subSectorsLower.Contains(c.SubSector.SubSectorName.ToLower()));
+                var sectorsLower = sectors.Select(s => s.ToLower()).ToList();
+                query = query.Where(c => c.Sectors.Any(s => sectorsLower.Contains(s.SectorName.ToLower())));
             }
 
             if (!string.IsNullOrWhiteSpace(CompanySize))
@@ -115,16 +100,16 @@ namespace Hubly.api.Infrastructure
 
             var items = await query
                 .OrderBy(c => c.CompanyName)
-                .Skip((Page - 1) * PageSize)
-                .Take(PageSize)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             return new PagedResponse<Company>
             {
                 Items = items,
                 TotalItems = totalItems,
-                Page = Page,
-                PageSize = PageSize
+                Page = page,
+                PageSize = pageSize
             };
         }
 

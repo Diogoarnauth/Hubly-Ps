@@ -27,6 +27,6 @@ namespace Hubly.api.Services.Problems
         public class FailedToGetCreatorSocialProfileInfo : CreatorError { }
         public class InvalidFollowersCount : CreatorError { }
         public class ProfileDoesntBellongToYou : CreatorError { }
-
+        public class InvalidSectorName : CreatorError { }
     }
 }

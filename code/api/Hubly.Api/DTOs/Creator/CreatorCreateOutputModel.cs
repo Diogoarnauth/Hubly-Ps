@@ -7,6 +7,7 @@ public class CreatorCreateOutputModel
 {
     public int Id { get; set; } 
     public string ArtisticName { get; set; } = null!;
+    public List<string> Sectors { get; set; } = new(); 
     public bool IsVerified { get; set; }
     public string AvailabilityStatus { get; set; } = null!;
     public decimal GlobalRating { get; set; }

@@ -17,12 +17,6 @@ public class Company
     public bool IsVerified { get; set; } = false;
     [Column("description")]
     public string? Description { get; set; }
-  
-    [Column("sector_id")]
-    public int SectorId { get; set; }
-
-    [Column("sub_sector_id")]
-    public int? SubSectorId { get; set; }
 
     [Column("company_size")]
     public string? CompanySize { get; set; }
@@ -33,7 +27,6 @@ public class Company
     [Column("country_headquarters")]
     public string? CountryHeadquarters { get; set; }
 
-    public virtual Sector Sector { get; set; } = null!;
-    public virtual SubSector? SubSector { get; set; }
     public virtual User User { get; set; } = null!;
+    public virtual ICollection<Sector> Sectors { get; set; } = new List<Sector>();
 }

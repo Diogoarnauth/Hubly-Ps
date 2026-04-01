@@ -22,15 +22,14 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Companies.Create)]
-    public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyCreateInputModel input)
+    public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
     {
-        var res = await _companyService.Register(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.SubSector, input.WebsiteLink, input.CountryHeadquarters);
+        var res = await _companyService.Register(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 
         return res.Match<IActionResult>(
-            success => CreatedAtAction(nameof(Create), success.Adapt<CompanyCreateOutputModel>()),
+            success => CreatedAtAction(nameof(Create), success.Adapt<CompanyOutputModel>()),
             error => error switch
             {
-                CompanyError.InvalidSubSectorName => ProblemResponse.InvalidSubSectorName.ToResponse(),
                 CompanyError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 CompanyError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(),
@@ -42,15 +41,14 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Companies.EditCompanyProfile)]
-    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyEditInputModel input)
+    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
     {
-        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sector, input.SubSector, input.WebsiteLink, input.CountryHeadquarters);
+        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 
         return res.Match<IActionResult>(
-            success => Ok(success.Adapt<CompanyEditOutputModel>()),
+            success => Ok(success.Adapt<CompanyOutputModel>()),
             error => error switch
             {
-                CompanyError.InvalidSubSectorName => ProblemResponse.InvalidSubSectorName.ToResponse(),
                 CompanyError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(),
                 CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
@@ -67,7 +65,7 @@ public class CompanyController : ControllerBase
         var res = await _companyService.GetById(id, user.Id);
 
         return res.Match<IActionResult>(
-            success => Ok(success.Adapt<GetCompanyOutputModel>()),
+            success => Ok(success.Adapt<CompanyOutputModel>()),
             error => error switch
             {
                 CompanyError.CompanyNotFound => ProblemResponse.CompanyNotFound.ToResponse(),
@@ -85,8 +83,7 @@ public class CompanyController : ControllerBase
         // Passamos os novos campos (Countries e SubSector) que são List<string>
         var res = await _companyService.Search(
             input.Name,
-            input.Sector,
-            input.SubSector,
+            input.Sectors,
             input.CompanySize,
             input.Countries,
             input.Page,
@@ -97,7 +94,7 @@ public class CompanyController : ControllerBase
             success => Ok(new
             {
                 // O Mapster vai usar as regras que definimos no Program.cs para cada item da lista
-                Items = success.Items.Adapt<List<GetCompanyOutputModel>>(),
+                Items = success.Items.Adapt<List<CompanyOutputModel>>(),
                 TotalItems = success.TotalItems,
                 Page = success.Page,
                 PageSize = success.PageSize
@@ -105,8 +102,7 @@ public class CompanyController : ControllerBase
             error => error switch
             {
                 CompanyError.FailedToGetCompanyInfo => ProblemResponse.FailedToGetCompanyInfo.ToResponse(),
-                CompanyError.InvalidSectorName => ProblemResponse.InvalidName.ToResponse(),
-                _ => ProblemResponse.InternalServerError.ToResponse()
+                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
     }

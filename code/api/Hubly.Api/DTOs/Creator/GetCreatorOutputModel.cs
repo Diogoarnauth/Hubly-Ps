@@ -12,5 +12,6 @@ public class GetCreatorOutputModel
     public int RatingsCount { get; set; }
     public int ChatsStartedCount { get; set; } 
     public int ChatsRespondedCount { get; set; } 
+    public List<string> Sectors { get; set; } = new();
     public List<SocialProfileOutputModel> SocialProfiles { get; set; } = new();
 }

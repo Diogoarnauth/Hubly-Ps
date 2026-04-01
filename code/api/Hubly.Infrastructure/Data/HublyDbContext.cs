@@ -11,7 +11,6 @@ public class HublyDbContext : DbContext
     public DbSet<Token> Tokens { get; set; }
     public DbSet<Creator> Creators { get; set; }
     public DbSet<Sector> Sectors { get; set; }
-    public DbSet<SubSector> SubSectors { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
     public DbSet<SocialPlatform> SocialPlatforms { get; set; }
@@ -49,9 +48,12 @@ public class HublyDbContext : DbContext
         {
             entity.ToTable("creators", "dbo");
             entity.HasKey(c => c.Id);
-
-            // Mapeia a propriedade Id para a coluna user_id do SQL
             entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
+
+            entity.HasMany(c => c.Sectors)
+                  .WithMany()
+                  .UsingEntity(j => j.ToTable("creator_sectors", "dbo")
+                                    .Property<int>("creator_user_id").HasColumnName("creator_user_id"));
 
             entity.HasOne(c => c.User)
                   .WithOne(u => u.Creator)
@@ -108,33 +110,17 @@ public class HublyDbContext : DbContext
             entity.HasIndex(s => s.SectorName).IsUnique();
         });
 
-
-        modelBuilder.Entity<SubSector>(entity =>
-        {
-            entity.ToTable("sub_sectors", "dbo");
-            entity.HasKey(ss => ss.Id);
-
-            entity.Property(ss => ss.Id).HasColumnName("id");
-            entity.Property(ss => ss.SubSectorName).HasColumnName("subsector_name");
-
-            entity.Property(ss => ss.SectorId).HasColumnName("sector_id");
-
-            entity.HasOne(ss => ss.Sector)
-                  .WithMany(s => s.SubSectors)
-                  .HasForeignKey(ss => ss.SectorId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasIndex(ss => new { ss.SectorId, ss.SubSectorName }).IsUnique();
-        });
-
         // CONFIGURAÇÃO: Company (PK é FK do User)
         modelBuilder.Entity<Company>(entity =>
         {
             entity.ToTable("companies", "dbo");
             entity.HasKey(c => c.Id);
-
-            // Mapeia a propriedade Id para a coluna user_id do SQL
             entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
+
+            entity.HasMany(c => c.Sectors)
+                  .WithMany()
+                  .UsingEntity(j => j.ToTable("company_sectors", "dbo")
+                                    .Property<int>("company_user_id").HasColumnName("company_user_id"));
 
             entity.HasOne(c => c.User)
                   .WithOne(u => u.Company)
@@ -172,6 +158,7 @@ public class HublyDbContext : DbContext
         {
             entity.ToTable("profile_views_history", "dbo");
             entity.HasKey(h => h.Id);
+            
             entity.Property(h => h.Id).HasColumnName("id");
             entity.Property(h => h.ViewerUserId).HasColumnName("viewer_user_id");
             entity.Property(h => h.ViewedCompanyId).HasColumnName("viewed_company_id");

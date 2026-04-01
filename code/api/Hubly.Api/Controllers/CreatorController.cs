@@ -26,12 +26,13 @@ public class CreatorController : ControllerBase
     [HttpPost(Uris.Uris.Creators.Create)]
     public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CreatorCreateInputModel input)
     {
-        var res = await _creatorService.Register(user.Id, input.ArtisticName);
+        var res = await _creatorService.Register(user.Id, input.ArtisticName, input.Sectors);
 
         return res.Match<IActionResult>(
             success => CreatedAtAction(nameof(Create), success.Adapt<CreatorCreateOutputModel>()),
             error => error switch
             {
+                CreatorError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CreatorError.CreatorAlreadyExists => ProblemResponse.CreatorAlreadyExists.ToResponse(),
                 CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(),

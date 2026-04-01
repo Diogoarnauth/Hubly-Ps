@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hubly.api.DTOs;
 
-public class CompanyEditInputModel
+public class CompanyInputModel
 {
     [Required]
     public int CompanySize { get; set; } = 0;
@@ -13,11 +13,9 @@ public class CompanyEditInputModel
     [Required]
     public string Description { get; set; } = null!;
 
-   [Required]
-    public string Sector { get; set; } = null!;
+    [Required]
+    public List<string> Sectors { get; set; } = new(); 
     
-    public string? SubSector { get; set; } = null!;
-
     [Required]
     public string WebsiteLink { get; set; } = null!;
 
