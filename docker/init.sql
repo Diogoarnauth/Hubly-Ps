@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     platform_id INTEGER NOT NULL REFERENCES dbo.social_platforms(id) ON DELETE CASCADE,
     platform_user_name VARCHAR(100), 
     link VARCHAR(255),
+    description TEXT,
     followers_count INTEGER DEFAULT 0 CHECK (followers_count >= 0),
     price_min DECIMAL DEFAULT NULL,
     price_max DECIMAL DEFAULT NULL,

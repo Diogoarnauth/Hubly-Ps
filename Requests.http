@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= m3iguLteBE2pYOQiDQnHFZdG+I9XVJNt2Q4ZLCR9FJk=
+@token= w6FtRzlSKjgggBtwIty5/+6/yyEO8KmJBLA7wfx3MeA=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "844795" 
+    "code": "164695" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -89,6 +89,12 @@ Content-Type: {{contentType}}
 {
   "artisticName": "Kazio"
 }
+
+### Get creator info
+GET http://{{host}}/api/creator/34
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
 
 //dá null no sector e no subsector sempre que se cria uma company, com 200
 ### Register Company
@@ -191,6 +197,7 @@ Content-Type: {{contentType}}
 {
   "Platform_user_name": "Kazoziiii",
   "Link": "https://www.youtube.com/@KazzioProva",
+  "Description": "Adoro fazer pranks",
   "Followers_count": 4,
   "PriceMin": 10.00,
   "PriceMax": 20.00,  
@@ -209,19 +216,20 @@ Content-Type: {{contentType}}
 
 
 ### Get platform do creator
-GET http://{{host}}/api/creator/socialProfile/3
+GET http://{{host}}/api/creator/socialProfile/1
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 
 ### Edit CreateSocialProfile erro 500 quando tentamos edi
-POST http://{{host}}/api/creator/socialProfile/edit/5
+POST http://{{host}}/api/creator/socialProfile/edit/1
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
   "PlatformUserName": "abfiuabw",
   "Link": "https://www.youtube.com/@titio",
+  "Description": "Afinal nao adoro assim tanto fazer pranks",
   "FollowersCount": 1,
   "PriceMin": 10.00,
   "PriceMax": 70.00

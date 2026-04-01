@@ -12,7 +12,7 @@ public class Creator
 
     [Required]
     [Column("artistic_name")]
-    public string ArtisticName { get; set; } = null!;
+    public string ArtisticName { get; set; } = null!; //falar
 
     [Column("is_verified")]
     public bool IsVerified { get; set; } = false;

@@ -9,6 +9,9 @@ public class EditPlatformsInputModel
 
     [Required]
     public string Link { get; set; } = null!;
+    
+    [Required]
+    public string Description { get; set; } = null!;
 
     [Required]
     public int FollowersCount { get; set; }

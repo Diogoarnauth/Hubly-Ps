@@ -80,26 +80,25 @@ public class CreatorController : ControllerBase
 
     }
 
-    //IMPLEMENTAR QUANDO SE TIVER A CENA DOS PROFILES FEITA 
-    /*  [HttpGet(Uris.Uris.Creators.GetById)]
-      public async Task<IActionResult> GetById([FromRoute] int id)
+    [HttpGet(Uris.Uris.Creators.GetById)]
+      public async Task<IActionResult> GetById( AuthenticatedUser user, [FromRoute] int id)
       {
-          var res = await _creatorService.GetById(id);
+          var res = await _creatorService.GetById(id, user.Id);
 
           return res.Match<IActionResult>(
               success => Ok(success.Adapt<GetCreatorOutputModel>()),
               error => error switch
               {
-                  CompanyError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                  CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
                   _ => ProblemResponse.InternalServerError.ToResponse()
               }
           );
       }
-  */
+  
     //--- Social Platforms ---
 
     [HttpGet(Uris.Uris.Creators.GetSocialProfileById)]
-    public async Task<IActionResult> GetById(
+    public async Task<IActionResult> GetSocialProfileById(
         [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
         [FromRoute] int profileId)
     {
@@ -120,7 +119,7 @@ public class CreatorController : ControllerBase
     [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
     public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
     {
-        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId);
+        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Description, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId);
 
         return res.Match<IActionResult>(
             success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),
@@ -143,7 +142,7 @@ public class CreatorController : ControllerBase
     [HttpPost(Uris.Uris.Creators.EditCreatorSocialProfile)]
     public async Task<IActionResult> EditCreatorSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int socialProfileId, [FromBody] EditPlatformsInputModel input)
     {
-        var res = await _creatorService.EditCreatorSocialProfile(user.Id, socialProfileId, input.PlatformUserName, input.Link, input.FollowersCount, input.PriceMin, input.PriceMax);
+        var res = await _creatorService.EditCreatorSocialProfile(user.Id, socialProfileId, input.PlatformUserName, input.Link, input.Description, input.FollowersCount, input.PriceMin, input.PriceMax);
 
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<EditPlatformsOutputModel>()),

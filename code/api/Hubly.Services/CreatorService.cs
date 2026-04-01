@@ -92,19 +92,35 @@ namespace Hubly.api.Services
         }
 
 
-        /* public async Task<OneOf<Creator, CompanyError>> GetById(int userId)
-         {
-             var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
-             {
-                 var company = await context.CreatorRepository.GetByUserId(userId);
-                 if (company == null) return new CreatorError.CreatorNotFound();
+        public async Task<OneOf<Creator, CreatorError>> GetById(int targetCreatorId, int viewerId)
+        {
+            var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
+            {
+                var creator = await context.CreatorRepository.GetByUserIdSocialProfiles(targetCreatorId);
+                if (creator == null) return new CreatorError.CreatorNotFound();
+                
+                try
+                    {
+                        var historyEntry = new ProfileViewHistory
+                        {
+                            ViewerUserId = viewerId,
+                            ViewedCreatorId = targetCreatorId,
+                            ViewedAt = DateTime.UtcNow
+                        };
 
-                 return Creator;
-             });
+                        await context.HistoryRepository.AddView(historyEntry);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                    }
+                
+                return creator;
+            });
 
-             return result;
-         }
- */
+            return result;
+        }
+
         public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
         {
             if (!_creatorsDomain.IsValidRating(rating)) return new CreatorError.InvalidRating();
@@ -155,7 +171,7 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id)
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax))
             {
@@ -199,6 +215,7 @@ namespace Hubly.api.Services
                     PlatformId = platform_id,
                     PlatformUserName = user_name,
                     Link = link,
+                    Description = description,
                     FollowersCount = followers_count,
                     PriceMin = priceMin,
                     PriceMax = priceMax
@@ -233,29 +250,29 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, int followers_count, decimal? priceMin, decimal? priceMax)
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
             if (!_creatorsDomain.IsValidArtisticName(user_name)) return new CreatorError.InvalidArtisticName();
             if (!_creatorsDomain.IsValidSocialLink(link)) return new CreatorError.InvalidWebSiteLink();
             if (!_creatorsDomain.IsValidFollowersCount(followers_count)) return new CreatorError.InvalidFollowersCount();
-           
+
             var result = await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
             {
                 if (await context.CompanyRepository.ExistsByUserId(userId)) return new CreatorError.UserAlreadyRegisteredAsCompany();
-                
-                var creatorSocialProfile= await context.CreatorSocialRepository.GetById(socialProfileId);
-                if(creatorSocialProfile == null) return new CreatorError.SocialProfileNotFound();
 
-                if(creatorSocialProfile.CreatorId != userId) return new CreatorError.ProfileDoesntBellongToYou();
+                var creatorSocialProfile = await context.CreatorSocialRepository.GetById(socialProfileId);
+                if (creatorSocialProfile == null) return new CreatorError.SocialProfileNotFound();
 
-                if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(creatorSocialProfile.PlatformId, user_name))  return new CreatorError.SocialProfileAlreadyExists();
-                
+                if (creatorSocialProfile.CreatorId != userId) return new CreatorError.ProfileDoesntBellongToYou();
+
+                if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(creatorSocialProfile.PlatformId, user_name)) return new CreatorError.SocialProfileAlreadyExists();
+
                 var updatedCreatorSocialProfile = await context.CreatorSocialRepository.EditCreatorSocialProfile(
-                    userId, socialProfileId, user_name, link, followers_count, priceMin, priceMax);
+                    userId, socialProfileId, user_name, link, description, followers_count, priceMin, priceMax);
 
                 if (updatedCreatorSocialProfile == null) return new CreatorError.FailedToGetCreatorSocialProfileInfo();
-                
+
                 return updatedCreatorSocialProfile;
             });
 

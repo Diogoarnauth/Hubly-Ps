@@ -79,6 +79,7 @@ public class HublyDbContext : DbContext
             entity.Property(csp => csp.PlatformId).HasColumnName("platform_id");
             entity.Property(csp => csp.PlatformUserName).HasColumnName("platform_user_name");
             entity.Property(csp => csp.Link).HasColumnName("link");
+            entity.Property(csp => csp.Description).HasColumnName("description");
             entity.Property(csp => csp.FollowersCount).HasColumnName("followers_count");
 
             entity.Property(csp => csp.PriceMin).HasColumnName("price_min").HasPrecision(10, 2);

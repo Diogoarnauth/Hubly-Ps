@@ -77,6 +77,15 @@ namespace Hubly.api.Infrastructure
 
             return true;
         }
+
+        public async Task<Creator?> GetByUserIdSocialProfiles(int userId)
+        {
+            return await _context.Creators
+            .Include(c => c.SocialProfiles)
+                .ThenInclude(csp => csp.Platform) 
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == userId);
+        }
     
     }
 }

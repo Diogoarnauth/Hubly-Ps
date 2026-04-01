@@ -26,6 +26,9 @@ public class CreatorSocialProfile
     [MaxLength(255)]
     public string? Link { get; set; }
 
+    [Column("description")]
+    public string? Description { get; set; }
+
     [Column("followers_count")]
     public int FollowersCount { get; set; } = 0;
 

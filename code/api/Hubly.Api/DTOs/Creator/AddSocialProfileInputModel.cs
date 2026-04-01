@@ -9,6 +9,9 @@ public class AddSocialProfileInputModel
 
     [Required]
     public string Link { get; set; } = null!;
+    
+    [Required]
+    public string Description { get; set; } = null!;
 
     [Required]
     public int Followers_count { get; set; }
