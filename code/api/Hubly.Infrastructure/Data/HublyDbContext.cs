@@ -14,7 +14,7 @@ public class HublyDbContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
     public DbSet<SocialPlatform> SocialPlatforms { get; set; }
-    public DbSet<CreatorSocialProfile> CreatorSocialProfiles { get; set;}
+    public DbSet<CreatorSocialProfile> CreatorSocialProfiles { get; set; }
     public DbSet<ProfileViewHistory> ProfileViewHistory { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -67,7 +67,7 @@ public class HublyDbContext : DbContext
             entity.HasKey(p => p.Id);
             entity.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(p => p.NamePlatform).HasColumnName("name_platform").IsRequired();
-            
+
             entity.HasIndex(p => p.NamePlatform).IsUnique();
         });
 
@@ -88,7 +88,7 @@ public class HublyDbContext : DbContext
             entity.Property(csp => csp.PriceMax).HasColumnName("price_max").HasPrecision(10, 2);
 
             entity.HasOne(csp => csp.Creator)
-                  .WithMany(c => c.SocialProfiles) 
+                  .WithMany(c => c.SocialProfiles)
                   .HasForeignKey(csp => csp.CreatorId)
                   .OnDelete(DeleteBehavior.Cascade);
 
@@ -112,22 +112,32 @@ public class HublyDbContext : DbContext
 
         // CONFIGURAÇÃO: Company (PK é FK do User)
         modelBuilder.Entity<Company>(entity =>
-        {
-            entity.ToTable("companies", "dbo");
-            entity.HasKey(c => c.Id);
-            entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
+ {
+     entity.ToTable("companies", "dbo");
+     entity.HasKey(c => c.Id);
+     entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
 
-            entity.HasMany(c => c.Sectors)
-                  .WithMany()
-                  .UsingEntity(j => j.ToTable("company_sectors", "dbo")
-                                    .Property<int>("company_user_id").HasColumnName("company_user_id"));
+     entity.HasMany(c => c.Sectors)
+           .WithMany()
+           .UsingEntity<Dictionary<string, object>>(
+               "company_sectors",
+               j => j.HasOne<Sector>()
+                     .WithMany()
+                     .HasForeignKey("sector_id"),
+               j => j.HasOne<Company>()
+                     .WithMany()
+                     .HasForeignKey("company_user_id"),
+               j =>
+               {
+                   j.ToTable("company_sectors", "dbo");
+                   j.HasKey("company_user_id", "sector_id");
+               });
 
-            entity.HasOne(c => c.User)
-                  .WithOne(u => u.Company)
-                  .HasForeignKey<Company>(c => c.Id)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
+     entity.HasOne(c => c.User)
+           .WithOne(u => u.Company)
+           .HasForeignKey<Company>(c => c.Id)
+           .OnDelete(DeleteBehavior.Cascade);
+ });
         // TODO() VER MELHOR
         modelBuilder.Entity<EmailConfirmation>(entity =>
         {
@@ -158,7 +168,7 @@ public class HublyDbContext : DbContext
         {
             entity.ToTable("profile_views_history", "dbo");
             entity.HasKey(h => h.Id);
-            
+
             entity.Property(h => h.Id).HasColumnName("id");
             entity.Property(h => h.ViewerUserId).HasColumnName("viewer_user_id");
             entity.Property(h => h.ViewedCompanyId).HasColumnName("viewed_company_id");

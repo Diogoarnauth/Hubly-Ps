@@ -86,6 +86,16 @@ namespace Hubly.api.Infrastructure
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == userId);
         }
-    
+
+        
+        //About Sector
+        public async Task<List<Sector>> GetSectorByName(List<string> sectorName)
+        {
+            return await _context.Sectors
+                .Where(s => sectorName.Contains(s.SectorName))
+                .ToListAsync();
+        }
+
+
     }
 }

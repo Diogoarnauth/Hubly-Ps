@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= UI7A7tfr/cML2pDlRhaWd906RBmqmNNq1zSKmrLcWrQ=
+@token= r1sqK3lMhsJIySxyJUl2pNj+OX0EnaUrEhxgp4REtJY=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "182122" 
+    "code": "193204" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -88,7 +88,7 @@ Content-Type: {{contentType}}
 
 {
   "artisticName": "Kazio",
-  "sectors": ["Gaming & E-sports", "Lifestyle"]
+  "sectors": ["Gaming & E-sports", "Education & E-learning"]
 }
 
 ### Get creator info
@@ -109,7 +109,10 @@ Content-Type: {{contentType}}
   "Description": "é isso",
   "Sectors": [
     "Education & E-learning",
-    "Technology & SaaS"
+    "Technology & SaaS",
+    "Sustainability & Ecology",
+    "Travel & Tourism",
+    "Finance & Fintech"
   ],
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
@@ -143,15 +146,14 @@ Content-Type: {{contentType}}
   "CompanySize": 200000,
   "CompanyName": "Hublizinho",
   "Description": "Adoro o que faço",
-  "Sectors": ["Gaming & E-sports", "Technology & SaaS"],
+  "Sectors": ["Automotive & Mobility"],
   "WebsiteLink": "http://www.bananinha.ed",
   "CountryHeadquarters": "Spain"
 }
 
 
-##n esta a funcionar
 ### Get company info
-GET http://{{host}}/api/company/8
+GET http://{{host}}/api/company/13
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

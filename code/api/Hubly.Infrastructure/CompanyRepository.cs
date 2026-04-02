@@ -37,26 +37,31 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync(com => com.Id == userId);
         }
 
-        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, List<Sector> sectors,string website_link, string country_headquarters)
+        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, List<Sector> sectors, string website_link, string country_headquarters)
         {
-            var company = await _context.Companies.FindAsync(user_id);
+            var company = await _context.Companies
+                .Include(c => c.Sectors)
+                .FirstOrDefaultAsync(c => c.Id == user_id);
+
             if (company == null) return null;
 
             company.CompanyName = company_name;
             company.Description = description;
-            company.Sectors = sectors;
             company.CompanySize = company_size;
             company.WebsiteLink = website_link;
             company.CountryHeadquarters = country_headquarters;
 
-            _context.Companies.Update(company);
+            company.Sectors.Clear();
+            foreach (var sector in sectors)
+            {
+                _context.Set<Sector>().Attach(sector);
+                company.Sectors.Add(sector);
+            }
             await _context.SaveChangesAsync();
-
-            _context.Entry(company).State = EntityState.Detached;
 
             return company;
         }
-
+        
         //About Sector
         public async Task<List<Sector>> GetSectorByName(List<string> sectorName)
         {

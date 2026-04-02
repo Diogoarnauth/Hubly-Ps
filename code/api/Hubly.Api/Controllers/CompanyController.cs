@@ -49,8 +49,9 @@ public class CompanyController : ControllerBase
             success => Ok(success.Adapt<CompanyOutputModel>()),
             error => error switch
             {
+                
+                CompanyError.FailedToGetCompanyInfo => ProblemResponse.FailedToGetCompanyInfo.ToResponse(), 
                 CompanyError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
-                CompanyError.CompanyAlreadyExists => ProblemResponse.CompanyAlreadyExists.ToResponse(),
                 CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CompanyError.InvalidCountryHeadquarters => ProblemResponse.InvalidCountryHeadquarters.ToResponse(),
                 CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),

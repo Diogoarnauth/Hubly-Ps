@@ -13,5 +13,4 @@ public class Sector
     [Column("sector_name")]
     public string SectorName { get; set; } = string.Empty;
 
-    public virtual ICollection<SubSector> SubSectors { get; set; } = new List<SubSector>();
 }
