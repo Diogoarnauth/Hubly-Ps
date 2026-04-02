@@ -241,7 +241,7 @@ namespace Hubly.api.Services
 
                 if (creatorSocialProfile.CreatorId != userId) return new CreatorError.ProfileDoesntBellongToYou();
 
-                if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(creatorSocialProfile.PlatformId, user_name)) return new CreatorError.SocialProfileAlreadyExists();
+                //if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(creatorSocialProfile.PlatformId, user_name)) return new CreatorError.SocialProfileAlreadyExists();
 
                 var foundSectors = await context.CreatorRepository.GetSectorByName(sectors);
                 if (foundSectors.Count != sectors.Count) return new CreatorError.InvalidSectorName();

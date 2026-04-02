@@ -23,13 +23,12 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.CreatorSocialProfiles.AnyAsync(p => p.CreatorId == userId && p.PlatformId == platformId);
         }
-
         public async Task<CreatorSocialProfile?> GetById(int profileId)
         {
             return await _context.CreatorSocialProfiles
+                .Include(p => p.Sectors)
                 .FirstOrDefaultAsync(p => p.Id == profileId);
         }
-
         public void Delete(CreatorSocialProfile profile)
         {
             _context.CreatorSocialProfiles.Remove(profile);
@@ -45,7 +44,7 @@ namespace Hubly.api.Infrastructure
             var creatorSocialProfile = await _context.CreatorSocialProfiles
                 .Include(c => c.Sectors)
                 .FirstOrDefaultAsync(c => c.Id == socialProfileId && c.CreatorId == userId);
-            
+
             if (creatorSocialProfile == null) return null;
 
             creatorSocialProfile.PlatformUserName = user_name;
@@ -57,13 +56,13 @@ namespace Hubly.api.Infrastructure
 
             creatorSocialProfile.Sectors.Clear();
             if (sectors != null && sectors.Any())
+            {
+                foreach (var sector in sectors)
                 {
-                    foreach (var sector in sectors)
-                    {
-                        _context.Set<Sector>().Attach(sector);
-                        creatorSocialProfile.Sectors.Add(sector);
-                    }
+                    _context.Set<Sector>().Attach(sector);
+                    creatorSocialProfile.Sectors.Add(sector);
                 }
+            }
 
             await _context.SaveChangesAsync();
             return creatorSocialProfile;

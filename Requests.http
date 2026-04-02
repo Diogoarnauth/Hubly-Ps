@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= F2bZc+EuNjPTkpzdUp8U0QHmZBDkyQ583dLVu0uUAkQ=
+@token= gdsqpt/8VHJFdc85gmkk0j0jBuNljqPr5zUoSkktp/U=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "240760" 
+    "code": "874453" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -152,7 +152,7 @@ Content-Type: {{contentType}}
 
 
 ### Get company info
-GET http://{{host}}/api/company/13
+GET http://{{host}}/api/company/34
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -182,15 +182,10 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### 
-GET http://{{host}}/api/companies?sector=Technology%20%26%20SaaS&page=1&pageSize=5
+GET http://{{host}}/api/companies?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-
-### 
-GET http://{{host}}/api/companies?subSector=Game Development&page=1&pageSize=5
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
 
 ### Criar SocialProfile do creator
 POST http://{{host}}/api/creator/socialProfile
@@ -205,7 +200,7 @@ Content-Type: {{contentType}}
   "PriceMin": 10.00,
   "PriceMax": 20.00,  
   "PlatformId": 2,
-  "Sectors": ["Automotive & Mobility"]
+  "Sectors": ["Automotive & Mobility", "Pets"]
 }
 
 ### Get all platforms
@@ -234,6 +229,7 @@ Content-Type: {{contentType}}
   "PlatformUserName": "abfiuabw",
   "Link": "https://www.youtube.com/@titio",
   "Description": "Afinal nao adoro assim tanto fazer pranks",
+  "Sectors": ["Automotive & Mobility", "Pets", "Real Estate"],
   "FollowersCount": 1,
   "PriceMin": 10.00,
   "PriceMax": 70.00
