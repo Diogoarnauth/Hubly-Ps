@@ -50,11 +50,6 @@ public class HublyDbContext : DbContext
             entity.HasKey(c => c.Id);
             entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
 
-            entity.HasMany(c => c.Sectors)
-                  .WithMany()
-                  .UsingEntity(j => j.ToTable("creator_sectors", "dbo")
-                                    .Property<int>("creator_user_id").HasColumnName("creator_user_id"));
-
             entity.HasOne(c => c.User)
                   .WithOne(u => u.Creator)
                   .HasForeignKey<Creator>(c => c.Id)
@@ -86,6 +81,22 @@ public class HublyDbContext : DbContext
 
             entity.Property(csp => csp.PriceMin).HasColumnName("price_min").HasPrecision(10, 2);
             entity.Property(csp => csp.PriceMax).HasColumnName("price_max").HasPrecision(10, 2);
+
+            entity.HasMany(csp => csp.Sectors)
+                .WithMany()  
+                .UsingEntity<Dictionary<string, object>>(
+                    "creator_profile_sectors", 
+                    j => j.HasOne<Sector>()
+                            .WithMany()
+                            .HasForeignKey("sector_id"),
+                    j => j.HasOne<CreatorSocialProfile>()
+                            .WithMany()
+                            .HasForeignKey("profile_id"),
+                    j =>
+                    {
+                        j.ToTable("creator_profile_sectors", "dbo");
+                        j.HasKey("profile_id", "sector_id");
+                    });
 
             entity.HasOne(csp => csp.Creator)
                   .WithMany(c => c.SocialProfiles)

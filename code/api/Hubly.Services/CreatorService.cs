@@ -25,21 +25,16 @@ namespace Hubly.api.Services
             _creatorsDomain = creatorsDomain;
         }
 
-        public async Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName, List<string> sectorNames)
+        public async Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName)
         {
 
             if (!_creatorsDomain.IsValidArtisticName(artisticName)) return new CreatorError.InvalidArtisticName();
             
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
-                var foundSectors = await context.CompanyRepository.GetSectorByName(sectorNames);
-                if (foundSectors.Count != sectorNames.Count) return new CreatorError.InvalidSectorName();
+                if (await context.CreatorRepository.ExistsByUserId(userId)) return new CreatorError.CreatorAlreadyExists();
 
-                if (await context.CreatorRepository.ExistsByUserId(userId))
-                    return new CreatorError.CreatorAlreadyExists();
-
-                if (await context.CompanyRepository.ExistsByUserId(userId))
-                    return new CreatorError.UserAlreadyRegisteredAsCompany();
+                if (await context.CompanyRepository.ExistsByUserId(userId))  return new CreatorError.UserAlreadyRegisteredAsCompany();
 
                 var newCreator = new Creator
                 {
@@ -50,8 +45,7 @@ namespace Hubly.api.Services
                     GlobalRating = 0,
                     RatingsCount = 0,
                     ChatsStartedCount = 0,
-                    ChatsRespondedCount = 0,
-                    Sectors = foundSectors
+                    ChatsRespondedCount = 0
                 };
 
                 await context.CreatorRepository.RegisterCreator(newCreator);
@@ -155,16 +149,13 @@ namespace Hubly.api.Services
             {
                 var profile = await context.CreatorSocialRepository.GetById(creatorProfileId);
 
-                if (profile == null)
-                {
-                    return new CreatorError.SocialProfileNotFound();
-                }
+                if (profile == null) return new CreatorError.SocialProfileNotFound();
 
                 return profile;
             });
         }
 
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id)
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id, List<String> sectors)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
@@ -187,10 +178,10 @@ namespace Hubly.api.Services
                     return new CreatorError.SocialProfileAlreadyExists();
                 }
 
-                /*if (await context.CreatorSocialRepository.HasProfileInPlatform(userId, platform_id))
-                {
-                    return new CreatorError.SocialProfileAlreadyExists();
-                }*/
+                var foundSectors = await context.CreatorRepository.GetSectorByName(sectors);
+
+                if (foundSectors.Count != sectors.Count) return new CreatorError.InvalidSectorName();
+
 
                 var newProfile = new CreatorSocialProfile
                 {
@@ -201,7 +192,8 @@ namespace Hubly.api.Services
                     Description = description,
                     FollowersCount = followers_count,
                     PriceMin = priceMin,
-                    PriceMax = priceMax
+                    PriceMax = priceMax,
+                    Sectors = foundSectors
                 };
 
                 await context.CreatorSocialRepository.Add(newProfile);
@@ -233,7 +225,7 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax)
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, List<String> sectors)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
             if (!_creatorsDomain.IsValidArtisticName(user_name)) return new CreatorError.InvalidArtisticName();
@@ -251,8 +243,11 @@ namespace Hubly.api.Services
 
                 if (await context.CreatorSocialRepository.ExistsByPlatformAndUsername(creatorSocialProfile.PlatformId, user_name)) return new CreatorError.SocialProfileAlreadyExists();
 
+                var foundSectors = await context.CreatorRepository.GetSectorByName(sectors);
+                if (foundSectors.Count != sectors.Count) return new CreatorError.InvalidSectorName();
+
                 var updatedCreatorSocialProfile = await context.CreatorSocialRepository.EditCreatorSocialProfile(
-                    userId, socialProfileId, user_name, link, description, followers_count, priceMin, priceMax);
+                    userId, socialProfileId, user_name, link, description, followers_count, priceMin, priceMax, foundSectors);
 
                 if (updatedCreatorSocialProfile == null) return new CreatorError.FailedToGetCreatorSocialProfileInfo();
 

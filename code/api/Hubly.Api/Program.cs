@@ -88,10 +88,7 @@ builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>
     .NewConfig()
     .Map(dest => dest.PlatformName, src => src.Platform.NamePlatform);
-TypeAdapterConfig<Creator, CreatorCreateOutputModel>
-    .NewConfig()
-    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
-TypeAdapterConfig<Creator, GetCreatorOutputModel>
+TypeAdapterConfig<CreatorSocialProfile, GetSocialProfileOutputModel>
     .NewConfig()
     .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
 TypeAdapterConfig<Company, CompanyOutputModel>

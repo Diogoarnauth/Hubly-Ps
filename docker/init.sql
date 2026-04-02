@@ -54,12 +54,6 @@ CREATE TABLE IF NOT EXISTS dbo.company_sectors (
     PRIMARY KEY (company_user_id, sector_id)
 );
 
-CREATE TABLE IF NOT EXISTS dbo.creator_sectors (
-    creator_user_id INTEGER NOT NULL REFERENCES dbo.creators(user_id) ON DELETE CASCADE,
-    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
-    PRIMARY KEY (creator_user_id, sector_id)
-);
-
 CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     id SERIAL PRIMARY KEY,
     creator_id INTEGER NOT NULL REFERENCES dbo.creators(user_id) ON DELETE CASCADE,
@@ -73,6 +67,11 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     CONSTRAINT unique_platform_username UNIQUE(platform_id, platform_user_name)
 );
 
+CREATE TABLE IF NOT EXISTS dbo.creator_profile_sectors (
+    profile_id INTEGER NOT NULL REFERENCES dbo.creator_social_profiles(id) ON DELETE CASCADE,
+    sector_id INTEGER NOT NULL REFERENCES dbo.sectors(id) ON DELETE CASCADE,
+    PRIMARY KEY (profile_id, sector_id)
+);
 
 CREATE TABLE IF NOT EXISTS dbo.email_confirmation (
     id serial primary key,

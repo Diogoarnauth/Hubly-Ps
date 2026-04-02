@@ -43,4 +43,5 @@ public class CreatorSocialProfile
 
     [ForeignKey("PlatformId")]
     public virtual SocialPlatform Platform { get; set; } = null!;
+    public virtual ICollection<Sector> Sectors { get; set; } = new List<Sector>();
 }

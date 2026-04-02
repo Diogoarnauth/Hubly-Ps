@@ -17,7 +17,6 @@ namespace Hubly.api.Infrastructure
        public async Task<bool> RegisterCreator(Creator newCreator)
         {
             await _context.Creators.AddAsync(newCreator);
-            // Se o TransactionManager fizer o Save ao fim, não precisas do SaveChanges aqui
             return true; 
         }
 
@@ -29,7 +28,6 @@ namespace Hubly.api.Infrastructure
         public async Task<Creator?> GetByUserId(int userId)
         {
             return await _context.Creators
-                //.Include(c => c.User) // Caso precisemos dos dados do User, pensar ainda 
                 .FirstOrDefaultAsync(c => c.Id == userId);
         }
 

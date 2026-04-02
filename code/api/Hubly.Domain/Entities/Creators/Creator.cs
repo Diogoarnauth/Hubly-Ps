@@ -36,6 +36,5 @@ public class Creator
     [ForeignKey("Id")]
     public virtual User User { get; set; } = null!;
 
-    public virtual ICollection<Sector> Sectors { get; set; } = new List<Sector>();
     public virtual ICollection<CreatorSocialProfile> SocialProfiles { get; set; } = new List<CreatorSocialProfile>();
 }

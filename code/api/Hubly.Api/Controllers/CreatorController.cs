@@ -26,13 +26,12 @@ public class CreatorController : ControllerBase
     [HttpPost(Uris.Uris.Creators.Create)]
     public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CreatorCreateInputModel input)
     {
-        var res = await _creatorService.Register(user.Id, input.ArtisticName, input.Sectors);
+        var res = await _creatorService.Register(user.Id, input.ArtisticName);
 
         return res.Match<IActionResult>(
             success => CreatedAtAction(nameof(Create), success.Adapt<CreatorCreateOutputModel>()),
             error => error switch
             {
-                CreatorError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CreatorError.CreatorAlreadyExists => ProblemResponse.CreatorAlreadyExists.ToResponse(),
                 CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(),
@@ -118,21 +117,22 @@ public class CreatorController : ControllerBase
 
 
     [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
-    public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] AddSocialProfileInputModel input)
+    public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] SocialProfileInputModel input)
     {
-        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Description, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId);
+        var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Description, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId, input.Sectors);
 
         return res.Match<IActionResult>(
-            success => CreatedAtAction(nameof(Create), success.Adapt<AddSocialProfileOutputModel>()),
+            success => CreatedAtAction(nameof(Create), success.Adapt<GetSocialProfileOutputModel>()),
             error => error switch
             {
-                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
-                CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
                 CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),
+                CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
+                CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
                 CreatorError.PlatformNotFound => ProblemResponse.PlatformNotFound.ToResponse(),
                 CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
-                CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
+                CreatorError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
@@ -143,21 +143,22 @@ public class CreatorController : ControllerBase
     [HttpPost(Uris.Uris.Creators.EditCreatorSocialProfile)]
     public async Task<IActionResult> EditCreatorSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int socialProfileId, [FromBody] EditPlatformsInputModel input)
     {
-        var res = await _creatorService.EditCreatorSocialProfile(user.Id, socialProfileId, input.PlatformUserName, input.Link, input.Description, input.FollowersCount, input.PriceMin, input.PriceMax);
+        var res = await _creatorService.EditCreatorSocialProfile(user.Id, socialProfileId, input.PlatformUserName, input.Link, input.Description, input.FollowersCount, input.PriceMin, input.PriceMax, input.Sectors);
 
         return res.Match<IActionResult>(
-            success => Ok(success.Adapt<EditPlatformsOutputModel>()),
+            success => Ok(success.Adapt<GetSocialProfileOutputModel>()),
             error => error switch
             {
                 CreatorError.InvalidPriceRange => ProblemResponse.InvalidPriceRange.ToResponse(),
-                CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
                 CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
+                CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
+                CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
+                CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(), 
                 CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
                 CreatorError.ProfileDoesntBellongToYou => ProblemResponse.ProfileDoesntBellongToYou.ToResponse(),
-                CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CreatorError.SocialProfileAlreadyExists => ProblemResponse.SocialProfileAlreadyExists.ToResponse(),
-                CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(), 
                 CreatorError.FailedToGetCreatorSocialProfileInfo => ProblemResponse.FailedToGetCreatorSocialProfileInfo.ToResponse(),
+                CreatorError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

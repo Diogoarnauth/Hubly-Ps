@@ -40,9 +40,12 @@ namespace Hubly.api.Infrastructure
             return await _context.CreatorSocialProfiles
                 .AnyAsync(p => p.PlatformId == platformId && p.PlatformUserName == username);
         }
-        public async Task<CreatorSocialProfile?> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax)
+        public async Task<CreatorSocialProfile?> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, List<Sector> sectors)
         {
-            var creatorSocialProfile = await _context.CreatorSocialProfiles.FindAsync(socialProfileId);
+            var creatorSocialProfile = await _context.CreatorSocialProfiles
+                .Include(c => c.Sectors)
+                .FirstOrDefaultAsync(c => c.Id == socialProfileId && c.CreatorId == userId);
+            
             if (creatorSocialProfile == null) return null;
 
             creatorSocialProfile.PlatformUserName = user_name;
@@ -52,13 +55,20 @@ namespace Hubly.api.Infrastructure
             creatorSocialProfile.PriceMin = priceMin;
             creatorSocialProfile.PriceMax = priceMax;
 
-            _context.CreatorSocialProfiles.Update(creatorSocialProfile);
+            creatorSocialProfile.Sectors.Clear();
+            if (sectors != null && sectors.Any())
+                {
+                    foreach (var sector in sectors)
+                    {
+                        _context.Set<Sector>().Attach(sector);
+                        creatorSocialProfile.Sectors.Add(sector);
+                    }
+                }
+
             await _context.SaveChangesAsync();
-
-            _context.Entry(creatorSocialProfile).State = EntityState.Detached;
-
             return creatorSocialProfile;
         }
+
 
     }
 }

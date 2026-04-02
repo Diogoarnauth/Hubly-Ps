@@ -1,4 +1,6 @@
 // Hubly.api.Models.Creators.GetSocialProfileOutputModel.cs
+using Hubly.api.Domain.Entities;
+
 namespace Hubly.api.DTOs;
 
 public class GetSocialProfileOutputModel
@@ -12,4 +14,5 @@ public class GetSocialProfileOutputModel
     public int FollowersCount { get; set; }
     public decimal? PriceMin { get; set; }
     public decimal? PriceMax { get; set; }
+    public List<string> Sectors { get; set; } = new();
 }

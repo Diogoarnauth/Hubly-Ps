@@ -19,5 +19,6 @@ public class EditPlatformsInputModel
     public decimal? PriceMin { get; set; } = null;
 
     public decimal? PriceMax { get; set; } = null;
-    
+    public List<string> Sectors { get; set; } = new(); 
+  
 }

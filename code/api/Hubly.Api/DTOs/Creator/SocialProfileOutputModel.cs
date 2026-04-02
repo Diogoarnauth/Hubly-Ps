@@ -12,3 +12,4 @@ public class SocialProfileOutputModel
     public decimal? PriceMax { get; set; }
     public string? PlatformName { get; set; } 
 }
+

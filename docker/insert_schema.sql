@@ -87,8 +87,12 @@ INSERT INTO dbo.companies (user_id, company_name, description, company_size, web
 (11, 'CodeForge Academy', 'Bootcamps.', '0 a 100', 'https://codeforge.edu', 'Portugal'),
 (12, 'SkyRent Digital', 'PropTech.', '100 a 1000', 'https://skyrent.io', 'Italy');
 
-INSERT INTO dbo.creator_sectors (creator_user_id, sector_id) VALUES 
-(1, 11), (1, 20);
+INSERT INTO dbo.creator_social_profiles (id, creator_id, platform_id, platform_user_name, link, description, followers_count, price_min, price_max) 
+VALUES (1, 1, 2, 'joaovlogs_oficial', 'https://instagram.com/joaovlogs_oficial', 'Olá sou o joaovlogs e mostro o meu lifestyle', 15000, 10.00, 40.00);
+
+INSERT INTO dbo.creator_profile_sectors (profile_id, sector_id) VALUES 
+(1, 11), 
+(1, 20);
 
 INSERT INTO dbo.company_sectors (company_user_id, sector_id) VALUES 
 (2, 1),  -- Technology & SaaS
