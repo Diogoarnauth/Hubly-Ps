@@ -68,6 +68,50 @@ namespace Hubly.api.Infrastructure
             return creatorSocialProfile;
         }
 
+        public async Task<PagedResponse<CreatorSocialProfile>> Search(int? platform_id, string? platform_user_name, int? followers_count_min, int? followers_count_max, decimal? price_min, decimal? price_max, List<string>? sectors, int page, int page_size)
+        {
+            var query = _context.CreatorSocialProfiles
+                .Include(p => p.Sectors)
+                .AsNoTracking() 
+                .AsQueryable();
 
+            if (platform_id.HasValue) query = query.Where(p => p.PlatformId == platform_id.Value);
+
+            if (!string.IsNullOrWhiteSpace(platform_user_name))
+            {
+                query = query.Where(p => EF.Functions.ILike(p.PlatformUserName, $"%{platform_user_name}%"));
+            }
+
+            if (followers_count_min.HasValue) query = query.Where(p => p.FollowersCount >= followers_count_min.Value);
+            
+            if (followers_count_max.HasValue) query = query.Where(p => p.FollowersCount <= followers_count_max.Value);
+
+            if (price_min.HasValue) query = query.Where(p => p.PriceMin >= price_min.Value);
+
+            if (price_max.HasValue) query = query.Where(p => p.PriceMax <= price_max.Value);
+
+            if (sectors != null && sectors.Any())
+            {
+                var sectorsLower = sectors.Select(s => s.ToLower()).ToList();
+                query = query.Where(p => p.Sectors.Any(s => sectorsLower.Contains(s.SectorName.ToLower())));
+            }
+
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(p => p.FollowersCount) 
+                .Skip((page - 1) * page_size)
+                .Take(page_size)
+                .ToListAsync();
+
+            return new PagedResponse<CreatorSocialProfile>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                Page = page,
+                PageSize = page_size
+            };
+        }
+        
     }
 }

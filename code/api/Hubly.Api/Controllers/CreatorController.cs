@@ -81,20 +81,20 @@ public class CreatorController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Creators.GetById)]
-      public async Task<IActionResult> GetById( AuthenticatedUser user, [FromRoute] int id)
-      {
-          var res = await _creatorService.GetById(id, user.Id);
+    public async Task<IActionResult> GetById(AuthenticatedUser user, [FromRoute] int id)
+    {
+        var res = await _creatorService.GetById(id, user.Id);
 
-          return res.Match<IActionResult>(
-              success => Ok(success.Adapt<GetCreatorOutputModel>()),
-              error => error switch
-              {
-                  CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
-                  _ => ProblemResponse.InternalServerError.ToResponse()
-              }
-          );
-      }
-  
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<GetCreatorOutputModel>()),
+            error => error switch
+            {
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
     //--- Social Platforms ---
 
     [HttpGet(Uris.Uris.Creators.GetSocialProfileById)]
@@ -153,7 +153,7 @@ public class CreatorController : ControllerBase
                 CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CreatorError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CreatorError.InvalidFollowersCount => ProblemResponse.InvalidFollowersCount.ToResponse(),
-                CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(), 
+                CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(),
                 CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
                 CreatorError.ProfileDoesntBellongToYou => ProblemResponse.ProfileDoesntBellongToYou.ToResponse(),
                 CreatorError.FailedToGetCreatorSocialProfileInfo => ProblemResponse.FailedToGetCreatorSocialProfileInfo.ToResponse(),
@@ -183,38 +183,38 @@ public class CreatorController : ControllerBase
 
     }
 
-[HttpGet(Uris.Uris.Creators.Search)]
-public async Task<IActionResult> Search(
-    [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-    [FromQuery] CreatorSearchInputModel input)
-{
-    var res = await _creatorService.Search(
-        input.PlatformId,
-        input.PlatformUserName,
-        input.FollowersCountMin,
-        input.FollowersCountMax,
-        input.PriceMin,
-        input.PriceMax,
-        input.Sectors,
-        input.Page,
-        input.PageSize
-    );
+    [HttpGet(Uris.Uris.Creators.Search)]
+    public async Task<IActionResult> Search(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromQuery] CreatorSearchInputModel input)
+    {
+        var res = await _creatorService.Search(
+            input.PlatformId,
+            input.PlatformUserName,
+            input.FollowersCountMin,
+            input.FollowersCountMax,
+            input.PriceMin,
+            input.PriceMax,
+            input.Sectors,
+            input.Page,
+            input.PageSize
+        );
 
-    return res.Match<IActionResult>(
-        success => Ok(new
-        {
-            Items = success.Items.Adapt<List<GetSocialProfileOutputModel>>(),
-            TotalItems = success.TotalItems,
-            Page = success.Page,
-            PageSize = success.PageSize
-        }),
-        error => error switch
-        {
-            CreatorError.SearchFailed => ProblemResponse.InternalServerError.ToResponse(), 
-            _ => ProblemResponse.InternalServerError.ToResponse()
-        }
-    );
-}
+        return res.Match<IActionResult>(
+            success => Ok(new
+            {
+                Items = success.Items.Adapt<List<GetSocialProfileOutputModel>>(),
+                TotalItems = success.TotalItems,
+                Page = success.Page,
+                PageSize = success.PageSize
+            }),
+            error => error switch
+            {
+                CreatorError.FailedToGetCreatorInfo => ProblemResponse.FailedToGetCreatorInfo.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 }
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
 

@@ -250,4 +250,9 @@ public class ProblemResponse
         "Invalid Sector Name",
     404);
 
+    public static readonly ProblemResponse FailedToGetCreatorInfo = new(
+        "failed-to-get-creator-info",
+        "Failed To Get Creator Info",
+    404);
+
 }

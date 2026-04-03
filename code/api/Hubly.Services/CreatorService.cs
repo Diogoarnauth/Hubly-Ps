@@ -257,36 +257,26 @@ namespace Hubly.api.Services
             return result;
         }
 
-        public async Task<OneOf<PagedResponse<CreatorSocialProfile>, CreatorError>> Search(
-    int? platformId,
-    string? platformUserName,
-    int? followersCountMin,
-    int? followersCountMax,
-    decimal? priceMin,
-    decimal? priceMax,
-    List<string>? sectors,
-    int page,
-    int pageSize)
+        public async Task<OneOf<PagedResponse<CreatorSocialProfile>, CreatorError>> Search(int? platform_id, string? platform_user_name, int? followers_count_min, int? followers_count_max, decimal? price_min, decimal? price_max, List<string>? sectors, int page, int page_size)
         {
             page = page <= 0 ? 1 : page;
-            pageSize = pageSize <= 0 ? 10 : (pageSize > 100 ? 100 : pageSize);
+            page_size = page_size <= 0 ? 10 : (page_size > 100 ? 100 : page_size);
 
             return await _transactionManager.Run<OneOf<PagedResponse<CreatorSocialProfile>, CreatorError>>(async (context) =>
             {
                 var results = await context.CreatorSocialRepository.Search(
-                    platformId,
-                    platformUserName,
-                    followersCountMin,
-                    followersCountMax,
-                    priceMin,
-                    priceMax,
+                    platform_id,
+                    platform_user_name,
+                    followers_count_min,
+                    followers_count_max,
+                    price_min,
+                    price_max,
                     sectors,
                     page,
-                    pageSize
+                    page_size
                 );
 
-                if (results == null)
-                    return new CreatorError.SearchFailed(); 
+                if (results == null) return new CreatorError.FailedToGetCreatorInfo(); 
 
                 return results;
             });

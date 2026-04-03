@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= gdsqpt/8VHJFdc85gmkk0j0jBuNljqPr5zUoSkktp/U=
+@token= kE+A5EcAvM+140pPs+nw7L1lh2+I0w3u5T1MGMaUeBs=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "874453" 
+    "code": "293567" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -161,6 +161,8 @@ GET http://{{host}}/api/users/getHistory
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+########################## Search companies ##########################
+
 ### 
 GET http://{{host}}/api/companies?page=1&pageSize=10
 Authorization: Bearer {{token}}
@@ -186,6 +188,7 @@ GET http://{{host}}/api/companies?Sectors=Technology%20%26%20SaaS&page=1&pageSiz
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+##############################################################################
 
 ### Criar SocialProfile do creator
 POST http://{{host}}/api/creator/socialProfile
@@ -234,3 +237,32 @@ Content-Type: {{contentType}}
   "PriceMin": 10.00,
   "PriceMax": 70.00
 }
+
+########################## Search creators ##########################
+
+### 
+GET http://{{host}}/api/creators?page=1&pageSize=10
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### deveria de funcionar melhor com pesquisas minusculas
+GET http://{{host}}/api/creators?PlatformUserName=kaz
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+###
+GET http://{{host}}/api/companies?companySize=0%20a%20100
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+###
+GET http://{{host}}/api/companies?Countries=portugal&Countries=spain
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### 
+GET http://{{host}}/api/companies?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+##############################################################################

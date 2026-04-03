@@ -81,7 +81,6 @@ public class CompanyController : ControllerBase
     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
     [FromQuery] CompanySearchInputModel input)
     {
-        // Passamos os novos campos (Countries e SubSector) que são List<string>
         var res = await _companyService.Search(
             input.Name,
             input.Sectors,
@@ -94,7 +93,6 @@ public class CompanyController : ControllerBase
         return res.Match<IActionResult>(
             success => Ok(new
             {
-                // O Mapster vai usar as regras que definimos no Program.cs para cada item da lista
                 Items = success.Items.Adapt<List<CompanyOutputModel>>(),
                 TotalItems = success.TotalItems,
                 Page = success.Page,

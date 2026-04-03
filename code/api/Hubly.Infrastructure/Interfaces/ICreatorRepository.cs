@@ -13,6 +13,7 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<bool> IncrementChatsResponded(int userId);
         Task<Creator?> GetByUserIdSocialProfiles(int userId);
         Task<List<Sector>> GetSectorByName(List<string> sectorName);
+        
 
         
         // Task EditProfile(int userId, string artisticName, string availabilityStatus);        
