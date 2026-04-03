@@ -29,12 +29,12 @@ namespace Hubly.api.Services
         {
 
             if (!_creatorsDomain.IsValidArtisticName(artisticName)) return new CreatorError.InvalidArtisticName();
-            
+
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
                 if (await context.CreatorRepository.ExistsByUserId(userId)) return new CreatorError.CreatorAlreadyExists();
 
-                if (await context.CompanyRepository.ExistsByUserId(userId))  return new CreatorError.UserAlreadyRegisteredAsCompany();
+                if (await context.CompanyRepository.ExistsByUserId(userId)) return new CreatorError.UserAlreadyRegisteredAsCompany();
 
                 var newCreator = new Creator
                 {
@@ -85,23 +85,23 @@ namespace Hubly.api.Services
             {
                 var creator = await context.CreatorRepository.GetByUserIdSocialProfiles(targetCreatorId);
                 if (creator == null) return new CreatorError.CreatorNotFound();
-                
-                try
-                    {
-                        var historyEntry = new ProfileViewHistory
-                        {
-                            ViewerUserId = viewerId,
-                            ViewedCreatorId = targetCreatorId,
-                            ViewedAt = DateTime.UtcNow
-                        };
 
-                        await context.HistoryRepository.AddView(historyEntry);
-                    }
-                    catch (Exception ex)
+                try
+                {
+                    var historyEntry = new ProfileViewHistory
                     {
-                        Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
-                    }
-                
+                        ViewerUserId = viewerId,
+                        ViewedCreatorId = targetCreatorId,
+                        ViewedAt = DateTime.UtcNow
+                    };
+
+                    await context.HistoryRepository.AddView(historyEntry);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                }
+
                 return creator;
             });
 
@@ -255,6 +255,41 @@ namespace Hubly.api.Services
             });
 
             return result;
+        }
+
+        public async Task<OneOf<PagedResponse<CreatorSocialProfile>, CreatorError>> Search(
+    int? platformId,
+    string? platformUserName,
+    int? followersCountMin,
+    int? followersCountMax,
+    decimal? priceMin,
+    decimal? priceMax,
+    List<string>? sectors,
+    int page,
+    int pageSize)
+        {
+            page = page <= 0 ? 1 : page;
+            pageSize = pageSize <= 0 ? 10 : (pageSize > 100 ? 100 : pageSize);
+
+            return await _transactionManager.Run<OneOf<PagedResponse<CreatorSocialProfile>, CreatorError>>(async (context) =>
+            {
+                var results = await context.CreatorSocialRepository.Search(
+                    platformId,
+                    platformUserName,
+                    followersCountMin,
+                    followersCountMax,
+                    priceMin,
+                    priceMax,
+                    sectors,
+                    page,
+                    pageSize
+                );
+
+                if (results == null)
+                    return new CreatorError.SearchFailed(); 
+
+                return results;
+            });
         }
 
     }
