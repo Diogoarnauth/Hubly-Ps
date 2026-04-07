@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider"; 
 import { AuthRedirectHandler } from "@/components/AuthRedirectHandler";
 
 export const metadata: Metadata = {
-  title: "Digital Wallet",
-  description: "An helper for your finances",
+  title: "Hubly",
+  description: "An Hub where Creators and Company meet",
 };
 
 export default function RootLayout({
