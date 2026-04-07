@@ -251,17 +251,17 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?companySize=0%20a%20100
+GET http://{{host}}/api/creators?companySize=0%20a%20100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?Countries=portugal&Countries=spain
+GET http://{{host}}/api/creators?Countries=portugal&Countries=spain
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### 
-GET http://{{host}}/api/companies?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
+GET http://{{host}}/api/creators?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
