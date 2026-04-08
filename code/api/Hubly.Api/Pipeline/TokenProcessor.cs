@@ -30,7 +30,7 @@ namespace Hubly.api.Pipeline
 
         public async Task<AuthenticatedUser?> ProcessCookieToken(IRequestCookieCollection cookies)
         {
-            if (!cookies.TryGetValue("auth_token", out var token))
+            if (!cookies.TryGetValue("token", out var token))
             {
                 return null;
             }

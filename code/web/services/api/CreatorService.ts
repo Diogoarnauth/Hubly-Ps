@@ -9,7 +9,6 @@ class CreatorService implements ICreatorService {
         const payload = {
             artisticName: artisticName
         };
-        // O ApiClient já trata dos headers e do JSON.stringify
         const response = await this.apiClient.post(API_ENDPOINTS.creator.register, payload);
         return response;
     }
