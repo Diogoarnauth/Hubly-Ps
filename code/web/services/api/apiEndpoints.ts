@@ -11,5 +11,12 @@ export const API_ENDPOINTS = {
     
     creator: {
         register: `${API_BASE_URL}/creator`, 
+    },
+
+    company: {
+        register: `${API_BASE_URL}/company`, 
+    },
+    sectors: {
+        getAll: `${API_BASE_URL}/sectors`,
     }
 }

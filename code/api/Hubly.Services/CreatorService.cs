@@ -225,6 +225,18 @@ namespace Hubly.api.Services
             });
         }
 
+        public async Task<OneOf<List<Sector>, CreatorError>> GetAllSectors()
+        {
+            return await _transactionManager.Run<OneOf<List<Sector>, CreatorError>>(async (context) =>
+            {
+                var sectors = await context.CreatorRepository.GetAllSectors();
+
+                if (sectors == null) return new CreatorError.SectorsNotFound(); 
+
+                return sectors;
+            });
+        }
+
         public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, List<String> sectors)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
@@ -276,7 +288,7 @@ namespace Hubly.api.Services
                     page_size
                 );
 
-                if (results == null) return new CreatorError.FailedToGetCreatorInfo(); 
+                if (results == null) return new CreatorError.FailedToGetCreatorInfo();
 
                 return results;
             });

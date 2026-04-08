@@ -255,4 +255,9 @@ public class ProblemResponse
         "Failed To Get Creator Info",
     404);
 
+    public static readonly ProblemResponse SectorsNotFound = new(
+        "sectors-not-found",
+        "Sectors Not Found",
+    404);
+
 }

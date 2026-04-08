@@ -14,10 +14,10 @@ namespace Hubly.api.Infrastructure
             _context = context;
         }
 
-       public async Task<bool> RegisterCreator(Creator newCreator)
+        public async Task<bool> RegisterCreator(Creator newCreator)
         {
             await _context.Creators.AddAsync(newCreator);
-            return true; 
+            return true;
         }
 
         public async Task<bool> ExistsByUserId(int userId)
@@ -41,7 +41,7 @@ namespace Hubly.api.Infrastructure
             return creator;
         }
 
-          public async Task<bool> UpdateRating(Creator creator)
+        public async Task<bool> UpdateRating(Creator creator)
         {
             _context.Creators.Update(creator);
 
@@ -55,7 +55,7 @@ namespace Hubly.api.Infrastructure
             var creator = await _context.Creators.FindAsync(userId);
             if (creator == null) return false;
 
-            creator.ChatsStartedCount++; 
+            creator.ChatsStartedCount++;
 
             _context.Creators.Update(creator);
             await _context.SaveChangesAsync();
@@ -68,7 +68,7 @@ namespace Hubly.api.Infrastructure
             var creator = await _context.Creators.FindAsync(userId);
             if (creator == null) return false;
 
-            creator.ChatsRespondedCount++; 
+            creator.ChatsRespondedCount++;
 
             _context.Creators.Update(creator);
             await _context.SaveChangesAsync();
@@ -80,12 +80,12 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.Creators
             .Include(c => c.SocialProfiles)
-                .ThenInclude(csp => csp.Platform) 
+                .ThenInclude(csp => csp.Platform)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == userId);
         }
 
-        
+
         //About Sector
         public async Task<List<Sector>> GetSectorByName(List<string> sectorName)
         {
@@ -94,6 +94,10 @@ namespace Hubly.api.Infrastructure
                 .ToListAsync();
         }
 
+        public async Task<List<Sector>> GetAllSectors()
+        {
+            return await _context.Sectors.ToListAsync();
+        }
 
     }
 }

@@ -183,6 +183,17 @@ public class CreatorController : ControllerBase
 
     }
 
+    [HttpGet(Uris.Uris.Sectors.GetAll)] 
+    public async Task<IActionResult> GetAllSectors()
+    {
+        var res = await _creatorService.GetAllSectors();
+
+        return res.Match<IActionResult>(
+            success => Ok(success.Select(s => new { s.Id, Name = s.SectorName })), 
+            error => ProblemResponse.SectorsNotFound.ToResponse()
+        );
+    }
+
     [HttpGet(Uris.Uris.Creators.Search)]
     public async Task<IActionResult> Search(
         [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,

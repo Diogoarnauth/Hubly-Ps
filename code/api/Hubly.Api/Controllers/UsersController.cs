@@ -90,7 +90,7 @@ public class UserController : ControllerBase
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.Now.AddDays(-1)
             };
-            Response.Cookies.Append("auth_token", "", cookieOptions);
+            Response.Cookies.Append("token", "", cookieOptions);
         }
         return response.Match<IActionResult>(
             success => NoContent(),
@@ -164,7 +164,6 @@ public class UserController : ControllerBase
     [HttpPost(Uris.Uris.Users.VerifyEmail)]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
     {
-        Console.WriteLine("ENTREI NO CONTROLLERRRRR");
         var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);
 
         return result.Match<IActionResult>(
@@ -193,6 +192,8 @@ public class UserController : ControllerBase
             }
         );
     }
+
+    
 
     [HttpGet(Uris.Uris.Users.GetHistory)]
 public async Task<IActionResult> GetHistory([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)

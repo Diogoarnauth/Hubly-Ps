@@ -28,5 +28,6 @@ namespace Hubly.api.Services.Problems
         public class InvalidFollowersCount : CreatorError { }
         public class ProfileDoesntBellongToYou : CreatorError { }
         public class InvalidSectorName : CreatorError { }
+        public class SectorsNotFound : CreatorError { }
     }
 }

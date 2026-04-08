@@ -74,9 +74,12 @@ public static class Uris
 
     public static class SocialPlatforms
     {
-
         public const string GetAll = $"{Prefix}/socialPlatform";
-        
+    }
+
+    public static class Sectors
+    {
+        public const string GetAll = $"{Prefix}/sectors";   
     }
 
 

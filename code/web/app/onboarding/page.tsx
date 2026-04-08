@@ -2,8 +2,8 @@
 
 import { useOnboardingContext } from '@/providers/OnboardingContext';
 import { RoleSelection } from './_components/RoleSelection';
-import { CreatorForm } from './_components/CreatorForm';
-import { CompanyForm } from './_components/CompanyForm';
+import { CreatorForm } from '../../components/auth/CreatorForm';
+import { CompanyForm } from '../../components/auth/CompanyForm';
 
 export default function OnboardingPage() {
   const { role, setRole } = useOnboardingContext();

@@ -238,6 +238,11 @@ Content-Type: {{contentType}}
   "PriceMax": 70.00
 }
 
+### Obter todos os sectores disponíveis
+GET http://{{host}}/api/sectors
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
 ########################## Search creators ##########################
 
 ### 
