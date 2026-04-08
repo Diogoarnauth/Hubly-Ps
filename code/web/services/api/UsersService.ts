@@ -15,5 +15,16 @@ class UsersService implements IUserService {
         const response = await this.apiClient.post(API_ENDPOINTS.user.login, user);
         return response as boolean
     }
+
+     async register(email: string, password: string, name: string): Promise<string | undefined> {
+        const user = {
+            name: name,
+            email: email,
+            password: password  
+        }
+        const response = await this.apiClient.post(API_ENDPOINTS.user.register, user);
+        return response as any;
+    }
+
 }
 export default new UsersService();

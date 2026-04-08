@@ -1,9 +1,11 @@
-const API_BASE_URL = "https://digitalmanager.duckdns.org/api"
+const API_BASE_URL = "http://localhost:80/api"; 
 
 export const API_ENDPOINTS = {
    
     user: {
-        login: `${API_BASE_URL}/login`,
+        login: `${API_BASE_URL}/users/token`,
+        register: `${API_BASE_URL}/users`,
+
     },
     
 }
