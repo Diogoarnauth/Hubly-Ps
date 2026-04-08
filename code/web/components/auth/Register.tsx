@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
-
 export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,9 +18,10 @@ export function Register() {
   const [error, setError] = useState('');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [redirect, setRedirect] = useState(false);
   const [name, setUsername] = useState('');
   const [, setUserEmail] = useRegisterContext();
+
+  // 1. Removemos o estado 'redirect' (não é necessário se navegarmos no handleSubmit)
 
   const isEmailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isPasswordValid = (password: string) => password.length >= 6;
@@ -30,13 +30,25 @@ export function Register() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    const confirmationCode = await authService.register(email, password, name);
-    if (confirmationCode) {
+    setError(''); // Limpamos erros anteriores ao tentar de novo
+
+    try {
+      const confirmationCode = await authService.register(email, password, name);
+      
+      if (confirmationCode) {
+        // 2. Definimos o email no contexto (que agora grava no sessionStorage)
+        setUserEmail(email);
+        
+        // 3. Navegamos IMEDIATAMENTE. O React não vai reclamar porque
+        // isto acontece após um evento de clique, não durante o desenho da página.
+        router.push('/register/confirmEmail');
+      } else {
+        setIsLoading(false);
+        setError('Failed to register');
+      }
+    } catch (err) {
       setIsLoading(false);
-      setUserEmail(email);
-      setRedirect(true);
-    } else {
-      setError('Failed to register');
+      setError('An unexpected error occurred');
     }
   }
 
@@ -46,9 +58,8 @@ export function Register() {
     isPasswordValid(password) &&
     isPasswordMatch(password, confirmPassword);
 
-  if (redirect && !isLoading) {
-    router.push('/register/confirmEmail');
-  }
+  // 4. REMOVIDO: O bloco "if (redirect && !isLoading) { router.push(...) }"
+  // Era aqui que o React "crashava".
 
   return (
     <Card>
@@ -96,7 +107,7 @@ export function Register() {
               />
 
               <Button type="submit" disabled={!canSubmit} className="w-full">
-                Register
+                {isLoading ? 'Creating account...' : 'Register'}
               </Button>
 
               <p className="mt-4 text-center text-sm">
@@ -106,9 +117,8 @@ export function Register() {
                 </Link>
               </p>
 
-              {isLoading && <div>Carregando...</div>}
               {error && (
-                  <Alert className="mt-4">
+                  <Alert className="mt-4" variant="destructive">
                       <AlertTitle>Error</AlertTitle>
                       <AlertDescription>{error}</AlertDescription>
                   </Alert>

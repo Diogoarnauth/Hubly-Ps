@@ -23,7 +23,8 @@ export function LoginForm() {
         const result = await authService.login(email, password);
         if (result) {
             toastSuccess('Login successful', 'You are now logged in');
-            router.push('/dashboard');
+            //Adicionar verificação de ver se o user existe como creator ou company para nao levar para essa pagina
+            router.push('/onboarding');
         }else{
             setPassword('');
             setIsLoading(false);

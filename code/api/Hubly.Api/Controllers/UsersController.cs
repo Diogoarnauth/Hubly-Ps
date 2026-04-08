@@ -164,6 +164,7 @@ public class UserController : ControllerBase
     [HttpPost(Uris.Uris.Users.VerifyEmail)]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
     {
+        Console.WriteLine("ENTREI NO CONTROLLERRRRR");
         var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);
 
         return result.Match<IActionResult>(

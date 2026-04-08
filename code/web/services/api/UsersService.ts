@@ -25,6 +25,15 @@ class UsersService implements IUserService {
         const response = await this.apiClient.post(API_ENDPOINTS.user.register, user);
         return response as any;
     }
+    
+    async validateConfirmationCode(email: string, confirmationCode: string): Promise<boolean> {
+        const user = {
+            email: email,
+            code: confirmationCode
+        }
+        const response = await this.apiClient.post(API_ENDPOINTS.user.verifyEmail, user);
+        return !!response;
+    }
 
 }
 export default new UsersService();

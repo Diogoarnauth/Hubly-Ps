@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   
   const isPublicRoute = publicRoutes.some(route => pathname === route);
   
-  const token = request.cookies.get('auth_token')?.value;
+  const token = request.cookies.get('token')?.value;
   
   if (!isPublicRoute && !token) {
     return NextResponse.redirect(new URL('/', request.url));

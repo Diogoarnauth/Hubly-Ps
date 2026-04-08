@@ -15,8 +15,7 @@ export function ConfirmEmail() {
   const router = useRouter();
   const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
-  const [redirect, setRedirect] = useState(false);
-  
+    
   const inputRefs = useRef<Array<HTMLInputElement | null>>([null, null, null, null, null, null]);
 
   const handleDigitChange = (index: number, value: string) => {
@@ -28,13 +27,9 @@ export function ConfirmEmail() {
     }
     
     const numericValue = value.replace(/[^0-9]/g, '');
-    
-    if (numericValue === '') {
-      return;
-    }
+    if (numericValue === '') return;
     
     const singleDigit = numericValue.charAt(0);
-    
     const newCodeDigits = [...codeDigits];
     newCodeDigits[index] = singleDigit;
     setCodeDigits(newCodeDigits);
@@ -69,17 +64,11 @@ export function ConfirmEmail() {
     
     const newCodeDigits = [...codeDigits];
     for (let i = 0; i < numericOnly.length; i++) {
-      if (i < 6) {
-        newCodeDigits[i] = numericOnly[i];
-      }
+      if (i < 6) newCodeDigits[i] = numericOnly[i];
     }
     setCodeDigits(newCodeDigits);
     const nextEmptyIndex = newCodeDigits.findIndex(digit => digit === '');
-    if (nextEmptyIndex !== -1) {
-      inputRefs.current[nextEmptyIndex]?.focus();
-    } else {
-      inputRefs.current[5]?.focus();
-    }
+    inputRefs.current[nextEmptyIndex !== -1 ? nextEmptyIndex : 5]?.focus();
   };
 
   const confirmationCode = codeDigits.join('');
@@ -90,22 +79,21 @@ export function ConfirmEmail() {
     setIsLoading(true);
     
     if (!userEmail) {
-      toastError('User email is not set', 'User email is not set');
+      toastError('Erro de Sessão', 'O email do utilizador não foi encontrado. Recomece o registo.');
       setIsLoading(false);
       return;
     }
     
     const result = await authService.validateConfirmationCode(userEmail, confirmationCode);
-    setIsLoading(false);
     
     if (result) {
-      setRedirect(true);
+      sessionStorage.removeItem('hubly_register_email');
+      router.push('/dashboard');
+    } else {
+      setIsLoading(false);
     }
   }
 
-  if (redirect) {
-    router.push('/dashboard');
-  }
 
   return (
     <Card>
@@ -144,7 +132,7 @@ export function ConfirmEmail() {
               disabled={!canSubmit}
               className="w-full mt-4"
             >
-              Confirm Email
+              {isLoading ? 'Verifying...' : 'Confirm Email'}
             </Button>
           </fieldset>
         </form>

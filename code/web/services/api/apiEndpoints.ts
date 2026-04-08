@@ -5,7 +5,8 @@ export const API_ENDPOINTS = {
     user: {
         login: `${API_BASE_URL}/users/token`,
         register: `${API_BASE_URL}/users`,
-
+        verifyEmail: `${API_BASE_URL}/users/verifyEmail`,
+        resendEmailConfirmation: `${API_BASE_URL}/users/resendEmailConfirmation`,
     },
     
 }
