@@ -1,26 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useOnboardingContext } from '@/providers/OnboardingContext';
 import { RoleSelection } from './_components/RoleSelection';
 import { CreatorForm } from './_components/CreatorForm';
 import { CompanyForm } from './_components/CompanyForm';
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState<'SELECT' | 'CREATOR' | 'COMPANY'>('SELECT');
+  const { role, setRole } = useOnboardingContext();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-slate-50/50">
-      {step === 'SELECT' && (
-        <RoleSelection onSelect={(role) => setStep(role === 'creator' ? 'CREATOR' : 'COMPANY')} />
-      )}
-      
-      {step === 'CREATOR' && (
-        <CreatorForm onBack={() => setStep('SELECT')} />
-      )}
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-2xl"> {}
+        
+        {!role && (
+          <RoleSelection onSelect={(selectedRole) => setRole(selectedRole)} />
+        )}
+        
+        {role === 'creator' && (
+          <CreatorForm onBack={() => setRole(null)} />
+        )}
 
-      {step === 'COMPANY' && (
-        <CompanyForm onBack={() => setStep('SELECT')} />
-      )}
+        {role === 'company' && (
+          <CompanyForm onBack={() => setRole(null)} />
+        )}
+
+      </div>
     </div>
   );
 }

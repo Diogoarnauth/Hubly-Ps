@@ -9,4 +9,7 @@ export const API_ENDPOINTS = {
         resendEmailConfirmation: `${API_BASE_URL}/users/resendEmailConfirmation`,
     },
     
+    creator: {
+        register: `${API_BASE_URL}/creator`, 
+    }
 }
