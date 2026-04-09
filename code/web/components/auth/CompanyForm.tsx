@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { useRouter } from 'next/navigation';
+import { toastSuccess, toastError } from '../ToastImplementations'; // Importa os teus toasters
 
 export function CompanyForm({ onBack }: { onBack: () => void }) {
   const router = useRouter();
@@ -17,11 +18,9 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // Estado para os setores que vêm da API
   const [availableSectors, setAvailableSectors] = useState<Sector[]>([]);
   const [loadingSectors, setLoadingSectors] = useState(true);
 
-  // Estado para todos os campos que o teu DTO em C# espera
   const [formData, setFormData] = useState({
     companySize: 0,
     companyName: '',
@@ -31,7 +30,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
     countryHeadquarters: ''
   });
 
-  // Carrega os setores assim que o componente aparece
   useEffect(() => {
     async function fetchSectors() {
       try {
@@ -52,7 +50,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
     else setStep((prev) => prev - 1);
   };
 
-  // Função para gerir a seleção múltipla de setores
   const handleSectorChange = (sectorName: string) => {
     setFormData(prev => {
       const isSelected = prev.sectors.includes(sectorName);
@@ -70,14 +67,20 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
     setError('');
 
     try {
-      const response = await companyService.registerCompany(formData);
-      if (response) {
+      const result = await companyService.registerCompany(formData);
+      
+      if (result.success) {
+        toastSuccess('Success!', 'Company registered successfully.');
         router.push('/dashboard');
       } else {
-        setError('Failed to register company. Please check your connection.');
+        const apiErrorMessage = result.message || 'Failed to register company.';
+        setError(apiErrorMessage); 
+        //toastError('Registration Error', apiErrorMessage); // Mostra no Toaster
       }
     } catch (err) {
-      setError('An unexpected error occurred during registration.');
+      const fallbackMsg = 'An unexpected error occurred. Please try again later.';
+      setError(fallbackMsg);
+      toastError('Server Error', fallbackMsg);
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +95,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* PASSO 1: Tamanho da Empresa */}
           {step === 1 && (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -110,7 +112,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 2: Nome da Empresa */}
           {step === 2 && (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -127,7 +128,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 3: Descrição */}
           {step === 3 && (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -144,7 +144,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 4: Setores (Seleção Dinâmica) */}
           {step === 4 && (
             <div className="space-y-4">
               <Label className="text-base">Select the business sectors:</Label>
@@ -182,7 +181,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 5: Website */}
           {step === 5 && (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -200,7 +198,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 6: Sede / País */}
           {step === 6 && (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -219,7 +216,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* Navegação Secundária */}
           <div className="pt-2">
             <Button 
               type="button" 

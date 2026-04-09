@@ -98,7 +98,10 @@ export function Register() {
                 label="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-              />
+                />
+              <p className="text-[11px] text-muted-foreground mt-1.5 ml-1 ">
+                The password must include 8 digits, one UperCase, Numbers and Special caracter
+              </p>
 
               <PasswordInput
                 label="Confirm Password"

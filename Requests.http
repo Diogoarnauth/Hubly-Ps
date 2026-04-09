@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= kE+A5EcAvM+140pPs+nw7L1lh2+I0w3u5T1MGMaUeBs=
+@token= 8lqbgIPvDU4OAyQbZuBNpDlCMYfFMknYADuxvliGGqQ=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha012@example.com",
+    "email": "Carolzinha0121@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha012@example.com",
+    "email": "Carolzinha0121@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -68,8 +68,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha012@example.com",
-    "code": "293567" 
+    "email": "Carolzinha0121@example.com",
+    "code": "042577" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -96,7 +96,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 
-//dá null no sector e no subsector sempre que se cria uma company, com 200
+// dá erro 500 com o pais errado
+// dá erro 500 com o link errado
 ### Register Company
 POST http://{{host}}/api/company
 Authorization: Bearer {{token}}
@@ -104,15 +105,8 @@ Content-Type: {{contentType}}
 
 {
   "CompanySize": 1000,
-  "CompanyName": "carolzinhaCompany",
+  "CompanyName": "Fuck",
   "Description": "é isso",
-  "Sectors": [
-    "Education & E-learning",
-    "Technology & SaaS",
-    "Sustainability & Ecology",
-    "Travel & Tourism",
-    "Finance & Fintech"
-  ],
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
 }
