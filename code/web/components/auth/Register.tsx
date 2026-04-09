@@ -16,12 +16,12 @@ export function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [name, setUsername] = useState('');
   const [, setUserEmail] = useRegisterContext();
 
-  // 1. Removemos o estado 'redirect' (não é necessário se navegarmos no handleSubmit)
 
   const isEmailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isPasswordValid = (password: string) => password.length >= 6;
@@ -30,25 +30,30 @@ export function Register() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    setError(''); // Limpamos erros anteriores ao tentar de novo
+    setError('');
+    setEmailError('');
 
     try {
       const confirmationCode = await authService.register(email, password, name);
-      
+
       if (confirmationCode) {
-        // 2. Definimos o email no contexto (que agora grava no sessionStorage)
         setUserEmail(email);
-        
-        // 3. Navegamos IMEDIATAMENTE. O React não vai reclamar porque
-        // isto acontece após um evento de clique, não durante o desenho da página.
         router.push('/register/confirmEmail');
       } else {
         setIsLoading(false);
         setError('Failed to register');
       }
-    } catch (err) {
+    } catch (err: any) {
       setIsLoading(false);
-      setError('An unexpected error occurred');
+      const backendResponse = err.response?.data;
+      const errorTitle = backendResponse?.title;
+      const errorDetail = backendResponse?.detail;
+
+      if (errorTitle === "EmailAlreadyExists" || (errorDetail && errorDetail.includes("already registered"))) {
+        setEmailError('There is already an account registered on that email');
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   }
 
@@ -58,73 +63,86 @@ export function Register() {
     isPasswordValid(password) &&
     isPasswordMatch(password, confirmPassword);
 
-  // 4. REMOVIDO: O bloco "if (redirect && !isLoading) { router.push(...) }"
-  // Era aqui que o React "crashava".
-
   return (
     <Card>
-        <CardHeader>
+      <CardHeader>
         <CardTitle className="text-2xl">Register</CardTitle>
         <CardDescription>
-            Enter your email below to register to your account
+          Enter your email below to register to your account
         </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
-            <fieldset disabled={isLoading} className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@email.com"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Name"
-                  required
-                />
-              </div>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
+          <fieldset disabled={isLoading} className="space-y-4">
+            <div>
+              <Label htmlFor="email" className={emailError ? "text-destructive" : ""}>
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError('');
+                }}
+                placeholder="example@gmail.com"
+                required
+                className={emailError ? "border-destructive focus-visible:ring-destructive" : ""}
+              />
+              {emailError && (
+                <p className="text-xs font-medium text-destructive mt-1">
+                  {emailError}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Name"
+                required
+              />
+            </div>
+            <div>
               <PasswordInput
                 label="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-
-              <PasswordInput
-                label="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-
-              <Button type="submit" disabled={!canSubmit} className="w-full">
-                {isLoading ? 'Creating account...' : 'Register'}
-              </Button>
-
-              <p className="mt-4 text-center text-sm">
-                Already have an account?{' '}
-                <Link href="/" className="underline">
-                  Login
-                </Link>
+              <p className="text-[11px] text-muted-foreground mt-1.5 ml-1 ">
+                The password must include 8 digits one UperCase, Numbers and Special caracter
               </p>
+            </div>
 
-              {error && (
-                  <Alert className="mt-4" variant="destructive">
-                      <AlertTitle>Error</AlertTitle>
-                      <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-              )}
-            </fieldset>
-          </form>
+            <PasswordInput
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
+            <Button type="submit" disabled={!canSubmit} className="w-full">
+              {isLoading ? 'Creating account...' : 'Register'}
+            </Button>
+
+            <p className="mt-4 text-center text-sm">
+              Already have an account?{' '}
+              <Link href="/" className="underline">
+                Login
+              </Link>
+            </p>
+
+            {error && (
+              <Alert className="mt-4" variant="destructive">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+          </fieldset>
+        </form>
       </CardContent>
     </Card>
   );

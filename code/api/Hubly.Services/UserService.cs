@@ -153,6 +153,28 @@ namespace Hubly.api.Services
                 return user;
             });
         }
+
+        public async Task<OneOf<bool, UserError>> CheckCreatorOrCompany(int userId)
+        {
+            try
+            {
+                return await _transactionManager.Run<bool>(async (context) =>
+                {
+                    var creator = await context.CreatorRepository.GetByUserId(userId);
+                    if (creator != null) return true;
+
+                    var company = await context.CompanyRepository.GetByUserId(userId);
+                    if (company != null) return true;
+
+                    return false;
+                });
+            }
+            catch
+            {
+                return new UserError.FailedToGetUserInfo();
+            }
+        }
+
         public async Task<OneOf<bool, UserError>> EditUser(int userId, string newUsername)
         {
             if (!_usersDomain.IsValidUsername(newUsername)) return new UserError.InvalidName();

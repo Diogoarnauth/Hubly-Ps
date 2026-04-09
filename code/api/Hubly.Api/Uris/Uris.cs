@@ -13,6 +13,7 @@ public static class Uris
         public const string Create = $"{Prefix}/users";
         public const string GetById = $"{Prefix}/users/{{id:int}}";
         public const string GetMyInfo = $"{Prefix}/users/profile/me";
+        public const string CheckCreatorOrCompany = $"{Prefix}/users/profile/CheckCreatorOrCompany";
         public const string Token = $"{Prefix}/users/token";
         public const string Logout = $"{Prefix}/users/logout";
         public const string EditUser = $"{Prefix}/users/edit";

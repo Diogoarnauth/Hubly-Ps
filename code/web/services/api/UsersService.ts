@@ -16,16 +16,16 @@ class UsersService implements IUserService {
         return response as boolean
     }
 
-     async register(email: string, password: string, name: string): Promise<string | undefined> {
+    async register(email: string, password: string, name: string): Promise<string | undefined> {
         const user = {
             name: name,
             email: email,
-            password: password  
+            password: password
         }
         const response = await this.apiClient.post(API_ENDPOINTS.user.register, user);
         return response as any;
     }
-    
+
     async validateConfirmationCode(email: string, confirmationCode: string): Promise<boolean> {
         const user = {
             email: email,
@@ -35,5 +35,14 @@ class UsersService implements IUserService {
         return !!response;
     }
 
+    async checkHasProfile(): Promise<boolean> {
+        try {
+            const response = await this.apiClient.get(API_ENDPOINTS.user.checkProfile);
+            return response?.hasProfile === true;
+        } catch (error) {
+            console.error("Error checking profile:", error);
+            return false; // Por segurança, se falhar, assumimos que não tem
+        }
+    }
 }
 export default new UsersService();
