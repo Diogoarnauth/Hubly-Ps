@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { useRouter } from 'next/navigation';
+import { toastSuccess, toastError } from '../ToastImplementations';
 
 export function CompanyForm({ onBack }: { onBack: () => void }) {
   const router = useRouter();
@@ -70,14 +71,19 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
     setError('');
 
     try {
-      const response = await companyService.registerCompany(formData);
-      if (response) {
+      const result = await companyService.registerCompany(formData);
+
+      if (result.success) {
+        toastSuccess('Success!', 'Company registered successfully.');
         router.push('/dashboard');
       } else {
-        setError('Failed to register company. Please check your connection.');
+        const apiErrorMessage = result.message || 'Failed to register company.';
+        setError(apiErrorMessage);
       }
     } catch (err) {
-      setError('An unexpected error occurred during registration.');
+      const fallbackMsg = 'An unexpected error occurred. Please try again later.';
+      setError(fallbackMsg);
+      toastError('Server Error', fallbackMsg);
     } finally {
       setIsLoading(false);
     }

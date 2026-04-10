@@ -6,9 +6,22 @@ class CompanyService implements ICompanyService {
     private apiClient = new ApiClient();
 
     async registerCompany(data: CompanyData) {
-        // O ApiClient trata do JSON.stringify e dos headers
-        const response = await this.apiClient.post(API_ENDPOINTS.company.register, data);
-        return response;
+       try {
+            const response = await this.apiClient.post(API_ENDPOINTS.company.register, data);
+
+            if (!response) {
+                return { success: false, message: "Connection failed" };
+            }
+
+            return { success: true, data: response };
+        } catch (error: any) {
+            const errorMessage = error.message || "An unexpected error occurred";
+
+            return { 
+                success: false, 
+                message: errorMessage 
+            };
+        }
     }
 }
 
