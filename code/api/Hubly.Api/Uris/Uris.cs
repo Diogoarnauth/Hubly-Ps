@@ -21,6 +21,7 @@ public static class Uris
         public const string ResendEmailConfirmation = $"{Prefix}/users/resendEmailConfirmation";
         public const string VerifyEmail = $"{Prefix}/users/verifyEmail";
         public const string GetHistory = $"{Prefix}/users/getHistory";
+        public const string FullCreatorProfile = $"{Prefix}/users/{{id:int}}/fullCreatorProfile";
 
 
         public const string ChangePassword = $"{Prefix}/users/changePassword";  

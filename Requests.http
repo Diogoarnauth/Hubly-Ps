@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= 2LxiTS5SGsktw4TN8pEYzMkxRdHtm26qcl5sAdqGeW4=
+@token= QZfP8tquMGVb1HdNH89QYEPGLFhLXtL1M/STDUtVk6Q=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -75,7 +75,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha0121@example.com",
-    "code": "585020" 
+    "code": "653510" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -202,7 +202,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Platform_user_name": "Kazoziiii",
+  "Platform_user_name": "oioizinho",
   "Link": "https://www.youtube.com/@KazzioProva",
   "Description": "Adoro fazer pranks",
   "Followers_count": 4,
@@ -277,3 +277,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ##############################################################################
+
+### Get full Creator profile
+GET http://{{host}}/api/users/34/fullCreatorProfile
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

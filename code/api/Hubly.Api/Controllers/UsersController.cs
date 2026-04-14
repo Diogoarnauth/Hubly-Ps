@@ -233,4 +233,22 @@ public class UserController : ControllerBase
             error => ProblemResponse.InternalServerError.ToResponse()
         );
     }
+
+    [HttpGet(Uris.Uris.Users.FullCreatorProfile)]
+    public async Task<IActionResult> GetFullCreatorProfile([FromRoute] int id)
+    {
+        var result = await _userService.GetFullCreatorProfile(id);
+
+        return result.Match<IActionResult>(
+            success => {
+                var output = success.Adapt<FullUserProfileOutputModel>();
+                return Ok(output);
+            },
+            error => error switch
+            {
+                UserError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 }
