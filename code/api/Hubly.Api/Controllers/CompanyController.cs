@@ -51,8 +51,8 @@ public class CompanyController : ControllerBase
             success => Ok(success.Adapt<CompanyOutputModel>()),
             error => error switch
             {
-                
-                CompanyError.FailedToGetCompanyInfo => ProblemResponse.FailedToGetCompanyInfo.ToResponse(), 
+
+                CompanyError.FailedToGetCompanyInfo => ProblemResponse.FailedToGetCompanyInfo.ToResponse(),
                 CompanyError.InvalidSectorName => ProblemResponse.InvalidSectorName.ToResponse(),
                 CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CompanyError.InvalidCountryHeadquarters => ProblemResponse.InvalidCountryHeadquarters.ToResponse(),
@@ -63,7 +63,7 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Companies.GetById)]
-    public async Task<IActionResult> GetById( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,[FromRoute] int id)
+    public async Task<IActionResult> GetById([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
     {
         var res = await _companyService.GetById(id, user.Id);
 
@@ -103,9 +103,42 @@ public class CompanyController : ControllerBase
             error => error switch
             {
                 CompanyError.FailedToGetCompanyInfo => ProblemResponse.FailedToGetCompanyInfo.ToResponse(),
-                 _ => ProblemResponse.InternalServerError.ToResponse()
+                _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
+    }
+
+     [HttpGet(Uris.Uris.Countries.GetCountries)]
+    public async Task<IActionResult> GetCountries()
+    {
+        var countries = await _companyService.GetAllCountries();
+        return Ok(countries);
+    }
+
+
+    [HttpGet(Uris.Uris.Companies.GetTrending)]
+    public async Task<IActionResult> GetTrending([FromQuery] int limit = 15)
+    {
+        var result = await _companyService.GetTrendingCompanies(limit);
+
+        return result.Match(
+            companies =>
+            {
+                var response = companies.Select(c => new
+                {
+                    user_id = c.Id,
+                    company_name = c.CompanyName,
+                    description = c.Description,
+                    country_headquarters = c.CountryHeadquarters,
+                    sectors = c.Sectors.Select(s => s.SectorName).ToList()
+                }).ToList();
+
+                return Ok(response);
+            },
+            error => error switch
+            {
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            });
     }
 
 }

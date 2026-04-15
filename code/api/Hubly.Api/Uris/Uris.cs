@@ -23,7 +23,8 @@ public static class Uris
         public const string GetHistory = $"{Prefix}/users/getHistory";
 
 
-        public const string ChangePassword = $"{Prefix}/users/changePassword";  
+
+        public const string ChangePassword = $"{Prefix}/users/changePassword";
         // No C#, usamos string.Replace ou string.Format para expandir o ID
         public static string ById(int id) => GetById.Replace("{id}", id.ToString());
 
@@ -47,10 +48,11 @@ public static class Uris
         public const string ChangeAvailabilityStatus = $"{Prefix}/creator/status";
         public const string RateCreator = $"{Prefix}/creator/rateCreator/{{id:int}}";
         public const string AddSocialProfile = $"{Prefix}/creator/socialProfile";
-        public const string RemoveSocialProfile = $"{Prefix}/creator/socialProfile/{{profileId:int}}"; 
+        public const string RemoveSocialProfile = $"{Prefix}/creator/socialProfile/{{profileId:int}}";
         public const string GetSocialProfileById = $"{Prefix}/creator/socialProfile/{{profileId:int}}";
         public const string EditCreatorSocialProfile = $"{Prefix}/creator/socialProfile/edit/{{socialProfileId}}";
         public const string Search = $"{Prefix}/creators";
+        public const string GetTrending = $"{Prefix}/creator/trending";
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
 
@@ -64,7 +66,8 @@ public static class Uris
         public const string Create = $"{Prefix}/company";
         public const string GetById = $"{Prefix}/company/{{id}}";
         public const string EditCompanyProfile = $"{Prefix}/company/edit";
-        public const string Search = $"{Prefix}/companies";
+        public const string Search = $"{Prefix}/company";
+        public const string GetTrending = $"{Prefix}/company/trending";
 
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
@@ -80,9 +83,13 @@ public static class Uris
 
     public static class Sectors
     {
-        public const string GetAll = $"{Prefix}/sectors";   
+        public const string GetAll = $"{Prefix}/sectors";
     }
+    public static class Countries
+    {
+        public const string GetCountries = $"{Prefix}/getCountries";
 
+    }
 
 
 }

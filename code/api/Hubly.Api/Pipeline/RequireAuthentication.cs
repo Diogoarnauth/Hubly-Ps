@@ -40,7 +40,7 @@ namespace Hubly.api.Pipeline
             if (user == null)
             {
                 context.Result = new UnauthorizedObjectResult(new { message = "Authentication required" });
-                context.HttpContext.Response.Cookies.Delete("auth_token");
+                context.HttpContext.Response.Cookies.Delete("token");
                 context.HttpContext.Response.Headers.Append(
                     "WWW-Authenticate",
                     "Bearer");

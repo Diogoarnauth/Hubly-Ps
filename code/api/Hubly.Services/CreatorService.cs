@@ -231,7 +231,7 @@ namespace Hubly.api.Services
             {
                 var sectors = await context.CreatorRepository.GetAllSectors();
 
-                if (sectors == null) return new CreatorError.SectorsNotFound(); 
+                if (sectors == null) return new CreatorError.SectorsNotFound();
 
                 return sectors;
             });
@@ -291,6 +291,21 @@ namespace Hubly.api.Services
                 if (results == null) return new CreatorError.FailedToGetCreatorInfo();
 
                 return results;
+            });
+        }
+
+
+
+        public async Task<OneOf<List<Creator>, CreatorError>> GetTrendingCreators(int limit)
+        {
+            return await _transactionManager.Run<OneOf<List<Creator>, CreatorError>>(async (context) =>
+            {
+                var creators = await context.HistoryRepository.GetTopTrendingCreators(limit);
+
+                if (creators == null)
+                    return new List<Creator>();
+
+                return creators;
             });
         }
 

@@ -183,13 +183,13 @@ public class CreatorController : ControllerBase
 
     }
 
-    [HttpGet(Uris.Uris.Sectors.GetAll)] 
+    [HttpGet(Uris.Uris.Sectors.GetAll)]
     public async Task<IActionResult> GetAllSectors()
     {
         var res = await _creatorService.GetAllSectors();
 
         return res.Match<IActionResult>(
-            success => Ok(success.Select(s => new { s.Id, Name = s.SectorName })), 
+            success => Ok(success.Select(s => new { s.Id, Name = s.SectorName })),
             error => ProblemResponse.SectorsNotFound.ToResponse()
         );
     }
@@ -222,6 +222,33 @@ public class CreatorController : ControllerBase
             error => error switch
             {
                 CreatorError.FailedToGetCreatorInfo => ProblemResponse.FailedToGetCreatorInfo.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
+
+    [HttpGet(Uris.Uris.Creators.GetTrending)]
+    public async Task<IActionResult> GetTrending([FromQuery] int limit = 15)
+    {
+        var result = await _creatorService.GetTrendingCreators(limit);
+
+        return result.Match(
+            creators =>
+            {
+                var response = creators.SelectMany(c => c.SocialProfiles.Select(sp => new
+                {
+                    user_id = c.Id,
+                    PlatformUserName = sp.PlatformUserName,
+                    PlatformName = sp.Platform.NamePlatform,
+                    Description = sp.Description
+                })).Take(limit).ToList();
+
+                return Ok(response);
+            },
+            error => error switch
+            {
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions; 
+using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
@@ -19,23 +19,23 @@ public class CompaniesDomain
     }
 
     public string ConvertCompanySize(int size)
-{
-    if (size < 0) return "0 a 100"; 
-
-    return size switch
     {
-        <= 100 => "0 a 100",
-        <= 1000 => "100 a 1000",
-        <= 10000 => "1000 a 10000",
-        <= 100000 => "10000 a 100000",
-        <= 1000000 => "100000 a 1000000",
-        _ => "+1M"
-    };
-}
+        if (size < 0) return "0 a 100";
+
+        return size switch
+        {
+            <= 100 => "0 a 100",
+            <= 1000 => "100 a 1000",
+            <= 10000 => "1000 a 10000",
+            <= 100000 => "10000 a 100000",
+            <= 1000000 => "100000 a 1000000",
+            _ => "+1M"
+        };
+    }
 
     public bool IsSafeText(string? text)
     {
-        if (string.IsNullOrWhiteSpace(text)) return false; 
+        if (string.IsNullOrWhiteSpace(text)) return false;
         return !_profanityFilter.IsProfanity(text);
     }
 
@@ -49,15 +49,24 @@ public class CompaniesDomain
         return Regex.IsMatch(url, pattern, RegexOptions.IgnoreCase);
     }
 
+    public List<string> GetSupportedCountries()
+    {
+        return CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+            .Select(x => new RegionInfo(x.Name))
+            .Select(r => r.EnglishName)
+            .Distinct()
+            .OrderBy(name => name)
+            .ToList();
+    }
     public bool IsValidCountry(string? countryName)
     {
         if (string.IsNullOrEmpty(countryName)) return true;
 
-        try 
+        try
         {
             return CultureInfo.GetCultures(CultureTypes.SpecificCultures)
                 .Select(x => new RegionInfo(x.Name))
-                .Any(x => x.EnglishName.Equals(countryName, StringComparison.OrdinalIgnoreCase) || 
+                .Any(x => x.EnglishName.Equals(countryName, StringComparison.OrdinalIgnoreCase) ||
                           x.DisplayName.Equals(countryName, StringComparison.OrdinalIgnoreCase));
         }
         catch

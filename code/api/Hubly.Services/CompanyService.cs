@@ -77,7 +77,7 @@ namespace Hubly.api.Services
 
                 var companyExists = await context.CompanyRepository.GetByUserId(user_id);
                 if (companyExists == null) return new CompanyError.FailedToGetCompanyInfo();
-                
+
                 var foundSectors = await context.CompanyRepository.GetSectorByName(sectors);
                 if (foundSectors.Count != sectors.Count) return new CompanyError.InvalidSectorName();
 
@@ -100,22 +100,22 @@ namespace Hubly.api.Services
                 var company = await context.CompanyRepository.GetByUserId(targetCompanyId);
                 if (company == null) return new CompanyError.CompanyNotFound();
 
-                    try
+                try
+                {
+                    var historyEntry = new ProfileViewHistory
                     {
-                        var historyEntry = new ProfileViewHistory
-                        {
-                            ViewerUserId = viewerId,
-                            ViewedCompanyId = targetCompanyId,
-                            ViewedAt = DateTime.UtcNow
-                        };
+                        ViewerUserId = viewerId,
+                        ViewedCompanyId = targetCompanyId,
+                        ViewedAt = DateTime.UtcNow
+                    };
 
-                        await context.HistoryRepository.AddView(historyEntry);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
-                    }
-                
+                    await context.HistoryRepository.AddView(historyEntry);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                }
+
                 return company;
             });
 
@@ -142,6 +142,25 @@ namespace Hubly.api.Services
                 if (results == null) return new CompanyError.FailedToGetCompanyInfo();
 
                 return results;
+            });
+        }
+
+        public async Task<List<string>> GetAllCountries()
+        {
+            return await Task.Run(() => _companiesDomain.GetSupportedCountries());
+        }
+
+
+        public async Task<OneOf<List<Company>, CompanyError>> GetTrendingCompanies(int limit)
+        {
+            return await _transactionManager.Run<OneOf<List<Company>, CompanyError>>(async (context) =>
+            {
+                var companies = await context.HistoryRepository.GetTopTrendingCompanies(limit);
+
+                if (companies == null)
+                    return new List<Company>();
+
+                return companies;
             });
         }
     }

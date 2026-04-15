@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= 2LxiTS5SGsktw4TN8pEYzMkxRdHtm26qcl5sAdqGeW4=
+@token= DGf8mNHmyHxCVUrMLMLog8qTs1wGr+BnTj7d54p8GO4=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,14 +20,21 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha0121@example.com",
-    "password": "PasswordSegura123"
+    "email": "dioarnauth@gmail.com",
+    "password": "Diogo2005."
 }
 
 ### 3. Logout 
 POST http://{{host}}/api/users/logout
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
+
+### 4. getCountries 
+GET http://{{host}}/api/getCountries
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
 
 
 ### Get user info
@@ -75,7 +82,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha0121@example.com",
-    "code": "585020" 
+    "code": "789625" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -97,7 +104,7 @@ Content-Type: {{contentType}}
 }
 
 ### Get creator info
-GET http://{{host}}/api/creator/34
+GET http://{{host}}/api/creator/15
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -117,7 +124,15 @@ Content-Type: {{contentType}}
     "Technology & SaaS",
     "Sustainability & Ecology",
     "Travel & Tourism",
-    "Finance & Fintech"
+    "Finance & Fintech",
+    "Sports & Fitness",
+    "Real Estate",
+    "Automotive & Mobility",
+    "Children & Maternity",
+    "Pets",
+    "Marketing & Advertising",
+    "Retail & E-commerce",
+    "Events & Lifestyle"
   ],
   "WebsiteLink": "https://fr.primor.eu/fr_fr/",
   "CountryHeadquarters": "France"
@@ -158,7 +173,7 @@ Content-Type: {{contentType}}
 
 
 ### Get company info
-GET http://{{host}}/api/company/34
+GET http://{{host}}/api/company/5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -170,27 +185,27 @@ Content-Type: {{contentType}}
 ########################## Search companies ##########################
 
 ### 
-GET http://{{host}}/api/companies?page=1&pageSize=10
+GET http://{{host}}/api/company?page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### deveria de funcionar melhor com pesquisas minusculas
-GET http://{{host}}/api/companies?name=ma
+GET http://{{host}}/api/company?name=ha
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?companySize=0%20a%20100
+GET http://{{host}}/api/company?companySize=0%20a%20100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ###
-GET http://{{host}}/api/companies?Countries=portugal&Countries=spain
+GET http://{{host}}/api/company?Countries=portugal&Countries=spain
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### 
-GET http://{{host}}/api/companies?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
+GET http://{{host}}/api/company?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -257,7 +272,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### deveria de funcionar melhor com pesquisas minusculas
-GET http://{{host}}/api/creators?PlatformUserName=kaz
+GET http://{{host}}/api/creators?PlatformUserName=elena
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -272,7 +287,18 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### 
-GET http://{{host}}/api/creators?Sectors=Technology%20%26%20SaaS&page=1&pageSize=5
+GET http://{{host}}/api/creators?Sectors=Entertainment%20%26%20Media&page=1&pageSize=5
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get Trending Creators (Top 15 mais visualizados)
+GET http://{{host}}/api/creator/trending
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+
+### Get Trending Company (Top 15 mais visualizados)
+GET http://{{host}}/api/company/trending
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
