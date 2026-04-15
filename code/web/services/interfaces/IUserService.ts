@@ -5,6 +5,7 @@ interface IUserService {
     register(email: string, password: string, name: string): Promise<string | undefined>;
     validateConfirmationCode(email: string, confirmationCode: string): Promise<boolean>;
     getFullCreatorProfile(id: number): Promise<FullUserProfileOutputModel | null>;
+    editUsername(newUsername: string): Promise<boolean>;
 }
 
 export default IUserService;

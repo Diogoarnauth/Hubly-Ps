@@ -41,6 +41,23 @@ public class CreatorController : ControllerBase
 
     }
 
+    [HttpPost(Uris.Uris.Creators.EditCreatorProfile)]
+    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CreatorCreateInputModel input)
+    {
+        var res = await _creatorService.Edit(user.Id, input.ArtisticName);
+
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<CreatorCreateOutputModel>()),
+            error => error switch
+            {
+                
+                CreatorError.FailedToGetCreatorInfo => ProblemResponse.FailedToGetCreatorInfo.ToResponse(), 
+                CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
     [HttpPost(Uris.Uris.Creators.ChangeAvailabilityStatus)]
     public async Task<IActionResult> ChangeAvailabilityStatus([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] StatusChangeInputModel input)
     {

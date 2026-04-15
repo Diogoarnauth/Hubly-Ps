@@ -22,6 +22,7 @@ public static class Uris
         public const string VerifyEmail = $"{Prefix}/users/verifyEmail";
         public const string GetHistory = $"{Prefix}/users/getHistory";
         public const string FullCreatorProfile = $"{Prefix}/users/{{id:int}}/fullCreatorProfile";
+        public const string FullCompanyProfile = $"{Prefix}/users/{{id:int}}/fullCompanyProfile";
 
 
         public const string ChangePassword = $"{Prefix}/users/changePassword";  
@@ -44,7 +45,7 @@ public static class Uris
 
         public const string Create = $"{Prefix}/creator";
         public const string GetById = $"{Prefix}/creator/{{id}}";
-        public const string EditCreatorProfile = $"{Prefix}/creator/edit"; //falta fazer
+        public const string EditCreatorProfile = $"{Prefix}/creator/edit"; 
         public const string ChangeAvailabilityStatus = $"{Prefix}/creator/status";
         public const string RateCreator = $"{Prefix}/creator/rateCreator/{{id:int}}";
         public const string AddSocialProfile = $"{Prefix}/creator/socialProfile";

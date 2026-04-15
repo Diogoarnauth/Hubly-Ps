@@ -9,14 +9,19 @@ export const API_ENDPOINTS = {
         resendEmailConfirmation: `${API_BASE_URL}/users/resendEmailConfirmation`,
         checkProfile: `${API_BASE_URL}/users/profile/CheckCreatorOrCompany`,
         getFullCreatorProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCreatorProfile`, 
+        getFullCompanyProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCompanyProfile`,
+        edit: `${API_BASE_URL}/users/edit`
     },
     
     creator: {
         register: `${API_BASE_URL}/creator`, 
+        status: `${API_BASE_URL}/creator/status`,
+        edit: `${API_BASE_URL}/creator/edit`
     },
 
     company: {
         register: `${API_BASE_URL}/company`, 
+        edit: `${API_BASE_URL}/company/edit`
     },
     sectors: {
         getAll: `${API_BASE_URL}/sectors`,

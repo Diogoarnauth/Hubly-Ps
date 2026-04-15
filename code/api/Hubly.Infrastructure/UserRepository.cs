@@ -61,5 +61,14 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        public async Task<User?> GetFullUserCompanyById(int id)
+        {
+            return await _context.Users
+                .Include(u => u.Company)
+                    .ThenInclude(c => c.Sectors)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
 }
 }

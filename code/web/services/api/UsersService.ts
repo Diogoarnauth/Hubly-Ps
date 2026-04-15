@@ -4,7 +4,9 @@ import IUserService from "../interfaces/IUserService";
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
 import { FullUserProfileOutputModel } from "../DTO/FullUserProfileOutputModel";
+import { FullCompanyProfileOutputModel } from "../DTO/FullCompanyProfileOutputModel";
 import  GetCreatorOutputModel  from "../DTO/GetCreatorOutputModel";
+import GetCompanyOutputModel from "../DTO/GetCompanyOutputModel";
 
 
 class UsersService implements IUserService {
@@ -65,15 +67,36 @@ class UsersService implements IUserService {
     }
 
    async getFullCreatorProfile(id: number): Promise<FullUserProfileOutputModel | null> {
-    const data = await this.apiClient.get<any>(API_ENDPOINTS.user.getFullCreatorProfile(id));
-    
-    if (!data) return null;
+        const data = await this.apiClient.get<any>(API_ENDPOINTS.user.getFullCreatorProfile(id));
+        if (!data) return null;
 
-    return {
-        ...data,
-        // Instanciamos a classe para ativar o construtor que criaste
-        creator: data.creator ? new GetCreatorOutputModel(data.creator) : null
-    };
+        return {
+            ...data,
+            // Instanciamos a classe para ativar o construtor que criaste
+            creator: data.creator ? new GetCreatorOutputModel(data.creator) : null
+        };
+    }
+
+    async getFullCompanyProfile(id: number): Promise<FullCompanyProfileOutputModel | null> {
+        const data = await this.apiClient.get<any>(API_ENDPOINTS.user.getFullCompanyProfile(id));
+        
+        if (!data) return null;
+
+        return {
+            ...data,
+            company: data.company ? new GetCompanyOutputModel(data.company) : null
+        };
+    }
+
+    async editUsername(newUsername: string): Promise<boolean> {
+    try {
+        await this.apiClient.post(API_ENDPOINTS.user.edit, { newUsername });
+        return true;
+    } catch (error) {
+        console.error("Erro ao editar username:", error);
+        return false;
+    }
 }
+
 }
 export default new UsersService();

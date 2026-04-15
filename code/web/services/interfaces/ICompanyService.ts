@@ -1,5 +1,5 @@
 export interface CompanyData {
-    companySize: number;
+    companySize: string;
     companyName: string;
     description: string;
     sectors: string[];
@@ -9,6 +9,7 @@ export interface CompanyData {
 
 interface ICompanyService {
     registerCompany(data: CompanyData): Promise<any>;
+    editCompany(data: CompanyData): Promise<boolean>;
 }
 
 export default ICompanyService;

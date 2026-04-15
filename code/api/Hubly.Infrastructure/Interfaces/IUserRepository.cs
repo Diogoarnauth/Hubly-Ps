@@ -11,7 +11,7 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task EditUser(int userId, string newUsername);
         Task ChangePassword(int userId, string newPasswordHash);
         Task<User?> GetFullUserById(int id);
-
+        Task<User?> GetFullUserCompanyById(int id);
     }
 
 }

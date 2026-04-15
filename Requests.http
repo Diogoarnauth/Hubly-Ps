@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= QZfP8tquMGVb1HdNH89QYEPGLFhLXtL1M/STDUtVk6Q=
+@token= T0/NrSXWjD1Drxluaz03WZOT+u/rep7LJhbYVxpir/A=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -75,7 +75,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha0121@example.com",
-    "code": "653510" 
+    "code": "100576" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -139,7 +139,16 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "AvailabilityStatus": "AVAILABLE"
+  "AvailabilityStatus": "UNAVAILABLE"
+}
+
+### Edit Creator
+POST http://{{host}}/api/creator/edit
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "ArtisticName": "CarolininhaFofa"
 }
 
 ### Edit Company Profile
@@ -280,5 +289,10 @@ Content-Type: {{contentType}}
 
 ### Get full Creator profile
 GET http://{{host}}/api/users/34/fullCreatorProfile
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get full Company profile
+GET http://{{host}}/api/users/34/fullCompanyProfile
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

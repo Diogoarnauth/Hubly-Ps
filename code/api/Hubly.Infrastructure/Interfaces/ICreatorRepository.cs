@@ -14,11 +14,12 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<Creator?> GetByUserIdSocialProfiles(int userId);
         Task<List<Sector>> GetSectorByName(List<string> sectorName);
         Task<List<Sector>> GetAllSectors();
+        Task<Creator?> Edit(int user_id, string artisticName);
+
 
         
 
         
-        // Task EditProfile(int userId, string artisticName, string availabilityStatus);        
         // Task<IEnumerable<Creator>> GetTopRatedCreators(int count);
         // Task<IEnumerable<Creator>> GetMostActiveCreators(int count);
         // get top content creators

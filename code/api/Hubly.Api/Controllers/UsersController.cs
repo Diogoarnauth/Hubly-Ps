@@ -251,4 +251,23 @@ public class UserController : ControllerBase
             }
         );
     }
+
+    [HttpGet(Uris.Uris.Users.FullCompanyProfile)]
+    public async Task<IActionResult> GetFullCompanyProfile([FromRoute] int id)
+    {
+        var result = await _userService.GetFullCompanyProfile(id);
+
+        return result.Match<IActionResult>(
+            success => {
+                var output = success.Adapt<FullCompanyProfileOutputModel>();
+                return Ok(output);
+            },
+            error => error switch
+            {
+                UserError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
 }
