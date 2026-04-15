@@ -89,6 +89,15 @@ class CompanyService implements ICompanyService {
             filters
         );
     }
+    async editCompany(data: CompanyData): Promise<boolean> {
+        try {
+            await this.apiClient.post(API_ENDPOINTS.company.edit, data);
+            return true;
+        } catch (error) {
+            console.error("Erro ao editar empresa:", error);
+            return false;
+        }
+    }
 }
 
 export default new CompanyService();

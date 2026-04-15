@@ -99,5 +99,15 @@ namespace Hubly.api.Infrastructure
             return await _context.Sectors.ToListAsync();
         }
 
+        public async Task<Creator?> Edit(int user_id, string artisticName)
+        {
+            var creator = await _context.Creators.FirstOrDefaultAsync(c => c.Id == user_id);
+            if (creator == null) return null;
+            creator.ArtisticName = artisticName;
+            await _context.SaveChangesAsync();
+            return creator;
+            
+        }
+
     }
 }

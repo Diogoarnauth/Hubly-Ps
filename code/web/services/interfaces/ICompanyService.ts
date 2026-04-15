@@ -10,6 +10,7 @@ interface ICompanyService {
     getTrendingCompanies(limit?: number): Promise<TrendingCompany[]>;
     search(filters: CompanySearchInputModel): Promise<CompanySearchResponse>;
     getCountries(): Promise<string[]>;
+    editCompany(data: CompanyData): Promise<boolean>;
 
 }
 

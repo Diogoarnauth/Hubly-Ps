@@ -154,7 +154,16 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "AvailabilityStatus": "AVAILABLE"
+  "AvailabilityStatus": "UNAVAILABLE"
+}
+
+### Edit Creator
+POST http://{{host}}/api/creator/edit
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "ArtisticName": "CarolininhaFofa"
 }
 
 ### Edit Company Profile
@@ -217,7 +226,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Platform_user_name": "Kazoziiii",
+  "Platform_user_name": "oioizinho",
   "Link": "https://www.youtube.com/@KazzioProva",
   "Description": "Adoro fazer pranks",
   "Followers_count": 4,
@@ -303,3 +312,13 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ##############################################################################
+
+### Get full Creator profile
+GET http://{{host}}/api/users/34/fullCreatorProfile
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get full Company profile
+GET http://{{host}}/api/users/34/fullCompanyProfile
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

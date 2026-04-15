@@ -307,6 +307,23 @@ namespace Hubly.api.Services
 
                 return creators;
             });
+        public async Task<OneOf<Creator, CreatorError>> Edit(int user_id, string artisticName)
+        {
+            var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
+            {
+                if (await context.CompanyRepository.ExistsByUserId(user_id)) return new CreatorError.UserAlreadyRegisteredAsCompany();
+
+                var creatorExists = await context.CreatorRepository.GetByUserId(user_id);
+                if (creatorExists == null) return new CreatorError.FailedToGetCreatorInfo();
+
+                var updatedCreator = await context.CreatorRepository.Edit(user_id, artisticName);
+
+                if (updatedCreator == null) return new CreatorError.FailedToGetCreatorInfo();
+
+                return updatedCreator;
+            });
+
+            return result;
         }
 
     }

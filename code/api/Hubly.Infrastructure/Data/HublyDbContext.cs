@@ -123,32 +123,32 @@ public class HublyDbContext : DbContext
 
         // CONFIGURAÇÃO: Company (PK é FK do User)
         modelBuilder.Entity<Company>(entity =>
- {
-     entity.ToTable("companies", "dbo");
-     entity.HasKey(c => c.Id);
-     entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
+    {
+        entity.ToTable("companies", "dbo");
+        entity.HasKey(c => c.Id);
+        entity.Property(c => c.Id).HasColumnName("user_id").ValueGeneratedNever();
 
-     entity.HasMany(c => c.Sectors)
-           .WithMany()
-           .UsingEntity<Dictionary<string, object>>(
-               "company_sectors",
-               j => j.HasOne<Sector>()
-                     .WithMany()
-                     .HasForeignKey("sector_id"),
-               j => j.HasOne<Company>()
-                     .WithMany()
-                     .HasForeignKey("company_user_id"),
-               j =>
-               {
-                   j.ToTable("company_sectors", "dbo");
-                   j.HasKey("company_user_id", "sector_id");
-               });
+        entity.HasMany(c => c.Sectors)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "company_sectors",
+                j => j.HasOne<Sector>()
+                        .WithMany()
+                        .HasForeignKey("sector_id"),
+                j => j.HasOne<Company>()
+                        .WithMany()
+                        .HasForeignKey("company_user_id"),
+                j =>
+                {
+                    j.ToTable("company_sectors", "dbo");
+                    j.HasKey("company_user_id", "sector_id");
+                });
 
-     entity.HasOne(c => c.User)
-           .WithOne(u => u.Company)
-           .HasForeignKey<Company>(c => c.Id)
-           .OnDelete(DeleteBehavior.Cascade);
- });
+        entity.HasOne(c => c.User)
+            .WithOne(u => u.Company)
+            .HasForeignKey<Company>(c => c.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+    });
         // TODO() VER MELHOR
         modelBuilder.Entity<EmailConfirmation>(entity =>
         {

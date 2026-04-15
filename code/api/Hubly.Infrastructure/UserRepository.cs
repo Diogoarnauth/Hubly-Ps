@@ -52,5 +52,23 @@ namespace Hubly.api.Infrastructure
             _context.Users.Update(user);
         }
 
+        public async Task<User?> GetFullUserById(int id)
+        {
+            return await _context.Users
+                .Include(u => u.Creator)
+                    .ThenInclude(c => c.SocialProfiles)
+                .AsNoTracking() 
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public async Task<User?> GetFullUserCompanyById(int id)
+        {
+            return await _context.Users
+                .Include(u => u.Company)
+                    .ThenInclude(c => c.Sectors)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
 }
 }

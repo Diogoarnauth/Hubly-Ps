@@ -321,9 +321,29 @@ namespace Hubly.api.Services
             });
         }
 
-        
+        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int id)
+        {
+            return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetFullUserById(id);
 
+                if (user == null) return new UserError.UserNotFound();
 
+                return user;
+            });
+        }
+
+        public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int id)
+        {
+             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+            {
+                var user = await context.UserRepository.GetFullUserCompanyById(id);
+
+                if (user == null) return new UserError.UserNotFound();
+
+                return user;
+            }); 
+        }
 
         private string GenerateNumericCode(int length)
         {
