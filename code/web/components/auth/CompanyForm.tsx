@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { useRouter } from 'next/navigation';
 import { toastSuccess, toastError } from '../ToastImplementations';
+import { Loader2 } from 'lucide-react';
 
 export function CompanyForm({ onBack }: { onBack: () => void }) {
   const router = useRouter();
@@ -18,11 +19,11 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // Estado para os setores que vêm da API
+  // Estados para dados da API
   const [availableSectors, setAvailableSectors] = useState<Sector[]>([]);
-  const [loadingSectors, setLoadingSectors] = useState(true);
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
+  const [loadingInitialData, setLoadingInitialData] = useState(true);
 
-  // Estado para todos os campos que o teu DTO em C# espera
   const [formData, setFormData] = useState({
     companySize: 0,
     companyName: '',
@@ -32,19 +33,30 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
     countryHeadquarters: ''
   });
 
-  // Carrega os setores assim que o componente aparece
+  // Carregar setores e países ao montar o componente
   useEffect(() => {
-    async function fetchSectors() {
+    async function fetchData() {
       try {
-        const data = await sectorService.getAllSectors();
-        setAvailableSectors(data);
+        const [sectorsData, countriesData] = await Promise.all([
+          sectorService.getAllSectors(),
+          companyService.getCountries()
+        ]);
+        
+        setAvailableSectors(sectorsData);
+        
+        // Limpar e ordenar lista de países (removendo termos genéricos como fizemos na pesquisa)
+        const cleanCountries = countriesData
+          .filter(c => c !== 'world' && c !== 'Europe')
+          .sort((a, b) => a.localeCompare(b));
+        
+        setAvailableCountries(cleanCountries);
       } catch (err) {
-        console.error("Erro ao carregar setores:", err);
+        console.error("Error loading initial data:", err);
       } finally {
-        setLoadingSectors(false);
+        setLoadingInitialData(false);
       }
     }
-    fetchSectors();
+    fetchData();
   }, []);
 
   const nextStep = () => setStep((prev) => prev + 1);
@@ -53,7 +65,6 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
     else setStep((prev) => prev - 1);
   };
 
-  // Função para gerir a seleção múltipla de setores
   const handleSectorChange = (sectorName: string) => {
     setFormData(prev => {
       const isSelected = prev.sectors.includes(sectorName);
@@ -150,13 +161,14 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 4: Setores (Seleção Dinâmica) */}
+          {/* PASSO 4: Setores */}
           {step === 4 && (
             <div className="space-y-4">
               <Label className="text-base">Select the business sectors:</Label>
-              {loadingSectors ? (
-                <div className="text-center py-4 text-sm text-muted-foreground animate-pulse">
-                  Loading available sectors...
+              {loadingInitialData ? (
+                <div className="flex flex-col items-center py-4 gap-2">
+                  <Loader2 className="animate-spin text-primary" size={20} />
+                  <span className="text-sm text-muted-foreground">Loading sectors...</span>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-3 border rounded-md bg-background/50">
@@ -206,20 +218,35 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 6: Sede / País */}
+          {/* PASSO 6: Sede / País (Dropdown Dinâmica) */}
           {step === 6 && (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="country">Country Headquarters</Label>
-                <Input 
-                  id="country"
-                  value={formData.countryHeadquarters} 
-                  onChange={(e) => setFormData({...formData, countryHeadquarters: e.target.value})}
-                  placeholder="Ex: Portugal"
-                  required
-                />
+                {loadingInitialData ? (
+                  <div className="flex items-center gap-2 py-2">
+                    <Loader2 className="animate-spin text-primary" size={16} />
+                    <span className="text-xs text-muted-foreground">Loading countries...</span>
+                  </div>
+                ) : (
+                  <select
+                    id="country"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={formData.countryHeadquarters}
+                    onChange={(e) => setFormData({...formData, countryHeadquarters: e.target.value})}
+                    required
+                  >
+                    <option value="" disabled>Select a country</option>
+                    {availableCountries.map(country => (
+                      <option key={country} value={country} className="bg-slate-900">
+                        {country}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
               <Button type="submit" className="w-full" disabled={isLoading || !formData.countryHeadquarters}>
+                {isLoading ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
                 {isLoading ? 'Registering...' : 'Complete Registration'}
               </Button>
             </div>

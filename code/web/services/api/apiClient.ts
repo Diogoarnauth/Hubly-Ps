@@ -25,6 +25,36 @@ export class ApiClient {
     ApiClient.unauthorizedHandler = handler;
   }
 
+  /**
+   * Método auxiliar para converter um objeto de filtros numa Query String na URL.
+   * Se não houver parâmetros, devolve a URL intacta.
+   */
+  private buildUrl(url: string, params?: Record<string, any>): string {
+    if (!params || Object.keys(params).length === 0) {
+      return url;
+    }
+
+    const queryParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      // Ignora valores nulos, indefinidos ou strings vazias
+      if (value !== undefined && value !== null && value !== '') {
+        if (Array.isArray(value)) {
+          // Trata arrays (ex: setores) repetindo a chave: ?sectors=Music&sectors=Art
+          value.forEach(v => queryParams.append(key, v));
+        } else {
+          queryParams.append(key, value.toString());
+        }
+      }
+    });
+
+    const queryString = queryParams.toString();
+    if (!queryString) return url;
+
+    // Concatena com '?' ou '&' dependendo se a URL já tem parâmetros manuais
+    return `${url}${url.includes('?') ? '&' : '?'}${queryString}`;
+  }
+
   private async request<T>(url: string, options: RequestInit): Promise<T | ConflictResponse | null> {
     try {
       const response = await fetch(url, {
@@ -71,8 +101,12 @@ export class ApiClient {
     }
   }
 
-  async get<T>(url: string): Promise<T | ConflictResponse | null> {
-    return this.request<T>(url, {
+  /**
+   * GET atualizado para aceitar parâmetros de busca opcionais.
+   */
+  async get<T>(url: string, params?: Record<string, any>): Promise<T | ConflictResponse | null> {
+    const finalUrl = this.buildUrl(url, params);
+    return this.request<T>(finalUrl, {
       method: 'GET'
     });
   }
