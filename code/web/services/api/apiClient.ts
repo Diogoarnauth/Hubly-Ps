@@ -75,8 +75,9 @@ export class ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
-        if (response.status === 401 && ApiClient.unauthorizedHandler) {
-          ApiClient.unauthorizedHandler();
+        if (response.status === 401 && ApiClient.unauthorizedHandler && errorData.message === "Authentication required" ) {
+          console.log("entrei aquiiiiiii")
+          //ApiClient.unauthorizedHandler();
         }
         toastError(
           `Error ${response.status}`,
