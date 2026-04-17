@@ -139,6 +139,12 @@ class CreatorService implements ICreatorService {
             throw error;
         }
     }
+
+     async deleteSocialProfile(limit: number = 15): Promise<TrendingCreator[]> {
+        return await this.apiClient.get<TrendingCreator[]>(
+            `${API_ENDPOINTS.creator.trending}?limit=${limit}`
+        );
+    }
 }
 
 export default new CreatorService();

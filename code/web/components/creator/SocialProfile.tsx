@@ -1,11 +1,11 @@
 'use client';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Settings, Users, Tag, DollarSign, FileText, Loader2, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Trash2, Settings, Users, Tag, DollarSign, FileText, Loader2, ArrowLeft, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { toastError } from '../ToastImplementations';
-import creatorService from '@/services/api/CreatorService'; // Ajusta o import se necessário
+import { toastSuccess, toastError } from '../ToastImplementations';
+import creatorService from '@/services/api/CreatorService'; 
 import { GetSocialProfileOutputModel } from '@/services/DTO/GetSocialProfileOutputModel';
 import { EditSocialProfileModal } from './EditSocialProfileModal';
 
@@ -20,6 +20,25 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
   const [isEditSocialProfileModal, setIsEditSocialProfileModal] = useState(false);
   const router = useRouter();
   const isFetching = useRef(false);
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Tem mesmo a certeza que quer eliminar este perfil social? Esta operação é permanente e não pode ser desfeita."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const id = parseInt(profileId);
+      await creatorService.deleteSocialProfile(id); 
+      
+      toastSuccess('Sucesso', 'Perfil social eliminado com sucesso');
+      router.push('/dashboard'); 
+    } catch (error) {
+      console.error("Error deleting social profile:", error);
+      toastError('Erro', 'Não foi possível eliminar o perfil social');
+    }
+  };
 
   const fetchSocialProfile = useCallback(async () => {
     if (isFetching.current) return;
@@ -71,6 +90,18 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
     <div className="text-white relative space-y-8">
       {data?.isOwner && (
         <div className="flex justify-end mb-4">
+
+          {/* Botão Delete */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-red-950/30 hover:text-red-500 text-zinc-400 transition-colors"
+            onClick={handleDelete}
+            title="Eliminar Perfil Social"
+          >
+            <Trash2 className="w-6 h-6" />
+          </Button>
+
           <Button
             variant="ghost"
             size="icon"
@@ -80,6 +111,9 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
             <Settings className="w-8 h-8 text-white" />
           </Button>
         </div>
+        
+
+        
       )}
       {/* Botão de Voltar */}
       <div className="flex justify-start mb-4">

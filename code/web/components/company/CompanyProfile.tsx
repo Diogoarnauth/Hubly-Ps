@@ -1,6 +1,6 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
-import { Building2, Loader2, Settings } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {ArrowLeft, Building2, Loader2, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import usersService from '@/services/api/UsersService';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import {toastError } from '../ToastImplementations';
 import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
+//import companyService from '@/services/api/CompanyService'; 
 import GetCompanyOutputModel from '@/services/DTO/GetCompanyOutputModel';
 
 interface CompanyProfileProps {
@@ -43,6 +44,27 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
     }
   };
 
+
+    /*const handleDelete = async () => {
+      const confirmDelete = window.confirm(
+        "Tem mesmo a certeza que quer eliminar este perfil social? Esta operação é permanente e não pode ser desfeita."
+      );
+  
+      if (!confirmDelete) return;
+  
+      try {
+        const id = parseInt(profileId);
+        await companyService.deleteSocialProfile(id); 
+        
+        toastSuccess('Sucesso', 'Perfil social eliminado com sucesso');
+        router.push('/dashboard'); 
+      } catch (error) {
+        console.error("Error deleting social profile:", error);
+        toastError('Erro', 'Não foi possível eliminar o perfil social');
+      }
+    };*/
+  
+
   useEffect(() => {
     console.log("useEffect")
     console.log("id", id)
@@ -71,6 +93,17 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
               </Button>
             </div>
           )}
+
+           {/* Botão de Voltar */}
+      <div className="flex justify-start mb-4">
+        <Button
+          variant="ghost"
+          className="text-zinc-400 hover:text-white hover:bg-zinc-800 gap-2"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Profile
+        </Button>
+      </div>
 
       <div className="flex flex-col items-center mb-12">
         <div className="w-32 h-32 bg-zinc-800 rounded-full flex items-center justify-center mb-3">
