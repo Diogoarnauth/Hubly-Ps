@@ -7,10 +7,10 @@
 # Node / Next.js
 **/node_modules/
 **/.next/
+**/bin/
+**/obj/
 **/dist/
-**/out/
 **/build/
-
 # IDEs e Logs
 .vs/
 .vscode/
