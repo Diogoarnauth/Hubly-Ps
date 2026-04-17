@@ -7,6 +7,7 @@ interface ICreatorService {
     searchCreators(filters: CreatorSearchInputModel): Promise<CreatorSearchResponse>;
     changeStatus(status: string): Promise<boolean>;
     getSocialProfileById(profileId: number): Promise<GetSocialProfileOutputModel>;
+    editSocialProfile(socialProfileId: number, data: any);
 
 }
 

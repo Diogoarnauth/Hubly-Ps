@@ -20,7 +20,8 @@ export const API_ENDPOINTS = {
         addSocialProfile: `${API_BASE_URL}/creator/socialProfile`,
         status: `${API_BASE_URL}/creator/status`,
         getSocialProfileById: `${API_BASE_URL}/creator/socialProfile/{profileId}`,
-        edit: `${API_BASE_URL}/creator/edit`
+        edit: `${API_BASE_URL}/creator/edit`,
+        editSocialProfile: `${API_BASE_URL}/creator/socialProfile/edit/{socialProfileId}`,
     },
 
     company: {

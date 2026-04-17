@@ -80,9 +80,9 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Logout(AuthenticatedUser user)
     {
         var response = await _userService.Logout(user.Token);
-        if (Request.Cookies.ContainsKey("auth_token"))
+        if (Request.Cookies.ContainsKey("token"))
         {
-            Response.Cookies.Delete("auth_token");
+            Response.Cookies.Delete("token");
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,

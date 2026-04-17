@@ -5,16 +5,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Building2, Loader2, MapPin } from "lucide-react";
 import CompanyService, { TrendingCompany } from "@/services/api/CompanyService";
+import { useRouter } from "next/navigation"; 
 
 export function CompanyCarousel() {
     const [companies, setCompanies] = useState<TrendingCompany[]>([]);
     const [loading, setLoading] = useState(true);
+    const router = useRouter(); 
 
     useEffect(() => {
         async function fetchTrendingCompanies() {
             try {
                 const data = await CompanyService.getTrendingCompanies(15);
-                console.log("Trending Companies Data iaebfiaefb:", data);
+                console.log("Trending Companies Data:", data);
                 setCompanies(data || []);
             } catch (error) {
                 console.error("Erro ao carregar trending companies:", error);
@@ -49,7 +51,10 @@ export function CompanyCarousel() {
                 <CarouselContent className="-ml-4">
                     {companies.map((company) => (
                         <CarouselItem key={company.user_id} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5">
-                            <Card className="overflow-hidden hover:border-primary/50 transition-all cursor-pointer bg-secondary/10 h-full flex flex-col">
+                            <Card 
+                                onClick={() => router.push(`/company/${company.user_id}`)}
+                                className="overflow-hidden hover:border-primary/50 transition-all cursor-pointer bg-secondary/10 h-full flex flex-col active:scale-[0.98]"
+                            >
                                 {/* Área Visual */}
                                 <div className="aspect-video bg-muted flex items-center justify-center border-b shrink-0">
                                     <Building2 className="text-muted-foreground/40" size={40} />

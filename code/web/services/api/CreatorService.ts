@@ -124,6 +124,21 @@ class CreatorService implements ICreatorService {
             throw error;
         }
     }
+
+     async editSocialProfile(socialProfileId: number, data: any) {
+        try {
+            let endpoint = API_ENDPOINTS.creator.editSocialProfile;
+
+            endpoint = endpoint.replace("{socialProfileId}", socialProfileId.toString());
+
+            const response = await this.apiClient.post(endpoint, data);
+
+            return response;
+        } catch (error) {
+            console.error(`Erro ao obter perfil social ${socialProfileId}:`, error);
+            throw error;
+        }
+    }
 }
 
 export default new CreatorService();

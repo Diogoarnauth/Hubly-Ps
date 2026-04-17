@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Settings, UserCircle, Loader2, ExternalLink } from 'lucide-react';
+import { Plus, Settings, UserCircle, Loader2, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toastError } from '../ToastImplementations';
@@ -132,37 +132,51 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {creator?.socialProfiles && creator.socialProfiles.length > 0 ? (
-            creator.socialProfiles.map((social, index) => (
-              <Link
-                key={social.id || index}
-                href={`/socialProfile/${social.id}`}
-                className="group"
-              >
-                <Card className="bg-[#2A2A2A] border-none text-white rounded-[15px] hover:bg-[#333] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden">
-                  <CardContent className="p-5 flex flex-col items-center text-center space-y-2">
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-[10px] uppercase tracking-widest text-purple-400 font-bold">
-                        {social.platformName}
-                      </span>
-                      <ExternalLink className="w-3 h-3 text-zinc-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-sm font-medium truncate w-full">
-                      {social.platformUserName}
-                    </p>
-                    <p className="text-sm font-medium truncate w-full">
-                      Followers: {social.followersCount.toLocaleString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))
-          ) : (
-            <div className="col-span-full py-10 border-2 border-dashed border-zinc-800 rounded-[20px] text-center">
-              <p className="text-zinc-600 italic">No social profiles found for this creator.</p>
-            </div>
+          {/* 1. Mapear perfis existentes */}
+          {creator?.socialProfiles && creator.socialProfiles.map((social, index) => (
+            <Link
+              key={social.id || index}
+              href={`/socialProfile/${social.id}`}
+              className="group"
+            >
+              <Card className="bg-[#2A2A2A] border-none text-white rounded-[15px] hover:bg-[#333] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden h-full">
+                <CardContent className="p-5 flex flex-col items-center text-center space-y-2">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[10px] uppercase tracking-widest text-purple-400 font-bold">
+                      {social.platformName}
+                    </span>
+                    <ExternalLink className="w-3 h-3 text-zinc-500 group-hover:text-white" />
+                  </div>
+                  <p className="text-sm font-medium truncate w-full">
+                    {social.platformUserName}
+                  </p>
+                  <p className="text-sm font-medium truncate w-full">
+                    Followers: {social.followersCount.toLocaleString()}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+
+          {/* 2. CARD DE ADICIONAR*/}
+          {profile?.isOwner && (<Card
+            onClick={() => router.push(`/create-social-profile`)}
+            className="bg-transparent border-2 border-dashed border-zinc-800 text-zinc-500 rounded-[15px] hover:border-[#A78BFA] hover:text-[#A78BFA] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden h-full min-h-[140px] flex items-center justify-center group active:scale-95"
+          >
+            <CardContent className="p-0 flex flex-col items-center justify-center space-y-2">
+              <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-[#A78BFA]/10 transition-colors">
+                <Plus size={32} strokeWidth={2.5} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider">Add Profile</span>
+            </CardContent>
+          </Card>
           )}
         </div>
+
+        {/* Caso não existisse nenhum perfil e quisesses manter a mensagem (opcional) */}
+        {(!creator?.socialProfiles || creator.socialProfiles.length === 0) && (
+          <p className="text-zinc-600 italic text-center mt-4 text-sm">No profiles linked yet.</p>
+        )}
       </div>
 
       {/* Modal de Edição */}

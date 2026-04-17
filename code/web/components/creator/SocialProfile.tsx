@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { toastError } from '../ToastImplementations';
 import creatorService from '@/services/api/CreatorService'; // Ajusta o import se necessário
 import { GetSocialProfileOutputModel } from '@/services/DTO/GetSocialProfileOutputModel';
+import { EditSocialProfileModal } from './EditSocialProfileModal';
+
 
 interface SocialProfileProps {
   profileId: string;
@@ -15,6 +17,7 @@ interface SocialProfileProps {
 export function SocialProfile({ profileId }: SocialProfileProps) {
   const [data, setData] = useState<GetSocialProfileOutputModel | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditSocialProfileModal, setIsEditSocialProfileModal] = useState(false);
   const router = useRouter();
   const isFetching = useRef(false);
 
@@ -37,9 +40,15 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
     } catch (error) {
       console.error("Error loading social profile:", error);
       toastError('Error', 'Failed to load social profile');
-      router.push('/dashboard'); 
+      router.push('/dashboard');
     }
   }, [profileId, router]);
+
+  const handleEditSuccess = async () => {
+    isFetching.current = false; // Garante que o trinco está aberto
+    await fetchSocialProfile(); // Procura os dados novos no servidor
+    setIsEditSocialProfileModal(false); // Fecha o modal
+  };
 
   useEffect(() => {
     isFetching.current = false;
@@ -66,6 +75,7 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
             variant="ghost"
             size="icon"
             className="hover:bg-zinc-800"
+            onClick={() => setIsEditSocialProfileModal(true)}
           >
             <Settings className="w-8 h-8 text-white" />
           </Button>
@@ -175,6 +185,13 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
           </CardContent>
         </Card>
       </div>
+      {isEditSocialProfileModal && data && (
+        <EditSocialProfileModal
+          initialData={data}
+          onClose={() => setIsEditSocialProfileModal(false)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </div>
   );
 }
