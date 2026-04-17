@@ -1,10 +1,19 @@
 # .NET
-[Bb]in/
-[Oo]bj/
-# Node
-node_modules/
-dist/
-# IDEs
+**/[Bb]in/
+**/[Oo]bj/
+*.user
+*.suo
+
+# Node / Next.js
+**/node_modules/
+**/.next/
+**/dist/
+**/out/
+**/build/
+
+# IDEs e Logs
 .vs/
 .vscode/
 .idea/
+*.log
+.env.local

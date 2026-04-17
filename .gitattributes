@@ -1,0 +1,13 @@
+# Ignorar dependências do Frontend nas estatísticas
+code/web/node_modules/** linguist-documentation
+code/web/.next/** linguist-vendored
+code/web/out/** linguist-vendored
+code/web/build/** linguist-vendored
+
+# Ignorar ficheiros gerados de bibliotecas ou definições
+*.json linguist-documentation
+*.html linguist-documentation
+
+# Se tiveres ficheiros de bibliotecas externas guardados localmente
+# podes marcá-los como "vendored" para o GitHub ignorar no gráfico
+code/web/public/libs/** linguist-vendored
