@@ -20,7 +20,7 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<bool, UserError>> VerifyConfirmationCodeAsync(string email, string code);
         Task<OneOf<bool, UserError>> ResendConfirmationCodeAsync(int userId);
         Task<OneOf<List<ProfileViewHistory>, UserError>> GetHistory(int userId);
-        Task<OneOf<User, UserError>> GetFullCreatorProfile(int id);
-        Task<OneOf<User, UserError>> GetFullCompanyProfile(int id);
+        Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId);
+        Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId);
     }
 }

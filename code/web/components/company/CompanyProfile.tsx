@@ -4,8 +4,11 @@ import { Building2, Loader2, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import usersService from '@/services/api/UsersService';
+import { useRouter } from 'next/navigation';
+import {toastError } from '../ToastImplementations';
 import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
+import GetCompanyOutputModel from '@/services/DTO/GetCompanyOutputModel';
 
 interface CompanyProfileProps {
   id: string;
@@ -13,25 +16,38 @@ interface CompanyProfileProps {
 
 export function CompanyProfile({ id }: CompanyProfileProps) {
   const [profile, setProfile] = useState<FullCompanyProfileOutputModel | null>(null);
+  const [company, setCompany] = useState<GetCompanyOutputModel| null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const router = useRouter();
+  
 
-  // Função de busca isolada para poder ser chamada no refresh
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = async () => {
     try {
       const userId = parseInt(id);
       const data = await usersService.getFullCompanyProfile(userId);
-      setProfile(data);
+  
+      if (data?.company) {
+        setProfile(data);
+        setCompany(data.company);
+        setLoading(false);
+      } else {
+        toastError('Company not found', 'Invalid id');
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
+        router.push('/dashboard'); 
+      }
     } catch (error) {
-      console.error("Erro ao carregar perfil de empresa:", error);
-    } finally {
-      setLoading(false);
+      console.error("Erro ao carregar perfil:", error);
+      toastError('Error', 'Failed to load profile');
+      router.push('/dashboard');
     }
-  }, [id]);
+  };
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    console.log("useEffect")
+    console.log("id", id)
+    fetchProfile(); 
+  }, []);
 
   if (loading) {
     return (
@@ -43,16 +59,18 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
 
   return (
     <div className="text-white relative">
-      <div className="flex justify-end mb-4">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="hover:bg-zinc-800"
-          onClick={() => setIsEditModalOpen(true)}
-        >
-          <Settings className="w-8 h-8 text-white" />
-        </Button>
-      </div>
+          {profile?.isOwner && (
+            <div className="flex justify-end mb-4">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hover:bg-zinc-800"
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                <Settings className="w-8 h-8 text-white" />
+              </Button>
+            </div>
+          )}
 
       <div className="flex flex-col items-center mb-12">
         <div className="w-32 h-32 bg-zinc-800 rounded-full flex items-center justify-center mb-3">

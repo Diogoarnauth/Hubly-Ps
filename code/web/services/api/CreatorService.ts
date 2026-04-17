@@ -2,9 +2,11 @@ import ICreatorService from "../interfaces/ICreatorService";
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
 import GetCreatorOutputModel from "../DTO/GetCreatorOutputModel";
+import { GetSocialProfileOutputModel } from "../DTO/GetSocialProfileOutputModel";
 
 export interface TrendingCreator {
     user_id: number;
+    socialProfile_id: number;
     PlatformUserName: string;
     PlatformName: string;
     Description: string;
@@ -104,6 +106,22 @@ class CreatorService implements ICreatorService {
         } catch (error) {
             console.error("Erro ao editar creator:", error);
             return false;
+        }
+    }
+
+
+    async getSocialProfileById(profileId: number): Promise<GetSocialProfileOutputModel> {
+        try {
+            const endpointTemplate = API_ENDPOINTS.creator.getSocialProfileById;
+
+            const url = endpointTemplate.replace("{profileId}", profileId.toString());
+
+            const response = await this.apiClient.get<GetSocialProfileOutputModel>(url);
+
+            return response;
+        } catch (error) {
+            console.error(`Erro ao obter perfil social ${profileId}:`, error);
+            throw error;
         }
     }
 }

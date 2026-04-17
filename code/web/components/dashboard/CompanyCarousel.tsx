@@ -14,7 +14,7 @@ export function CompanyCarousel() {
         async function fetchTrendingCompanies() {
             try {
                 const data = await CompanyService.getTrendingCompanies(15);
-                console.log("Trending Companies Data:", data);
+                console.log("Trending Companies Data iaebfiaefb:", data);
                 setCompanies(data || []);
             } catch (error) {
                 console.error("Erro ao carregar trending companies:", error);

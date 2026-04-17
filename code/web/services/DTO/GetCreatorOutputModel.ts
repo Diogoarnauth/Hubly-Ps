@@ -1,6 +1,13 @@
 export interface SocialProfileOutputModel {
+    id: number;
+    platformId: number; //mudar 
+    platformUserName: string;
+    link: string;
+    description: string;
+    followersCount: number;
+    priceMin: number;
+    priceMax: number;
     platformName: string;
-    url: string;
 }
 class GetCreatorOutputModel {
     id: number;

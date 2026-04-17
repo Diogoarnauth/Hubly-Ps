@@ -235,13 +235,14 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.FullCreatorProfile)]
-    public async Task<IActionResult> GetFullCreatorProfile([FromRoute] int id)
+    public async Task<IActionResult> GetFullCreatorProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
     {
-        var result = await _userService.GetFullCreatorProfile(id);
+        var result = await _userService.GetFullCreatorProfile(id, user.Id);
 
         return result.Match<IActionResult>(
             success => {
                 var output = success.Adapt<FullUserProfileOutputModel>();
+                output.IsOwner = (id == user.Id);
                 return Ok(output);
             },
             error => error switch
@@ -253,13 +254,14 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.FullCompanyProfile)]
-    public async Task<IActionResult> GetFullCompanyProfile([FromRoute] int id)
+    public async Task<IActionResult> GetFullCompanyProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
     {
-        var result = await _userService.GetFullCompanyProfile(id);
+        var result = await _userService.GetFullCompanyProfile(id, user.Id);
 
         return result.Match<IActionResult>(
             success => {
                 var output = success.Adapt<FullCompanyProfileOutputModel>();
+                output.IsOwner = (id == user.Id);
                 return Ok(output);
             },
             error => error switch

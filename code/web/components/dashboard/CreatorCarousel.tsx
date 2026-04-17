@@ -52,7 +52,7 @@ export function CreatorCarousel() {
       <Carousel opts={{ align: "start", loop: true }}>
         <CarouselContent>
           {creators.map((c, index) => (
-            <CarouselItem key={c.user_id || index} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5">
+            <CarouselItem key={c.socialProfile_id || index} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5">
               <Card className="hover:border-primary transition-all group cursor-pointer h-full">
                 <CardContent className="p-0">
                   <div className="flex aspect-[3/4] items-center justify-center bg-muted group-hover:bg-primary/5 transition-colors">

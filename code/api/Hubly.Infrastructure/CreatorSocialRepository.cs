@@ -27,6 +27,7 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.CreatorSocialProfiles
                 .Include(p => p.Sectors)
+                .Include(csp => csp.Platform)
                 .FirstOrDefaultAsync(p => p.Id == profileId);
         }
         public void Delete(CreatorSocialProfile profile)

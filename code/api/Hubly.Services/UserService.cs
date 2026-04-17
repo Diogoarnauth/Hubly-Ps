@@ -321,25 +321,57 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int id)
+        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId)
         {
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
-                var user = await context.UserRepository.GetFullUserById(id);
+                var user = await context.UserRepository.GetFullUserById(targetCreatorId);
 
                 if (user == null) return new UserError.UserNotFound();
+
+                 try
+                {
+                    var historyEntry = new ProfileViewHistory
+                    {
+                        ViewerUserId = viewerId,
+                        ViewedCreatorId = targetCreatorId,
+                        ViewedAt = DateTime.UtcNow
+                    };
+
+                    await context.HistoryRepository.AddView(historyEntry);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                }
 
                 return user;
             });
         }
 
-        public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int id)
+        public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId)
         {
              return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
-                var user = await context.UserRepository.GetFullUserCompanyById(id);
+                var user = await context.UserRepository.GetFullUserCompanyById(targetCompanyId);
 
                 if (user == null) return new UserError.UserNotFound();
+
+                try
+                {
+                    var historyEntry = new ProfileViewHistory
+                    {
+                        ViewerUserId = viewerId,
+                        ViewedCompanyId = targetCompanyId,
+                        ViewedAt = DateTime.UtcNow
+                    };
+
+                    await context.HistoryRepository.AddView(historyEntry);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                }
 
                 return user;
             }); 

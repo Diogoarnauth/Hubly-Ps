@@ -57,6 +57,8 @@ namespace Hubly.api.Infrastructure
             return await _context.Users
                 .Include(u => u.Creator)
                     .ThenInclude(c => c.SocialProfiles)
+                                .ThenInclude(csp => csp.Platform)
+
                 .AsNoTracking() 
                 .FirstOrDefaultAsync(u => u.Id == id);
         }

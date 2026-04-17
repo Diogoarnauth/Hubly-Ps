@@ -143,18 +143,23 @@ namespace Hubly.api.Services
         }
 
 
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> GetSocialProfileById(int creatorProfileId, int userId)
+        public async Task<OneOf<(CreatorSocialProfile Profile, bool IsOwner), CreatorError>> GetSocialProfileById(int creatorProfileId, int userId)
         {
-            return await _transactionManager.Run<OneOf<CreatorSocialProfile, CreatorError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<(CreatorSocialProfile, bool), CreatorError>>(async (context) =>
             {
                 var profile = await context.CreatorSocialRepository.GetById(creatorProfileId);
-
                 if (profile == null) return new CreatorError.SocialProfileNotFound();
 
-                return profile;
+                // Obtemos o criador associado ao utilizador autenticado
+                var creator = await context.CreatorRepository.GetByUserId(userId);
+                if (creator == null) return new CreatorError.CreatorNotFound();
+
+                // Lógica de negócio: o utilizador é o dono deste perfil social?
+                bool isOwner = profile.CreatorId == creator.Id;
+
+                return (profile, isOwner);
             });
         }
-
         public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id, List<String> sectors)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
@@ -307,6 +312,8 @@ namespace Hubly.api.Services
 
                 return creators;
             });
+        }
+        
         public async Task<OneOf<Creator, CreatorError>> Edit(int user_id, string artisticName)
         {
             var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>

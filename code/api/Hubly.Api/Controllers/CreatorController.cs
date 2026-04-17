@@ -50,8 +50,8 @@ public class CreatorController : ControllerBase
             success => Ok(success.Adapt<CreatorCreateOutputModel>()),
             error => error switch
             {
-                
-                CreatorError.FailedToGetCreatorInfo => ProblemResponse.FailedToGetCreatorInfo.ToResponse(), 
+
+                CreatorError.FailedToGetCreatorInfo => ProblemResponse.FailedToGetCreatorInfo.ToResponse(),
                 CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
@@ -116,16 +116,22 @@ public class CreatorController : ControllerBase
 
     [HttpGet(Uris.Uris.Creators.GetSocialProfileById)]
     public async Task<IActionResult> GetSocialProfileById(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-        [FromRoute] int profileId)
+    [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+    [FromRoute] int profileId)
     {
         var res = await _creatorService.GetSocialProfileById(profileId, user.Id);
 
         return res.Match<IActionResult>(
-            success => Ok(success.Adapt<GetSocialProfileOutputModel>()),
+            success =>
+            {
+                var dto = success.Profile.Adapt<GetSocialProfileOutputModel>();
+                dto.IsOwner = success.IsOwner;
+                return Ok(dto);
+            },
             error => error switch
             {
                 CreatorError.SocialProfileNotFound => ProblemResponse.SocialProfileNotFound.ToResponse(),
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
@@ -257,6 +263,7 @@ public class CreatorController : ControllerBase
                 var response = creators.SelectMany(c => c.SocialProfiles.Select(sp => new
                 {
                     user_id = c.Id,
+                    socialProfile_id = sp.Id,
                     PlatformUserName = sp.PlatformUserName,
                     PlatformName = sp.Platform.NamePlatform,
                     Description = sp.Description

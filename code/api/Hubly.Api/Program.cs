@@ -90,7 +90,8 @@ TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>
     .Map(dest => dest.PlatformName, src => src.Platform.NamePlatform);
 TypeAdapterConfig<CreatorSocialProfile, GetSocialProfileOutputModel>
     .NewConfig()
-    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
+    .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName))
+    .Map(dest => dest.PlatformName, src => src.Platform.NamePlatform);
 TypeAdapterConfig<Company, CompanyOutputModel>
     .NewConfig()
     .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));

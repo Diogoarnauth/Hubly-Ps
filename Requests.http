@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= DGf8mNHmyHxCVUrMLMLog8qTs1wGr+BnTj7d54p8GO4=
+@token= /14fxlhInbrQNA+cJaY0TE6HWnWFSf0AQEWKim5mOng=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth@gmail.com",
-    "password": "Diogo2005."
+    "email": "Carolzinha0121@example.com",
+    "password": "PasswordSegura123"
 }
 
 ### 3. Logout 
@@ -82,7 +82,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha0121@example.com",
-    "code": "789625" 
+    "code": "000419" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -242,13 +242,13 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### apagar platform do creator
-DELETE http://{{host}}/api/creator/socialProfile/2
+DELETE http://{{host}}/api/creator/socialProfile/23
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 
 ### Get platform do creator
-GET http://{{host}}/api/creator/socialProfile/1
+GET http://{{host}}/api/creator/socialProfile/23
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -314,7 +314,7 @@ Content-Type: {{contentType}}
 ##############################################################################
 
 ### Get full Creator profile
-GET http://{{host}}/api/users/34/fullCreatorProfile
+GET http://{{host}}/api/users/33/fullCreatorProfile
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

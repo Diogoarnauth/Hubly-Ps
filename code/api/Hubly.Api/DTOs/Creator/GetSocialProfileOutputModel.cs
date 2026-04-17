@@ -14,5 +14,7 @@ public class GetSocialProfileOutputModel
     public int FollowersCount { get; set; }
     public decimal? PriceMin { get; set; }
     public decimal? PriceMax { get; set; }
+    public string? PlatformName { get; set; }
     public List<string> Sectors { get; set; } = new();
+    public bool IsOwner { get; set; } 
 }
