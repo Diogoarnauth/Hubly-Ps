@@ -73,7 +73,7 @@ builder.Services.AddScoped<ISocialPlatformService, SocialPlatformService>();
 
 //Encoders
 builder.Services.AddScoped<ITokenEncoder, Sha256TokenEncoder>();
-builder.Services.AddScoped<IPasswordEncoder, Sha256PasswordEncoder>();
+builder.Services.AddScoped<IPasswordEncoder, BCryptPasswordEncoder>();
 
 //Repositories
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();

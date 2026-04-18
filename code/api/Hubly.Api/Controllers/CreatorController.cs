@@ -82,8 +82,8 @@ public class CreatorController : ControllerBase
             return ProblemResponse.SelfRatingNotAllowed.ToResponse();
         }
 
-        var response = await _creatorService.RateCreator(id, request.Rate);
-
+        var response = await _creatorService.RateCreator(user.Id, id, request.Rate);
+        
         return response.Match<IActionResult>(
             success => NoContent(),
             error => error switch

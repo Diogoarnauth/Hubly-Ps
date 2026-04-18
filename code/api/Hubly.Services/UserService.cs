@@ -85,35 +85,26 @@ namespace Hubly.api.Services
             {
                 var user = await context.UserRepository.GetUserByEmail(email);
 
-                var passwordHash = _passwordEncoder.createValidationInformation(password);
-
-
-                if (user == null || (passwordHash != user.PasswordValidation))
+                if (user == null || !_passwordEncoder.Verify(password, user.PasswordValidation))
                 {
-
                     return new UserError.InvalidCredentials();
                 }
 
-                // 3. Gerir limite de tokens
                 var existingTokens = await context.TokenRepository.GetTokensByUser(user.Id);
-
                 int maxTokens = _usersDomain.MaxTokensPerUser;
 
                 if (existingTokens.Count >= maxTokens)
                 {
-
                     var oldestToken = existingTokens
                         .OrderBy(t => t.LastUsedAt)
                         .FirstOrDefault();
 
                     if (oldestToken != null)
                     {
-
                         await context.TokenRepository.DeleteTokenByValidation(oldestToken.TokenValidation);
                     }
                 }
 
-                // 4. Gerar o novo Token usando o SERVIÇO DE TOKENS
                 var rawToken = _tokenService.GenerateTokenValue();
                 var validationInfo = _tokenService.CreateTokenValidationInformation(rawToken);
 
@@ -130,7 +121,6 @@ namespace Hubly.api.Services
                 return rawToken;
             });
         }
-
         public async Task<OneOf<string, UserError>> Logout(string tokenValue)
         {
             return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
@@ -329,7 +319,7 @@ namespace Hubly.api.Services
 
                 if (user == null) return new UserError.UserNotFound();
 
-                 try
+                try
                 {
                     var historyEntry = new ProfileViewHistory
                     {
@@ -351,30 +341,30 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId)
         {
-             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
-            {
-                var user = await context.UserRepository.GetFullUserCompanyById(targetCompanyId);
+            return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
+           {
+               var user = await context.UserRepository.GetFullUserCompanyById(targetCompanyId);
 
-                if (user == null) return new UserError.UserNotFound();
+               if (user == null) return new UserError.UserNotFound();
 
-                try
-                {
-                    var historyEntry = new ProfileViewHistory
-                    {
-                        ViewerUserId = viewerId,
-                        ViewedCompanyId = targetCompanyId,
-                        ViewedAt = DateTime.UtcNow
-                    };
+               try
+               {
+                   var historyEntry = new ProfileViewHistory
+                   {
+                       ViewerUserId = viewerId,
+                       ViewedCompanyId = targetCompanyId,
+                       ViewedAt = DateTime.UtcNow
+                   };
 
-                    await context.HistoryRepository.AddView(historyEntry);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
-                }
+                   await context.HistoryRepository.AddView(historyEntry);
+               }
+               catch (Exception ex)
+               {
+                   Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+               }
 
-                return user;
-            }); 
+               return user;
+           });
         }
 
         private string GenerateNumericCode(int length)

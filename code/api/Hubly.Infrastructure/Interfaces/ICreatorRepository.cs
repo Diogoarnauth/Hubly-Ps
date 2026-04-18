@@ -15,8 +15,10 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<List<Sector>> GetSectorByName(List<string> sectorName);
         Task<List<Sector>> GetAllSectors();
         Task<Creator?> Edit(int user_id, string artisticName);
+        Task<bool> HasUserRatedCreator(int userId, int creatorId);
+        Task AddRating(CreatorRating rating);
 
-
+        
         
 
         

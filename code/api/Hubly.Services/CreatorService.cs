@@ -108,19 +108,34 @@ namespace Hubly.api.Services
             return result;
         }
 
-        public async Task<OneOf<bool, CreatorError>> RateCreator(int creatorId, int rating)
+        public async Task<OneOf<bool, CreatorError>> RateCreator(int evaluatorId, int creatorId, int rating)
         {
-            if (!_creatorsDomain.IsValidRating(rating)) return new CreatorError.InvalidRating();
-
+            if (!_creatorsDomain.IsValidRating(rating))
+                return new CreatorError.InvalidRating();
 
             return await _transactionManager.Run<OneOf<bool, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserId(creatorId);
-
                 if (creator == null)
                 {
                     return new CreatorError.CreatorNotFound();
                 }
+
+                var alreadyRated = await context.CreatorRepository.HasUserRatedCreator(evaluatorId, creatorId);
+                if (alreadyRated)
+                {
+                    return new CreatorError.ErrorRatingCreator();
+                }
+
+                var newRatingEntry = new CreatorRating
+                {
+                    EvaluatorId = evaluatorId,
+                    TargetCreatorId = creatorId,
+                    RatingValue = rating,
+                    RatedAt = DateTime.UtcNow
+                };
+
+                await context.CreatorRepository.AddRating(newRatingEntry);
 
                 var (newGlobalRating, newRatingsCount) = _creatorsDomain.CalculateNewRating(
                     creator.GlobalRating,
@@ -150,11 +165,9 @@ namespace Hubly.api.Services
                 var profile = await context.CreatorSocialRepository.GetById(creatorProfileId);
                 if (profile == null) return new CreatorError.SocialProfileNotFound();
 
-                // Obtemos o criador associado ao utilizador autenticado
                 var creator = await context.CreatorRepository.GetByUserId(userId);
                 if (creator == null) return new CreatorError.CreatorNotFound();
 
-                // Lógica de negócio: o utilizador é o dono deste perfil social?
                 bool isOwner = profile.CreatorId == creator.Id;
 
                 return (profile, isOwner);
@@ -313,7 +326,7 @@ namespace Hubly.api.Services
                 return creators;
             });
         }
-        
+
         public async Task<OneOf<Creator, CreatorError>> Edit(int user_id, string artisticName)
         {
             var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>

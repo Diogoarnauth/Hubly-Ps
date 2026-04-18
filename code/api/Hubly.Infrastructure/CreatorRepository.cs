@@ -106,7 +106,19 @@ namespace Hubly.api.Infrastructure
             creator.ArtisticName = artisticName;
             await _context.SaveChangesAsync();
             return creator;
-            
+
+        }
+
+
+        public async Task<bool> HasUserRatedCreator(int userId, int creatorId)
+        {
+            return await _context.CreatorRatings
+                .AnyAsync(r => r.EvaluatorId == userId && r.TargetCreatorId == creatorId);
+        }
+
+        public async Task AddRating(CreatorRating rating)
+        {
+            await _context.CreatorRatings.AddAsync(rating);
         }
 
     }

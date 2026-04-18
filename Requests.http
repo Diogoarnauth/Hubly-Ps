@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha0121@example.com",
-    "password": "PasswordSegura123"
+    "email": "creator1@gmail.com",
+    "password": "Diogo2005."
 }
 
 ### 3. Logout 

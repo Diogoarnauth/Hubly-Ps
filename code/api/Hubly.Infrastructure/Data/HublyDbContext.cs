@@ -16,6 +16,7 @@ public class HublyDbContext : DbContext
     public DbSet<SocialPlatform> SocialPlatforms { get; set; }
     public DbSet<CreatorSocialProfile> CreatorSocialProfiles { get; set; }
     public DbSet<ProfileViewHistory> ProfileViewHistory { get; set; }
+    public DbSet<CreatorRating> CreatorRatings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,6 +57,30 @@ public class HublyDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<CreatorRating>(entity =>
+        {
+            entity.ToTable("creator_ratings", "dbo");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(r => r.EvaluatorId).HasColumnName("evaluator_id");
+            entity.Property(r => r.TargetCreatorId).HasColumnName("target_creator_id");
+            entity.Property(r => r.RatingValue).HasColumnName("rating_value");
+            entity.Property(r => r.RatedAt).HasColumnName("rated_at").HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(r => new { r.EvaluatorId, r.TargetCreatorId }).IsUnique();
+
+            entity.HasOne(r => r.Evaluator)
+                .WithMany()
+                .HasForeignKey(r => r.EvaluatorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.TargetCreator)
+                .WithMany()
+                .HasForeignKey(r => r.TargetCreatorId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         modelBuilder.Entity<SocialPlatform>(entity =>
         {
             entity.ToTable("social_platforms", "dbo");
@@ -83,9 +108,9 @@ public class HublyDbContext : DbContext
             entity.Property(csp => csp.PriceMax).HasColumnName("price_max").HasPrecision(10, 2);
 
             entity.HasMany(csp => csp.Sectors)
-                .WithMany()  
+                .WithMany()
                 .UsingEntity<Dictionary<string, object>>(
-                    "creator_profile_sectors", 
+                    "creator_profile_sectors",
                     j => j.HasOne<Sector>()
                             .WithMany()
                             .HasForeignKey("sector_id"),

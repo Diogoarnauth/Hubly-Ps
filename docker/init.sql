@@ -96,3 +96,15 @@ CREATE TABLE IF NOT EXISTS dbo.profile_views_history (
         (viewed_company_id IS NULL AND viewed_creator_id IS NOT NULL)
     )
 );
+
+CREATE TABLE IF NOT EXISTS dbo.creator_ratings (
+    id SERIAL PRIMARY KEY,
+    evaluator_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    target_creator_id INTEGER NOT NULL REFERENCES dbo.creators(user_id) ON DELETE CASCADE,
+    rating_value INTEGER NOT NULL CHECK (rating_value >= 1 AND rating_value <= 5),
+    rated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT unique_user_rating UNIQUE(evaluator_id, target_creator_id),
+    
+    CONSTRAINT chk_not_self_rating CHECK (evaluator_id <> target_creator_id)
+);

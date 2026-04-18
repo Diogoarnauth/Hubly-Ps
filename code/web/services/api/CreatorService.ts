@@ -37,7 +37,7 @@ export interface SocialProfileInputModel {
 }
 
 export interface CreatorSearchResponse {
-    items: any[]; 
+    items: any[];
     totalItems: number;
 }
 
@@ -58,37 +58,37 @@ class CreatorService implements ICreatorService {
     async searchCreators(filters: CreatorSearchInputModel): Promise<CreatorSearchResponse> {
         // Agora o TypeScript sabe que isto devolve items e totalItems
         return await this.apiClient.get<CreatorSearchResponse>(
-            API_ENDPOINTS.creator.search, 
+            API_ENDPOINTS.creator.search,
             filters
         );
     }
 
     async addSocialProfile(data: SocialProfileInputModel): Promise<{ success: boolean; message?: string; data?: any }> {
-    try {
-        const response = await this.apiClient.post(
-            API_ENDPOINTS.creator.addSocialProfile, 
-            data
-        );
-        
-        if (!response || (response as any).error) {
-            throw new Error((response as any).message || "Invalid API response");
+        try {
+            const response = await this.apiClient.post(
+                API_ENDPOINTS.creator.addSocialProfile,
+                data
+            );
+
+            if (!response || (response as any).error) {
+                throw new Error((response as any).message || "Invalid API response");
+            }
+
+            return { success: true, data: response };
+        } catch (error: any) {
+            console.error("Error in addSocialProfile catch:", error);
+
+            const apiMessage = error.response?.data?.detail
+                || error.response?.data?.title
+                || "Failed to add social profile";
+
+            return {
+                success: false,
+                message: apiMessage
+            };
         }
-        
-        return { success: true, data: response };
-    } catch (error: any) {
-        console.error("Error in addSocialProfile catch:", error);
-
-        const apiMessage = error.response?.data?.detail 
-                        || error.response?.data?.title 
-                        || "Failed to add social profile";
-
-        return { 
-            success: false, 
-            message: apiMessage 
-        };
     }
-}
-    
+
     async changeStatus(status: string): Promise<boolean> {
         try {
             await this.apiClient.post(API_ENDPOINTS.creator.status, { AvailabilityStatus: status });
@@ -125,7 +125,7 @@ class CreatorService implements ICreatorService {
         }
     }
 
-     async editSocialProfile(socialProfileId: number, data: any) {
+    async editSocialProfile(socialProfileId: number, data: any) {
         try {
             let endpoint = API_ENDPOINTS.creator.editSocialProfile;
 
@@ -140,10 +140,12 @@ class CreatorService implements ICreatorService {
         }
     }
 
-     async deleteSocialProfile(limit: number = 15): Promise<TrendingCreator[]> {
-        return await this.apiClient.get<TrendingCreator[]>(
-            `${API_ENDPOINTS.creator.trending}?limit=${limit}`
-        );
+    async rateCreator(id: number, rating: number): Promise<boolean> {
+            const url = API_ENDPOINTS.creator.rateCreator.replace("{id}", id.toString());
+            const resultado = await this.apiClient.post(url, { rate: rating });
+            if(resultado) return true; 
+            return false 
+        
     }
 }
 

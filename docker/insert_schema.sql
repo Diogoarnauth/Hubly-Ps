@@ -131,20 +131,20 @@ INSERT INTO dbo.companies (user_id, company_name, description, company_size, web
 -- =============================================================================
 
 INSERT INTO dbo.company_sectors (company_user_id, sector_id) VALUES 
-    (2, 1),   -- Technology & SaaS
-    (2, 6),   -- Education & E-learning (talvez façam formação em IA)
-    (3, 2),   -- Fashion & Accessories (Aura Atelier)
-    (3, 19),  -- Retail & E-commerce
-    (5, 7),   -- Food & Beverages (Rooted Bites)
-    (5, 4),   -- Health & Wellness
-    (5, 15),  -- Sustainability & Ecology
-    (6, 9),   -- Pixel Horizon -> Gaming
-    (7, 15),  -- EcoFlow -> Sustainability
-    (8, 17),  -- HappyPaws -> Pets
-    (9, 18),  -- RankMaster -> Marketing
-    (10, 8),  -- PeakQuest -> Travel
-    (11, 6),  -- CodeForge -> Education
-    (12, 14); -- SkyRent -> Real Estate
+    (22, 1),   -- Technology & SaaS
+    (22, 6),   -- Education & E-learning (talvez façam formação em IA)
+    (23, 2),   -- Fashion & Accessories (Aura Atelier)
+    (23, 19),  -- Retail & E-commerce
+    (25, 7),   -- Food & Beverages (Rooted Bites)
+    (25, 4),   -- Health & Wellness
+    (25, 15),  -- Sustainability & Ecology
+    (26, 9),   -- Pixel Horizon -> Gaming
+    (27, 15),  -- EcoFlow -> Sustainability
+    (28, 17),  -- HappyPaws -> Pets
+    (29, 18),  -- RankMaster -> Marketing
+    (30, 8),  -- PeakQuest -> Travel
+    (31, 6),  -- CodeForge -> Education
+    (32, 14); -- SkyRent -> Real Estate
 
 
     
@@ -156,26 +156,26 @@ INSERT INTO dbo.creator_social_profiles
     (creator_id, platform_id, platform_user_name, link, description, followers_count, price_min, price_max) 
 VALUES 
     (1,  2, 'joaovlogs_oficial',    'https://instagram.com/joaovlogs_oficial', 'Olá sou o joaovlgos e engano pessoas no casino', 15000, 10.00, 40.00),
-    (13, 2, 'ana_silva_style',      'https://instagram.com/ana_silva_style',   'Dicas de lifestyle e organização diária.', 25000, 50.00, 150.00),
-    (14, 1, 'CarlosGadgets',        'https://youtube.com/carlosgadgets',       'Reviews honestas de smartphones e setups.', 120000, 200.00, 500.00),
-    (15, 6, 'martatrends_tok',      'https://tiktok.com/@martatrends_tok',     'Fashion hauls e tendências de moda rápida.', 350000, 150.00, 400.00),
-    (16, 1, 'RikyPlayGames',        'https://youtube.com/rikyplay',            'Livestreams diárias de jogos competitivos.', 85000, 100.00, 300.00),
-    (17, 2, 'sofia.zen.yoga',       'https://instagram.com/sofia.zen.yoga',    'Yoga, meditação e saúde mental.', 42000, 80.00, 200.00),
-    (18, 2, 'pedro.voyage',         'https://instagram.com/pedro.voyage',      'A explorar o mundo com uma mochila às costas.', 67000, 120.00, 350.00),
-    (19, 6, 'beaglow_makeup',       'https://tiktok.com/@beaglow_makeup',      'Tutoriais de maquilhagem para iniciantes.', 180000, 90.00, 250.00),
-    (20, 1, 'AndreCryptoNews',      'https://youtube.com/andrecrypto',         'Análise de mercado e tecnologia blockchain.', 30000, 300.00, 800.00),
-    (21, 2, 'cat_chef_taste',       'https://instagram.com/cat_chef_taste',    'Receitas saudáveis em menos de 15 minutos.', 95000, 150.00, 450.00),
-    (22, 1, 'DiogoRiderVlogs',      'https://youtube.com/diogorider',          'Aventuras sobre duas rodas e manutenção.', 45000, 100.00, 280.00),
-    (23, 6, 'elena_eco_living',     'https://tiktok.com/@elena_eco_living',    'Dicas para uma vida desperdício zero.', 110000, 70.00, 200.00),
-    (24, 1, 'FranStackDev',         'https://youtube.com/franstack',           'Aulas de Fullstack e carreira em tecnologia.', 55000, 250.00, 600.00),
-    (25, 2, 'ines_home_decor',      'https://instagram.com/ines_home_decor',   'Transformação de interiores com baixo orçamento.', 88000, 110.00, 320.00),
-    (26, 6, 'goncalo_paws',         'https://tiktok.com/@goncalo_paws',        'O dia a dia dos meus 3 Golden Retrievers.', 210000, 130.00, 300.00),
-    (27, 1, 'LauraLearnEnglish',    'https://youtube.com/lauralearn',          'Aprende inglês de forma prática e divertida.', 140000, 180.00, 450.00),
-    (28, 2, 'miguel_perf_coach',    'https://instagram.com/miguel_perf_coach', 'Treino de alta performance e suplementação.', 72000, 200.00, 500.00),
-    (29, 6, 'ritadaily_vlogs',      'https://tiktok.com/@ritadaily_vlogs',     'POV: A minha vida em Lisboa.', 500000, 250.00, 700.00),
-    (30, 1, 'TiagoCinemaReview',    'https://youtube.com/tiagocinema',         'Críticas de filmes e séries do momento.', 38000, 90.00, 240.00),
-    (31, 2, 'vera_digital_mkt',     'https://instagram.com/vera_digital_mkt',  'Estratégias de marketing para pequenos negócios.', 29000, 150.00, 400.00),
-    (32, 1, 'NunoSoundProduction',  'https://youtube.com/nunosound',           'Como produzir música em casa.', 15000, 120.00, 300.00);
+    (2, 2, 'ana_silva_style',      'https://instagram.com/ana_silva_style',   'Dicas de lifestyle e organização diária.', 25000, 50.00, 150.00),
+    (3, 1, 'CarlosGadgets',        'https://youtube.com/carlosgadgets',       'Reviews honestas de smartphones e setups.', 120000, 200.00, 500.00),
+    (4, 6, 'martatrends_tok',      'https://tiktok.com/@martatrends_tok',     'Fashion hauls e tendências de moda rápida.', 350000, 150.00, 400.00),
+    (5, 1, 'RikyPlayGames',        'https://youtube.com/rikyplay',            'Livestreams diárias de jogos competitivos.', 85000, 100.00, 300.00),
+    (6, 2, 'sofia.zen.yoga',       'https://instagram.com/sofia.zen.yoga',    'Yoga, meditação e saúde mental.', 42000, 80.00, 200.00),
+    (7, 2, 'pedro.voyage',         'https://instagram.com/pedro.voyage',      'A explorar o mundo com uma mochila às costas.', 67000, 120.00, 350.00),
+    (8, 6, 'beaglow_makeup',       'https://tiktok.com/@beaglow_makeup',      'Tutoriais de maquilhagem para iniciantes.', 180000, 90.00, 250.00),
+    (9, 1, 'AndreCryptoNews',      'https://youtube.com/andrecrypto',         'Análise de mercado e tecnologia blockchain.', 30000, 300.00, 800.00),
+    (10, 2, 'cat_chef_taste',       'https://instagram.com/cat_chef_taste',    'Receitas saudáveis em menos de 15 minutos.', 95000, 150.00, 450.00),
+    (11, 1, 'DiogoRiderVlogs',      'https://youtube.com/diogorider',          'Aventuras sobre duas rodas e manutenção.', 45000, 100.00, 280.00),
+    (12, 6, 'elena_eco_living',     'https://tiktok.com/@elena_eco_living',    'Dicas para uma vida desperdício zero.', 110000, 70.00, 200.00),
+    (13, 1, 'FranStackDev',         'https://youtube.com/franstack',           'Aulas de Fullstack e carreira em tecnologia.', 55000, 250.00, 600.00),
+    (14, 2, 'ines_home_decor',      'https://instagram.com/ines_home_decor',   'Transformação de interiores com baixo orçamento.', 88000, 110.00, 320.00),
+    (15, 6, 'goncalo_paws',         'https://tiktok.com/@goncalo_paws',        'O dia a dia dos meus 3 Golden Retrievers.', 210000, 130.00, 300.00),
+    (16, 1, 'LauraLearnEnglish',    'https://youtube.com/lauralearn',          'Aprende inglês de forma prática e divertida.', 140000, 180.00, 450.00),
+    (17, 2, 'miguel_perf_coach',    'https://instagram.com/miguel_perf_coach', 'Treino de alta performance e suplementação.', 72000, 200.00, 500.00),
+    (18, 6, 'ritadaily_vlogs',      'https://tiktok.com/@ritadaily_vlogs',     'POV: A minha vida em Lisboa.', 500000, 250.00, 700.00),
+    (19, 1, 'TiagoCinemaReview',    'https://youtube.com/tiagocinema',         'Críticas de filmes e séries do momento.', 38000, 90.00, 240.00),
+    (20, 2, 'vera_digital_mkt',     'https://instagram.com/vera_digital_mkt',  'Estratégias de marketing para pequenos negócios.', 29000, 150.00, 400.00),
+    (21, 1, 'NunoSoundProduction',  'https://youtube.com/nunosound',           'Como produzir música em casa.', 15000, 120.00, 300.00);
 
 
    
@@ -202,7 +202,7 @@ INSERT INTO dbo.creator_profile_sectors (profile_id, sector_id) VALUES
 -- =============================================================================
 
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 29, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 12, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 20) n;
 
 -- 2º Lugar: MartaTrends (User ID 15) - 18 visualizações

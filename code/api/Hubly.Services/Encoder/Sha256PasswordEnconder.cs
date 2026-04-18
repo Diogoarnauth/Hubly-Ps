@@ -1,24 +1,18 @@
-using System.Security.Cryptography;
-using System.Text;
+using BCrypt.Net;
 using Hubly.api.Services.Interfaces;
 
 namespace Hubly.api.Services.Encoder
 {
-    public class Sha256PasswordEncoder : IPasswordEncoder
+    public class BCryptPasswordEncoder : IPasswordEncoder
     {
         public string createValidationInformation(string password)
         {
-            return Hash(password);
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
-        private string Hash(string input)
+        public bool Verify(string password, string hashedPassword)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(input);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
     }
 }

@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import {toastError } from '../ToastImplementations';
 import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
-//import companyService from '@/services/api/CompanyService'; 
 import GetCompanyOutputModel from '@/services/DTO/GetCompanyOutputModel';
 
 interface CompanyProfileProps {
@@ -42,28 +41,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
       toastError('Error', 'Failed to load profile');
       router.push('/dashboard');
     }
-  };
-
-
-    /*const handleDelete = async () => {
-      const confirmDelete = window.confirm(
-        "Tem mesmo a certeza que quer eliminar este perfil social? Esta operação é permanente e não pode ser desfeita."
-      );
-  
-      if (!confirmDelete) return;
-  
-      try {
-        const id = parseInt(profileId);
-        await companyService.deleteSocialProfile(id); 
-        
-        toastSuccess('Sucesso', 'Perfil social eliminado com sucesso');
-        router.push('/dashboard'); 
-      } catch (error) {
-        console.error("Error deleting social profile:", error);
-        toastError('Erro', 'Não foi possível eliminar o perfil social');
-      }
-    };*/
-  
+  };  
 
   useEffect(() => {
     console.log("useEffect")
