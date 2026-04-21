@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Star, Plus, Settings, UserCircle, Loader2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, Plus, Settings, UserCircle, Loader2, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toastSuccess, toastError } from '../ToastImplementations';
@@ -50,7 +50,7 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
         const userId = parseInt(id);
         console.log("aswjbfikbf")
         const data = await usersService.getFullCreatorProfile(userId);
-
+        console.log("data", data)
         if (data?.creator) {
           setProfile(data);
           setCreator(data.creator);
@@ -99,6 +99,17 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
             </Button>
           </div>
         )}
+
+      {/* Botão de Voltar */}
+      <div className="flex justify-start mb-4">
+        <Button
+          variant="ghost"
+          className="text-zinc-400 hover:text-white hover:bg-zinc-800 gap-2"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Profile
+        </Button>
+      </div>
 
         {/* Header do Perfil */}
         <div className="flex flex-col items-center mb-12">

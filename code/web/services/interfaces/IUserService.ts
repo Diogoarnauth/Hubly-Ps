@@ -7,6 +7,7 @@ interface IUserService {
     checkHasProfile(): Promise<boolean>;
     getFullCreatorProfile(id: number): Promise<FullUserProfileOutputModel | null>;
     editUsername(newUsername: string): Promise<boolean>;
+    logout(): Promise<boolean>;
 }
 
 export default IUserService;

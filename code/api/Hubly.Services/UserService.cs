@@ -136,10 +136,8 @@ namespace Hubly.api.Services
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
                 var user = await context.UserRepository.GetUserById(userId);
-                if (user == null)
-                {
-                    return new UserError.FailedToGetUserInfo();
-                }
+                if (user == null) return new UserError.FailedToGetUserInfo();
+
                 return user;
             });
         }

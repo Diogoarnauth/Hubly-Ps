@@ -82,7 +82,7 @@ export function SocialProfileForm() {
       console.log("result", result)
       if (result.success) {
         toastSuccess('Success!', 'Social profile added.');
-        router.push('/dashboard');
+        router.push(`/creator/${result.data.creatorId}`);
       } else {
         setError(result.message || 'Error adding profile.');
       }

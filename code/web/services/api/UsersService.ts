@@ -5,37 +5,44 @@ import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
 import { FullUserProfileOutputModel } from "../DTO/FullUserProfileOutputModel";
 import { FullCompanyProfileOutputModel } from "../DTO/FullCompanyProfileOutputModel";
-import  GetCreatorOutputModel  from "../DTO/GetCreatorOutputModel";
+import GetCreatorOutputModel from "../DTO/GetCreatorOutputModel";
 import GetCompanyOutputModel from "../DTO/GetCompanyOutputModel";
 
+
+export interface UserInfo {
+    id: number;
+    name: string;
+    email: string;
+    role: 'creator' | 'company' | null;
+}
 
 class UsersService implements IUserService {
     private apiClient = new ApiClient();
 
-   async login(email: string, password: string): Promise<boolean> {
-    const user = {
-        email: email,
-        password: password
-    };
+    async login(email: string, password: string): Promise<boolean> {
+        const user = {
+            email: email,
+            password: password
+        };
 
-    try {
-        const response = await this.apiClient.post(API_ENDPOINTS.user.login, user);
+        try {
+            const response = await this.apiClient.post(API_ENDPOINTS.user.login, user);
 
-        if (!response) {
+            if (!response) {
+                return false;
+            }
+
+            if (response.token) {
+                return true;
+            }
+
+            return false;
+
+        } catch (error) {
+            console.error("Erro inesperado no login:", error);
             return false;
         }
-
-        if (response.token) {
-            return true;
-        }
-
-        return false;
-
-    } catch (error) {
-        console.error("Erro inesperado no login:", error);
-        return false;
     }
-}
 
     async register(email: string, password: string, name: string): Promise<string | undefined> {
         const user = {
@@ -66,7 +73,7 @@ class UsersService implements IUserService {
         }
     }
 
-   async getFullCreatorProfile(id: number): Promise<FullUserProfileOutputModel | null> {
+    async getFullCreatorProfile(id: number): Promise<FullUserProfileOutputModel | null> {
         const data = await this.apiClient.get<any>(API_ENDPOINTS.user.getFullCreatorProfile(id));
         if (!data) return null;
 
@@ -79,7 +86,7 @@ class UsersService implements IUserService {
 
     async getFullCompanyProfile(id: number): Promise<FullCompanyProfileOutputModel | null> {
         const data = await this.apiClient.get<any>(API_ENDPOINTS.user.getFullCompanyProfile(id));
-        
+
         if (!data) return null;
 
         return {
@@ -89,14 +96,43 @@ class UsersService implements IUserService {
     }
 
     async editUsername(newUsername: string): Promise<boolean> {
-    try {
-        await this.apiClient.post(API_ENDPOINTS.user.edit, { newUsername });
-        return true;
-    } catch (error) {
-        console.error("Erro ao editar username:", error);
-        return false;
+        try {
+            await this.apiClient.post(API_ENDPOINTS.user.edit, { newUsername });
+            return true;
+        } catch (error) {
+            console.error("Erro ao editar username:", error);
+            return false;
+        }
+    }
+
+
+    async getCurrentUser(): Promise<UserInfo | null> {
+        const response = await this.apiClient.get<UserInfo>(API_ENDPOINTS.user.getMyInfo);
+        console.log("responseeee", response)
+
+        if (!response) return null;
+
+        return {
+            id: response.id,
+            name: response.name,
+            email: response.email,
+            role: response.role
+        };
+    } catch(error) {
+        console.error("Erro ao obter info do utilizador:", error);
+        return null;
+    }
+
+    async logout(): Promise<boolean> {//melhorar errors disto
+        try {
+            await this.apiClient.post(API_ENDPOINTS.user.logout, {});
+            return true;
+        } catch (error) {
+            console.error("Erro ao realizar logout no servidor:", error);
+            // Retornamos true na mesma ou gerimos o erro?? 
+            return false;
+        }
     }
 }
 
-}
 export default new UsersService();

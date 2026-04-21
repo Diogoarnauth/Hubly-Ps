@@ -26,12 +26,14 @@ namespace Hubly.api.Infrastructure
             return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
-        
-       public async Task<User?> GetUserById(int userId)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        }
 
+        public async Task<User?> GetUserById(int userId)
+        {
+            return await _context.Users
+                .Include(u => u.Creator) 
+                .Include(u => u.Company)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
         public async Task<User?> GetUserByEmail(string email)
         {
             return await _context.Users
@@ -59,7 +61,7 @@ namespace Hubly.api.Infrastructure
                     .ThenInclude(c => c.SocialProfiles)
                                 .ThenInclude(csp => csp.Platform)
 
-                .AsNoTracking() 
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -72,5 +74,5 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-}
+    }
 }

@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, ArrowLeft, Loader2 } from 'lucide-react';
+import { Search, Filter, ArrowLeft, Loader2, Router } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from 'next/navigation';
+
 import creatorService from '@/services/api/CreatorService';
 import sectorService, { Sector } from '@/services/api/SectorService';
 import platformService, { SocialPlatform } from '@/services/api/PlatformService';
@@ -15,6 +17,8 @@ export function CreatorSearch({ onBack }: { onBack: () => void }) {
     const [showFilters, setShowFilters] = useState(false);
     const [platforms, setPlatforms] = useState<SocialPlatform[]>([]);
     const [sectors, setSectors] = useState<Sector[]>([]);
+    const router = useRouter();
+
 
     const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState<any>(null);
@@ -296,7 +300,7 @@ export function CreatorSearch({ onBack }: { onBack: () => void }) {
                                             <Button
                                                 className="w-full mt-2 group-hover:bg-primary group-hover:text-primary-foreground"
                                                 variant="outline"
-                                            //onClick={() => window.open(creator.link, '_blank')}, não é isto que queremos
+                                                onClick={() => router.push(`/socialProfile/${creator.id}`)}
                                             >
                                                 View Profile
                                             </Button>

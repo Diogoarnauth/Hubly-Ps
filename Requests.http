@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= J/rQk8iIAqeVByNhKOGd4DFFKRcXqJ3cvGMOVBpKNQw=
+@token= TAIredowPrlHGJ+jxgAwqRdfH6zueEANPMB3dOrxTXw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "creator1@gmail.com",
-    "password": "Diogo2005."
+    "email": "Carolzinha0121@example.com",
+    "password": "PasswordSegura123"
 }
 
 ### 3. Logout 
@@ -38,7 +38,7 @@ Content-Type: {{contentType}}
 
 
 ### Get user info
-GET http://{{host}}/api/users/2
+GET http://{{host}}/api/users/27
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -82,7 +82,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha0121@example.com",
-    "code": "000419" 
+    "code": "957628" 
 }
 
 ### 7. Reenviar Confirmação de Email

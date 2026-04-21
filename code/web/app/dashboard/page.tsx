@@ -2,34 +2,53 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import usersService from '@/services/api/UsersService';
+import { useUser } from '@/providers/UserProvider';
 import { Dashboard } from '@/components/dashboard/Dashboard';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user, loading, refreshUser } = useUser();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    async function checkAccess() {
-      const user = await usersService.checkHasProfile();
+    if (loading) return;
 
-      if (!user) {
-        //router.replace('/onboarding');
+    const validateAccess = async () => {
+
+      if (user && user.role !== null) {
+        setIsChecking(false);
         return;
       }
 
-      setLoading(false);
-    }
-    checkAccess();
-  }, [router]);
+      try {
+        await refreshUser();
+      } catch (error) {
+        console.error("Erro ao validar acesso na Dashboard:", error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
 
-  if (loading) {
+    validateAccess();
+  }, [user, loading, refreshUser]);
+
+  useEffect(() => {
+    if (!isChecking && !loading) {
+      if (!user || user.role === null) {
+        router.replace('/onboarding');
+      }
+    }
+  }, [isChecking, loading, user, router]);
+
+  if (loading || isChecking) {
     return (
       <div className="flex h-svh w-full items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading Hubly...</div>
+        <div className="animate-pulse text-muted-foreground font-medium">
+          Sincronizando Hubly...
+        </div>
       </div>
     );
   }
 
-  return <Dashboard />;
+  return user?.role ? <Dashboard /> : null;
 }

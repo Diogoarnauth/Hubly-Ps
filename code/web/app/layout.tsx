@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider"; 
+import { UserProvider } from "@/providers/UserProvider";
 import { AuthRedirectHandler } from "@/components/AuthRedirectHandler";
+import { NavbarWrapper } from "@/components/navbar/NavbarWrapper"; 
 
 export const metadata: Metadata = {
   title: "Hubly",
@@ -15,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"
@@ -23,9 +25,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster/>
-          <AuthRedirectHandler />
-          {children}
+          <UserProvider>
+            <Toaster />
+            <AuthRedirectHandler />
+            
+            {/* Smart NavBar*/}
+            <NavbarWrapper />
+
+            <div className="relative">
+               {children}
+            </div>
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

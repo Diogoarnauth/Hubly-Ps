@@ -103,11 +103,11 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.GetById)]
-    public async Task<IActionResult> GetUserInfo([FromRoute] int id, AuthenticatedUser user)
+    public async Task<IActionResult> GetUserInfo([FromRoute] int id)
     {
         var response = await _userService.GetUserInfo(id);
         return response.Match<IActionResult>(
-            success => Ok(success.Adapt<UserInfoOutputModel>()),
+            success => Ok(MapToUserInfo(success)),
             error => error switch
             {
                 UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
@@ -121,7 +121,7 @@ public class UserController : ControllerBase
     {
         var response = await _userService.GetUserInfo(user.Id);
         return response.Match<IActionResult>(
-            success => Ok(success.Adapt<UserInfoOutputModel>()),
+            success => Ok(MapToUserInfo(success)),
             error => error switch
             {
                 UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
@@ -240,7 +240,8 @@ public class UserController : ControllerBase
         var result = await _userService.GetFullCreatorProfile(id, user.Id);
 
         return result.Match<IActionResult>(
-            success => {
+            success =>
+            {
                 var output = success.Adapt<FullUserProfileOutputModel>();
                 output.IsOwner = (id == user.Id);
                 return Ok(output);
@@ -259,7 +260,8 @@ public class UserController : ControllerBase
         var result = await _userService.GetFullCompanyProfile(id, user.Id);
 
         return result.Match<IActionResult>(
-            success => {
+            success =>
+            {
                 var output = success.Adapt<FullCompanyProfileOutputModel>();
                 output.IsOwner = (id == user.Id);
                 return Ok(output);
@@ -271,5 +273,27 @@ public class UserController : ControllerBase
             }
         );
     }
+
+
+
+    private UserInfoOutputModel MapToUserInfo(User user)
+{
+    var model = user.Adapt<UserInfoOutputModel>();
+
+    if (user.Creator != null)
+    {
+        model.Role = "creator";
+    }
+    else if (user.Company != null)
+    {
+        model.Role = "company";
+    }
+    else
+    {
+        model.Role = null;
+    }
+
+    return model;
+}
 
 }

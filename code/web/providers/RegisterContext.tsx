@@ -8,7 +8,6 @@ const RegisterContext = createContext({
 });
 
 export const RegisterProvider = ({ children }: { children: React.ReactNode }) => {
-    // Inicializa o estado tentando ler do sessionStorage
     const [email, setEmailState] = useState<string | undefined>(() => {
         if (typeof window !== 'undefined') {
             return sessionStorage.getItem('hubly_register_email') || undefined;
