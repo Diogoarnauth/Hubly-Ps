@@ -69,7 +69,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICreatorService, CreatorService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ISocialPlatformService, SocialPlatformService>();
-
+builder.Services.AddScoped<IConversationService, ConversationService>();
 
 //Encoders
 builder.Services.AddScoped<ITokenEncoder, Sha256TokenEncoder>();
@@ -84,6 +84,9 @@ builder.Services.AddScoped<ICreatorRepository, CreatorRepository>();
 builder.Services.AddScoped<ISocialPlatformRepository, SocialPlatformRepository>();
 builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
 
 TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>
     .NewConfig()

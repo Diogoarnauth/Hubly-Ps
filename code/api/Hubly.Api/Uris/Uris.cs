@@ -93,5 +93,12 @@ public static class Uris
 
     }
 
+    public static class Conversations
+    {
+        public const string Create = $"{Prefix}/conversation";
+
+    }
+
+
 
 }

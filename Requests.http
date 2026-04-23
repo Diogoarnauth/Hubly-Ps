@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= TAIredowPrlHGJ+jxgAwqRdfH6zueEANPMB3dOrxTXw=
+@token= gsCyxrzpIA4m0Qkk8Zth9L/uwbD4Yas23vS7x7BBvYw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha0121@example.com",
+    "email": "Carolzinha01213@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha0121@example.com",
+    "email": "Carolzinha01213@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -81,8 +81,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha0121@example.com",
-    "code": "957628" 
+    "email": "Carolzinha01213@example.com",
+    "code": "166527" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -327,3 +327,21 @@ Content-Type: {{contentType}}
 DELETE http://{{host}}/api/creator/socialProfile/29
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+
+##############################################################################
+
+### Create Chat Conversation
+POST  http://{{host}}/api/conversation
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "Sender": {
+    "ProfileId": 34,
+    "Type": 2
+  },
+  "Receiver": {
+    "ProfileId": 1,
+    "Type": 2
+  } 
+}

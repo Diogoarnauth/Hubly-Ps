@@ -108,3 +108,39 @@ CREATE TABLE IF NOT EXISTS dbo.creator_ratings (
     
     CONSTRAINT chk_not_self_rating CHECK (evaluator_id <> target_creator_id)
 );
+
+CREATE TABLE IF NOT EXISTS dbo.conversations (
+    id SERIAL PRIMARY KEY,
+    created_at BIGINT NOT NULL,
+    last_message_at BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dbo.conversation_participants (
+    conversation_id INTEGER NOT NULL REFERENCES dbo.conversations(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    company_id INTEGER REFERENCES dbo.companies(user_id),
+    social_profile_id INTEGER REFERENCES dbo.creator_social_profiles(id),
+    CONSTRAINT chk_participant_role CHECK (
+        (company_id IS NOT NULL AND social_profile_id IS NULL) OR
+        (company_id IS NULL AND social_profile_id IS NOT NULL)
+    ),
+
+    PRIMARY KEY (conversation_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS dbo.messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER NOT NULL REFERENCES dbo.conversations(id) ON DELETE CASCADE,
+    sender_id INTEGER NOT NULL REFERENCES dbo.users(id), 
+    content TEXT NOT NULL,
+    sent_at BIGINT NOT NULL,
+    is_deleted BOOLEAN DEFAULT false
+);
+
+/*CREATE TABLE IF NOT EXISTS dbo.chat_read_status (
+    conversation_id INTEGER NOT NULL REFERENCES dbo.conversations(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    last_read_message_id INTEGER REFERENCES dbo.messages(id),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (chat_id, user_id)
+);*/

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Hubly.api.Domain.Entities;
+using Hubly.Domain.Entities.Chats;
 
 namespace Hubly.api.Infrastructure.Data;
 
@@ -17,6 +18,9 @@ public class HublyDbContext : DbContext
     public DbSet<CreatorSocialProfile> CreatorSocialProfiles { get; set; }
     public DbSet<ProfileViewHistory> ProfileViewHistory { get; set; }
     public DbSet<CreatorRating> CreatorRatings { get; set; }
+    public DbSet<Conversation> Conversations { get; set; }
+    public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -218,6 +222,70 @@ public class HublyDbContext : DbContext
             entity.HasOne(h => h.ViewedCreator)
                   .WithMany()
                   .HasForeignKey(h => h.ViewedCreatorId);
+        });
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            entity.ToTable("conversations", "dbo");
+            entity.HasKey(con => con.Id);
+            entity.Property(con => con.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(con => con.CreatedAt).HasColumnName("created_at");
+            entity.Property(con => con.LastMessageAt).HasColumnName("last_message_at");
+        });
+
+        modelBuilder.Entity<ConversationParticipant>(entity =>
+        {
+            entity.ToTable("conversation_participants", "dbo");
+            
+            entity.HasKey(cp => new { cp.ConversationId, cp.UserId });
+
+            entity.Property(cp => cp.ConversationId).HasColumnName("conversation_id");
+            entity.Property(cp => cp.UserId).HasColumnName("user_id");
+            entity.Property(cp => cp.CompanyId).HasColumnName("company_id");
+            entity.Property(cp => cp.SocialProfileId).HasColumnName("social_profile_id");
+
+            entity.HasOne(cp => cp.Conversation)
+                .WithMany(con => con.Participants)
+                .HasForeignKey(cp => cp.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cp => cp.User)
+                .WithMany() 
+                .HasForeignKey(cp => cp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cp => cp.Company)
+                .WithMany()
+                .HasForeignKey(cp => cp.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(cp => cp.SocialProfile)
+                .WithMany()
+                .HasForeignKey(cp => cp.SocialProfileId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.ToTable("messages", "dbo");
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(m => m.ConversationId).HasColumnName("conversation_id");
+            entity.Property(m => m.SenderId).HasColumnName("sender_id");
+            entity.Property(m => m.Content).HasColumnName("content").IsRequired();
+            entity.Property(m => m.SentAt).HasColumnName("sent_at");
+            entity.Property(m => m.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+
+            entity.HasOne(m => m.Conversation)
+                .WithMany(con => con.Messages)
+                .HasForeignKey(m => m.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

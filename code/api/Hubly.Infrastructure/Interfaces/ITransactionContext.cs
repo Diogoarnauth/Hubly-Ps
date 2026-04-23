@@ -10,4 +10,6 @@ public interface ITransactionContext
         IHistoryRepository HistoryRepository { get; }
         ISocialPlatformRepository SocialPlatformRepository {get; }
         ICreatorSocialRepository CreatorSocialRepository {get; }
+        IConversationRepository ConversationRepository {get;}
+
 }

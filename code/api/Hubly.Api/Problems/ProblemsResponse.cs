@@ -259,5 +259,12 @@ public class ProblemResponse
         "sectors-not-found",
         "Sectors Not Found",
     404);
-
+    public static readonly ProblemResponse ConversationAlreadyExists = new(
+        "conversation-already-exists",
+        "Conversation Already Exists",
+    409);
+    public static readonly ProblemResponse InvalidParticipantRole = new(
+        "invalid-participant-role",
+        "Invalid Participant Role",
+    409);
 }
