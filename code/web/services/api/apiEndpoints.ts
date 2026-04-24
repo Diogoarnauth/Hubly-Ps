@@ -25,6 +25,8 @@ export const API_ENDPOINTS = {
         edit: `${API_BASE_URL}/creator/edit`,
         editSocialProfile: `${API_BASE_URL}/creator/socialProfile/edit/{socialProfileId}`,
         rateCreator: `${API_BASE_URL}/creator/rateCreator/{id}`,
+        getRating:`${API_BASE_URL}/creators/{id}/my-rating`, 
+
     },
 
     company: {

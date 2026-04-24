@@ -17,6 +17,8 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, List<String> sectors);
         Task<OneOf<PagedResponse<CreatorSocialProfile>, CreatorError>> Search(int? platform_id, string? platform_user_name, int? followers_count_min, int? followers_count_max, decimal? price_min, decimal? price_max, List<string>? sectors, int page, int page_size);
         Task<OneOf<List<Sector>, CreatorError>> GetAllSectors();
+        Task<OneOf<int?, CreatorError>> GetUserRatingForCreator(int currentUserId, int creatorId);
+
         Task<OneOf<List<Creator>, CreatorError>> GetTrendingCreators(int limit);
         Task<OneOf<Creator, CreatorError>> Edit(int user_id, string artisticName);
         

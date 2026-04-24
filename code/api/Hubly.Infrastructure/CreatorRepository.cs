@@ -99,6 +99,14 @@ namespace Hubly.api.Infrastructure
             return await _context.Sectors.ToListAsync();
         }
 
+           public async Task<CreatorRating?> GetUserRating(int userId, int creatorId)
+        {
+            return await _context.CreatorRatings
+                .AsNoTracking() 
+                .FirstOrDefaultAsync(r => r.EvaluatorId == userId && r.TargetCreatorId == creatorId);
+        }
+
+
         public async Task<Creator?> Edit(int user_id, string artisticName)
         {
             var creator = await _context.Creators.FirstOrDefaultAsync(c => c.Id == user_id);

@@ -83,7 +83,7 @@ public class CreatorController : ControllerBase
         }
 
         var response = await _creatorService.RateCreator(user.Id, id, request.Rate);
-        
+
         return response.Match<IActionResult>(
             success => NoContent(),
             error => error switch
@@ -214,6 +214,23 @@ public class CreatorController : ControllerBase
         return res.Match<IActionResult>(
             success => Ok(success.Select(s => new { s.Id, Name = s.SectorName })),
             error => ProblemResponse.SectorsNotFound.ToResponse()
+        );
+    }
+
+    [HttpGet(Uris.Uris.Creators.GetMyRating)]
+    public async Task<IActionResult> GetMyRating(
+        [FromRoute] int id,
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    {
+        var res = await _creatorService.GetUserRatingForCreator(user.Id, id);
+
+        return res.Match<IActionResult>(
+            rating => Ok(new { rating }),
+            error => error switch
+            {
+                CreatorError.CreatorNotFound => ProblemResponse.CreatorNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
         );
     }
 

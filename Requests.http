@@ -138,15 +138,20 @@ Content-Type: {{contentType}}
   "CountryHeadquarters": "France"
 }
 
-
 ### Rate Creator
-POST http://{{host}}/api/creator/rateCreator/1
+POST http://{{host}}/api/creator/rateCreator/20
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Rate": 5
+  "Rate": 1
 }
+
+### Get my rate on a creator
+GET http://{{host}}/api/creators/20/my-rating
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
 
 ### Change Status
 POST http://{{host}}/api/creator/status

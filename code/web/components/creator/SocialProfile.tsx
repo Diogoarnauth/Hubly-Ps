@@ -120,7 +120,7 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
         <Button
           variant="ghost"
           className="text-zinc-400 hover:text-white hover:bg-zinc-800 gap-2"
-          onClick={() => router.back()}
+          onClick={() => router.push(`../creator/${data?.creatorId}`)}
         >
           <ArrowLeft className="w-4 h-4" /> Back to Profile
         </Button>
