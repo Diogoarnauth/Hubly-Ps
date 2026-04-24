@@ -14,6 +14,7 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<Creator?> GetByUserIdSocialProfiles(int userId);
         Task<List<Sector>> GetSectorByName(List<string> sectorName);
         Task<List<Sector>> GetAllSectors();
+        Task<CreatorRating?> GetUserRating(int userId, int creatorId);
         Task<Creator?> Edit(int user_id, string artisticName);
         Task<bool> HasUserRatedCreator(int userId, int creatorId);
         Task AddRating(CreatorRating rating);

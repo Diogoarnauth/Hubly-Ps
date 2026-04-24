@@ -49,6 +49,7 @@ public static class Uris
         public const string EditCreatorProfile = $"{Prefix}/creator/edit"; 
         public const string ChangeAvailabilityStatus = $"{Prefix}/creator/status";
         public const string RateCreator = $"{Prefix}/creator/rateCreator/{{id:int}}";
+        public const string GetMyRating = $"{Prefix}/creators/{{id}}/my-rating";
         public const string AddSocialProfile = $"{Prefix}/creator/socialProfile";
         public const string RemoveSocialProfile = $"{Prefix}/creator/socialProfile/{{profileId:int}}";
         public const string GetSocialProfileById = $"{Prefix}/creator/socialProfile/{{profileId:int}}";

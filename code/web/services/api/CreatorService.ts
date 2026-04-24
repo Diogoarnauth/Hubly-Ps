@@ -147,6 +147,21 @@ class CreatorService implements ICreatorService {
             return false 
         
     }
+
+     async getMyRatingForCreator(creatorId: number): Promise<number | null> {
+        try {
+            const url = API_ENDPOINTS.creator.getRating.replace('{id}', creatorId.toString());
+            console.log("creatorId", creatorId)
+
+            const response = await this.apiClient.get<{ rating: number | null }>(url);
+            console.log("resposta do rating", response)
+
+            return response?.rating ?? 0;
+        } catch (error) {
+            console.error("Erro ao obter a minha avaliação:", error);
+            return 0;
+        }
+    }
 }
 
 export default new CreatorService();

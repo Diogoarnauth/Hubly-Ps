@@ -158,6 +158,22 @@ namespace Hubly.api.Services
         }
 
 
+        public async Task<OneOf<int?, CreatorError>> GetUserRatingForCreator(int currentUserId, int creatorId)
+        {
+            return await _transactionManager.Run<OneOf<int?, CreatorError>>(async (context) =>
+            {
+                if (!await context.CreatorRepository.ExistsByUserId(creatorId))
+                {
+                    return new CreatorError.CreatorNotFound();
+                }
+
+                var ratingEntry = await context.CreatorRepository.GetUserRating(currentUserId, creatorId);
+
+                return ratingEntry?.RatingValue;
+            });
+        }
+
+
         public async Task<OneOf<(CreatorSocialProfile Profile, bool IsOwner), CreatorError>> GetSocialProfileById(int creatorProfileId, int userId)
         {
             return await _transactionManager.Run<OneOf<(CreatorSocialProfile, bool), CreatorError>>(async (context) =>
