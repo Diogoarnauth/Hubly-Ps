@@ -20,6 +20,7 @@ public class TransactionContext : ITransactionContext
         SocialPlatformRepository = new SocialPlatformRepository(context);
         CreatorSocialRepository = new CreatorSocialRepository(context);
         ConversationRepository = new ConversationRepository(context);
+        MessageRepository = new MessageRepository(context);
 
     }
 
@@ -30,6 +31,7 @@ public class TransactionContext : ITransactionContext
     public ICompanyRepository CompanyRepository { get; } 
     public IHistoryRepository HistoryRepository { get; } 
     public IConversationRepository ConversationRepository { get; }
+    public IMessageRepository MessageRepository {get; }
     public ISocialPlatformRepository SocialPlatformRepository { get; }
     public ICreatorSocialRepository CreatorSocialRepository { get; }
 

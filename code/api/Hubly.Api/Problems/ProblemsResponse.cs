@@ -267,4 +267,16 @@ public class ProblemResponse
         "invalid-participant-role",
         "Invalid Participant Role",
     409);
+    public static readonly ProblemResponse AccessDenied = new(
+        "access-denied",
+        "Access Denied",
+    403);
+    public static readonly ProblemResponse MessageNotFound = new(
+        "message-not-found",
+        "Message Not Found",
+    404);
+    public static readonly ProblemResponse MessageAlreadyDeleted = new(
+        "message-already-deleted",
+        "Message Already Deleted",
+    404);
 }

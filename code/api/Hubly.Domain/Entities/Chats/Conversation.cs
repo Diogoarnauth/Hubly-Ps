@@ -1,6 +1,6 @@
 using Hubly.api.Domain.Entities;
 
-namespace Hubly.Domain.Entities.Chats;
+namespace Hubly.api.Domain.Entities;
 
 
 public class Conversation

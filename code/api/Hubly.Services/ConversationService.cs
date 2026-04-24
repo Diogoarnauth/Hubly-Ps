@@ -1,13 +1,12 @@
 using Hubly.api.Services.Interfaces;
 using Hubly.api.Services.Problems;
-using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Interfaces;
+using Hubly.api.Domain.Entities;
 using OneOf;
 using System.Data.Common;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Hubly.api.Infrastructure;
-using Hubly.Domain.Entities.Chats;
+using Hubly.api.Infrastructure.Data;
 
 
 namespace Hubly.api.Services
@@ -15,26 +14,12 @@ namespace Hubly.api.Services
     public class ConversationService : IConversationService
     {
         private readonly ITransactionManager _transactionManager;
-        private readonly IConversationRepository _conversationRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly ICompanyRepository _companyRepository;
-        private readonly ICreatorSocialRepository _creatorSocialRepository;
-
-
 
         public ConversationService(
-            ITransactionManager transactionManager,
-            IConversationRepository conversationRepository
-            //IUserRepository userRepository,
-            //ICompanyRepository companyRepository,
-            //ICreatorSocialRepository creatorSocialRepository
-            )
+            ITransactionManager transactionManager
+        )
         {
             _transactionManager = transactionManager;
-            _conversationRepository = conversationRepository;
-            //_userRepository = userRepository;
-            //_companyRepository = companyRepository;
-            //_creatorSocialRepository creatorSocialRepository;
         }
 
 
@@ -85,18 +70,18 @@ namespace Hubly.api.Services
                         LastMessageAt = now,
                         Participants = new List<ConversationParticipant>
                         {
-                        new ConversationParticipant
-                        {
-                            UserId = currentUserId,
-                            CompanyId = senderCompanyId,
-                            SocialProfileId = senderSocialProfileId
-                        },
-                        new ConversationParticipant
-                        {
-                            UserId = targetUserId,
-                            CompanyId = receiverCompanyId,
-                            SocialProfileId = receiverSocialProfileId
-                        }
+                            new ConversationParticipant
+                            {
+                                UserId = currentUserId,
+                                CompanyId = senderCompanyId,
+                                SocialProfileId = senderSocialProfileId
+                            },
+                            new ConversationParticipant
+                            {
+                                UserId = targetUserId,
+                                CompanyId = receiverCompanyId,
+                                SocialProfileId = receiverSocialProfileId
+                            }
                         }
                     };
 
@@ -110,6 +95,117 @@ namespace Hubly.api.Services
             });
         }
 
+
+
+        public async Task<OneOf<int, ConversationError>> SendMessage(int currentUserId, int conversationId, string content)
+        {
+            return await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
+            {
+                var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
+                if (!isParticipant) return new ConversationError.AccessDenied();
+
+                try
+                {
+                    var message = new Message
+                    {
+                        ConversationId = conversationId,
+                        SenderId = currentUserId,
+                        Content = content,
+                        SentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        IsDeleted = false
+                    };
+
+                    var messageId = await context.MessageRepository.AddMessage(message);
+
+                    var conversation = await context.ConversationRepository.GetById(conversationId);
+                    if (conversation != null)
+                    {
+                        conversation.LastMessageAt = message.SentAt;
+                        await context.ConversationRepository.Update(conversation);
+                    }
+
+                    return messageId;
+                }
+                catch (Exception)
+                {
+                    return new ConversationError.InternalError();
+                }
+            });
+        }
+
+        public async Task<OneOf<bool, ConversationError>> EditMessage(int currentUserId, int messageId, string newContent)
+        {
+            return await _transactionManager.Run<OneOf<bool, ConversationError>>(async (context) =>
+            {
+                var message = await context.MessageRepository.GetById(messageId);
+
+                if (message == null) return new ConversationError.MessageNotFound();
+
+                if (message.SenderId != currentUserId) return new ConversationError.AccessDenied();
+
+                if (message.IsDeleted) return new ConversationError.MessageAlreadyDeleted();
+
+                try
+                {
+                    message.Content = newContent;
+                    message.IsEdited = true;
+
+                    await context.MessageRepository.UpdateMessage(message);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return new ConversationError.InternalError();
+                }
+            });
+        }
+
+        public async Task<OneOf<bool, ConversationError>> DeleteMessage(int currentUserId, int messageId)
+        {
+            return await _transactionManager.Run<OneOf<bool, ConversationError>>(async (context) =>
+            {
+                var message = await context.MessageRepository.GetById(messageId);
+
+                if (message == null) return new ConversationError.MessageNotFound();
+
+                if (message.SenderId != currentUserId)
+                    return new ConversationError.AccessDenied();
+
+                try
+                {
+                    message.IsDeleted = true;
+                    await context.MessageRepository.UpdateMessage(message);
+
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return new ConversationError.InternalError();
+                }
+            });
+        }
+
+        public async Task<OneOf<PagedResponse<Message>, ConversationError>> GetMessages(int currentUserId, int conversationId, int page = 1, int pageSize = 25)
+        {
+            return await _transactionManager.Run<OneOf<PagedResponse<Message>, ConversationError>>(async (context) =>
+            {
+
+                var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
+                if (!isParticipant) return new ConversationError.AccessDenied();
+
+                try
+                {
+                    var pagedMessages = await context.MessageRepository.GetMessages(conversationId, page, pageSize);
+                    return pagedMessages;
+                }
+                catch (Exception)
+                {
+                    return new ConversationError.InternalError();
+                }
+            });
+        }
+
     }
+
 
 }

@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= gsCyxrzpIA4m0Qkk8Zth9L/uwbD4Yas23vS7x7BBvYw=
+@token= ZRn8MkuEfFelZEYA/7G1U96QLNAKVHwETRIdOg1MVRI=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,7 +11,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha01213@example.com",
+    "email": "Carolzinha012@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha01213@example.com",
+    "email": "Carolzinha012@example.com",
     "password": "PasswordSegura123"
 }
 
@@ -81,8 +81,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha01213@example.com",
-    "code": "166527" 
+    "email": "Carolzinha012@example.com",
+    "code": "514702" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -338,10 +338,39 @@ Content-Type: {{contentType}}
 {
   "Sender": {
     "ProfileId": 34,
-    "Type": 2
+    "Type": 1
   },
   "Receiver": {
     "ProfileId": 1,
     "Type": 2
   } 
 }
+
+### Send a message
+POST  http://{{host}}/api/conversation/1/message
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "Olá! Tudo bem?"
+}
+
+### Edit a message
+POST  http://{{host}}/api/conversation/message/edit/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "Olá Como te chamas?"
+}
+
+### Delete a Message
+DELETE http://{{host}}/api/conversation/message/1
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get Messages (Paginated)
+GET http://{{host}}/api/conversation/1/messages?page=3&pageSize=2
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+

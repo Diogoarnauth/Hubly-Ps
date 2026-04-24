@@ -8,9 +8,9 @@ namespace Hubly.api.Services.Problems
         public class UserNotFound : ConversationError { }
         public class ConversationAlreadyExists : ConversationError { }  
         public class InternalError : ConversationError { }
-
-
-        
+        public class AccessDenied: ConversationError { }
+        public class MessageNotFound: ConversationError { }       
+        public class MessageAlreadyDeleted: ConversationError { }       
 
     }
 }

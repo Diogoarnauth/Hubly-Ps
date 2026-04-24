@@ -96,6 +96,10 @@ public static class Uris
     public static class Conversations
     {
         public const string Create = $"{Prefix}/conversation";
+        public const string SendMessage = $"{Prefix}/conversation/{{conversationId}}/message";
+        public const string EditMessage = $"{Prefix}/conversation/message/edit/{{messageId}}";
+        public const string DeleteMessage = $"{Prefix}/conversation/message/{{messageId}}";
+        public const string GetMessages = $"{Prefix}/conversation/{{conversationId}}/messages";
 
     }
 

@@ -54,12 +54,12 @@ export function NavUser() {
                         <DropdownMenuGroup>
                             <DropdownMenuItem onClick={() => router.push(`/${user.role}/${user.id}`)}>
                                 <UserIcon className="mr-2 h-4 w-4" />
-                                <span>Meu Perfil</span>
+                                <span>My Profile</span>
                             </DropdownMenuItem>
                             {user.role === 'creator' && (
                                 <DropdownMenuItem onClick={() => router.push('/create-social-profile')}>
                                     <Plus className="mr-2 h-4 w-4" />
-                                    <span>Perfil Social</span>
+                                    <span>Social Profile</span>
                                 </DropdownMenuItem>
                             )}
 
@@ -73,16 +73,16 @@ export function NavUser() {
                             className="text-destructive focus:bg-destructive/10"
                         >
                             <LogOut className="mr-2 h-4 w-4" />
-                            <span>Sair</span>
+                            <span>Leave</span>
                         </DropdownMenuItem>
                     </>
                 ) : (
                     /* --- MINI PÁGINA DE VALIDAÇÃO (LOGOUT) --- */
                     <div className="flex flex-col gap-3 p-3 text-center animate-in fade-in zoom-in-95 duration-200">
                         <div className="space-y-1">
-                            <p className="text-sm font-bold tracking-tight">Queres mesmo sair?</p>
+                            <p className="text-sm font-bold tracking-tight">Do you want to logout?</p>
                             <p className="text-[11px] leading-tight text-muted-foreground">
-                                Terás de fazer login novamente para aceder ao Hubly.
+                                You will need to login again later.
                             </p>
                         </div>
 
@@ -98,7 +98,7 @@ export function NavUser() {
                                 }}
                             >
                                 <X className="mr-1.5 h-3 w-3" />
-                                Não
+                                No
                             </Button>
                             <Button
                                 variant="destructive"
@@ -107,7 +107,7 @@ export function NavUser() {
                                 onClick={handleLogout}
                             >
                                 <Check className="mr-1.5 h-3 w-3" />
-                                Sim
+                                Yes
                             </Button>
                         </div>
                     </div>

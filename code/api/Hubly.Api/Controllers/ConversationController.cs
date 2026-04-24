@@ -23,7 +23,7 @@ public class ConversationController : ControllerBase
 
     [HttpPost(Uris.Uris.Conversations.Create)]
     public async Task<IActionResult> Create(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, 
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
         [FromBody] CreateConversationInputModel input)
     {
         int? senderCompanyId = input.Sender.Type == ParticipantType.Company ? input.Sender.ProfileId : null;
@@ -45,5 +45,84 @@ public class ConversationController : ControllerBase
             }
         );
     }
-    
+
+    [HttpPost(Uris.Uris.Conversations.SendMessage)]
+    public async Task<IActionResult> SendMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int conversationId, [FromBody] SendMessageInputModel input)
+    {
+        var res = await _conversationService.SendMessage(user.Id, conversationId, input.Content);
+
+        return res.Match<IActionResult>(
+            success => Ok(new { messageId = success }),
+            error => error switch
+            {
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpPost(Uris.Uris.Conversations.EditMessage)]
+    public async Task<IActionResult> EditMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int messageId, [FromBody] SendMessageInputModel input)
+    {
+        var res = await _conversationService.EditMessage(user.Id, messageId, input.Content);
+
+        return res.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                ConversationError.MessageNotFound => ProblemResponse.MessageNotFound.ToResponse(),
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                ConversationError.MessageAlreadyDeleted => ProblemResponse.MessageAlreadyDeleted.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpDelete(Uris.Uris.Conversations.DeleteMessage)]
+    public async Task<IActionResult> DeleteMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int messageId)
+    {
+        var res = await _conversationService.DeleteMessage(user.Id, messageId);
+
+        return res.Match<IActionResult>(
+            success => NoContent(), // 204 No Content é o ideal para Deletes com sucesso
+            error => error switch
+            {
+                ConversationError.MessageNotFound => ProblemResponse.MessageNotFound.ToResponse(),
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
+    [HttpGet(Uris.Uris.Conversations.GetMessages)]
+    public async Task<IActionResult> GetMessages(
+     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+     [FromRoute] int conversationId,
+     [FromQuery] int page = 1,
+     [FromQuery] int pageSize = 25)
+    {
+        var res = await _conversationService.GetMessages(user.Id, conversationId, page, pageSize);
+
+        return res.Match<IActionResult>(
+            success =>
+            {
+                var response = new PagedResponse<MessageResponseDTO>
+                {
+                    Page = success.Page,
+                    PageSize = success.PageSize,
+                    TotalItems = success.TotalItems,
+                    Items = success.Items.Select(m => m.Adapt<MessageResponseDTO>()).ToList()
+                };
+                return Ok(response);
+            },
+            error => error switch
+            {
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
 }

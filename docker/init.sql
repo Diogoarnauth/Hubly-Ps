@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS dbo.messages (
     sender_id INTEGER NOT NULL REFERENCES dbo.users(id), 
     content TEXT NOT NULL,
     sent_at BIGINT NOT NULL,
+    is_edited BOOLEAN DEFAULT false,
     is_deleted BOOLEAN DEFAULT false
 );
 

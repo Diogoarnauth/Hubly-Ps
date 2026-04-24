@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Hubly.api.Domain.Entities;
-using Hubly.Domain.Entities.Chats;
 
 namespace Hubly.api.Infrastructure.Data;
 
@@ -275,6 +274,7 @@ public class HublyDbContext : DbContext
             entity.Property(m => m.SenderId).HasColumnName("sender_id");
             entity.Property(m => m.Content).HasColumnName("content").IsRequired();
             entity.Property(m => m.SentAt).HasColumnName("sent_at");
+            entity.Property(m => m.IsEdited).HasColumnName("is_edited").HasDefaultValue(false);
             entity.Property(m => m.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
 
             entity.HasOne(m => m.Conversation)
