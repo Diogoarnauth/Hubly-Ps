@@ -10,6 +10,7 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, List<Sector> sectors, string website_link, string country_headquarters);
         Task<PagedResponse<Company>> Search(string? Name, List<string>? sectors, string? CompanySize, List<string>? countries, int page, int pageSize);
         Task<List<Sector>> GetSectorByName(List<string> sectorName);
+        Task<List<Company>> GetRecommendedByScore(int userId, UserInterestProfile profile);
 
         // ...
     }

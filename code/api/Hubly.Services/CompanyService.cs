@@ -163,5 +163,29 @@ namespace Hubly.api.Services
                 return companies;
             });
         }
+
+        public async Task<OneOf<List<Company>, CompanyError>> GetRecommendedCompanies(int userId)
+        {
+            return await _transactionManager.Run<OneOf<List<Company>, CompanyError>>(async (context) =>
+            {
+                var userInterests = await context.HistoryRepository.GetUserInterests(userId, 50);
+
+                bool hasHistory = userInterests.SectorFrequencies.Any() ||
+                                  userInterests.CountryFrequencies.Any() ||
+                                  userInterests.SizeFrequencies.Any();
+
+                if (!hasHistory)
+                {
+                    return await context.HistoryRepository.GetTopTrendingCompanies(10);
+                }
+
+                var recommendations = await context.CompanyRepository.GetRecommendedByScore(
+                    userId,
+                    userInterests
+                );
+
+                return recommendations ?? new List<Company>();
+            });
+        }
     }
 }

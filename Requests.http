@@ -82,7 +82,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "514702" 
+    "code": "711616" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -379,3 +379,7 @@ GET http://{{host}}/api/conversation/2/messages?page=1&pageSize=100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+### Get Recommended Companies (Baseado no histórico e scoring)
+GET http://{{host}}/api/company/getRecommendations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using Hubly.api.Infrastructure.Data;
 using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Interfaces;
@@ -61,7 +62,7 @@ namespace Hubly.api.Infrastructure
 
             return company;
         }
-        
+
         //About Sector
         public async Task<List<Sector>> GetSectorByName(List<string> sectorName)
         {
@@ -118,5 +119,44 @@ namespace Hubly.api.Infrastructure
             };
         }
 
+        public async Task<List<Company>> GetRecommendedByScore(int userId, UserInterestProfile profile)
+        {
+            var payload = new
+            {
+                sectors = profile.SectorFrequencies,
+                countries = profile.CountryFrequencies,
+                sizes = profile.SizeFrequencies
+            };
+
+            string interestsJson = JsonSerializer.Serialize(payload);
+
+            var rawResults = await _context.Database.SqlQueryRaw<CompanyRecommendationDto>(
+                "SELECT * FROM dbo.get_recommended_companies({0}, {1}::jsonb)",
+                userId, interestsJson
+            ).ToListAsync();
+
+            // 2. Printamos os valores no terminal
+            Console.WriteLine("\n--- DEBUG: PONTUAÇÃO DE RECOMENDAÇÕES ---");
+            foreach (var item in rawResults)
+            {
+                Console.WriteLine($"Empresa: {item.company_name.PadRight(20)} | Pontos: {item.recommendation_score}");
+            }
+            Console.WriteLine("------------------------------------------\n");
+
+            var companyIds = rawResults.Select(r => r.user_id).ToList();
+
+            return await _context.Companies
+                .Where(c => companyIds.Contains(c.Id))
+                .Include(c => c.Sectors)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
     }
+     public class CompanyRecommendationDto
+        {
+            public int user_id { get; set; }
+            public string company_name { get; set; }
+            public int recommendation_score { get; set; }
+        }
 }

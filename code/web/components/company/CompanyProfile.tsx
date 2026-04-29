@@ -58,19 +58,19 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
   }
 
   return (
-    <div className="text-white relative">
-      {profile?.isOwner && (
-        <div className="flex justify-end mb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-zinc-800"
-            onClick={() => setIsEditModalOpen(true)}
-          >
-            <Settings className="w-8 h-8 text-white" />
-          </Button>
-        </div>
-      )}
+    <div className="text-white relative pt-[5vh]">
+          {profile?.isOwner && (
+            <div className="flex justify-end mb-4">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hover:bg-zinc-800"
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                <Settings className="w-8 h-8 text-white" />
+              </Button>
+            </div>
+          )}
 
       {/* Botão de Voltar */}
       <div className="flex justify-start mb-4">
