@@ -1,4 +1,4 @@
-import { SocialPlatform } from "../services/api/PlatformService";
+import { SocialPlatform } from "../api/PlatformService";
 
 interface IPlatformService {
     getAllPlatforms(): Promise<SocialPlatform[]>;

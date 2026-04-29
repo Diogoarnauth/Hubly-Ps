@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= ZRn8MkuEfFelZEYA/7G1U96QLNAKVHwETRIdOg1MVRI=
+@token= JBFeLIh/9XYsESnj9XYa7GsHZHJCGYRjITQk4okoVuI=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -11,8 +11,8 @@ Content-Type: {{contentType}}
 
 {
     "name": "Bananinha",
-    "email": "Carolzinha012@example.com",
-    "password": "PasswordSegura123"
+    "email": "carolbrazete10@gmail.com",
+    "password": "Carol2010!"
 }
 
 ### 2. Login (Obter Token e Set-Cookie)
@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha012@example.com",
-    "password": "PasswordSegura123"
+    "email": "carolbrazete10@gmail.com",
+    "password": "Carol2010!"
 }
 
 ### 3. Logout 
@@ -343,11 +343,11 @@ Content-Type: {{contentType}}
 {
   "Sender": {
     "ProfileId": 34,
-    "Type": 1
+    "Type": 2
   },
   "Receiver": {
-    "ProfileId": 1,
-    "Type": 2
+    "ProfileId": 35,
+    "Type": 1
   } 
 }
 
@@ -375,7 +375,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Get Messages (Paginated)
-GET http://{{host}}/api/conversation/1/messages?page=3&pageSize=2
+GET http://{{host}}/api/conversation/2/messages?page=1&pageSize=100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

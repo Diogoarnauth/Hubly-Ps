@@ -1,4 +1,4 @@
-import { CreatorSearchInputModel, TrendingCreator, CreatorSearchResponse } from "../services/api/CreatorService";
+import { CreatorSearchInputModel, TrendingCreator, CreatorSearchResponse } from "../api/CreatorService";
 import { GetSocialProfileOutputModel } from "../DTO/GetSocialProfileOutputModel";
 
 interface ICreatorService {

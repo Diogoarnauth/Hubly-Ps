@@ -45,5 +45,13 @@ export const API_ENDPOINTS = {
     },
     countries: {
         getCountries:`${API_BASE_URL}/getCountries`,
+    },
+
+    conversation: {
+        getMessages: `${API_BASE_URL}/conversation/{conversationId}/messages`,
+        sendMessage: `${API_BASE_URL}/conversation/{conversationId}/message`,
+        create: `${API_BASE_URL}/conversation`,
+        editMessage: `${API_BASE_URL}/conversation/message/edit/{messageId}`,
+        deleteMessage: `${API_BASE_URL}/conversation/message/{messageId}`
     }
 }

@@ -1,11 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import {ArrowLeft, Building2, Loader2, Settings } from 'lucide-react';
+import { ArrowLeft, Building2, Loader2, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import usersService from '@/services/api/UsersService';
 import { useRouter } from 'next/navigation';
-import {toastError } from '../ToastImplementations';
+import { toastError } from '../ToastImplementations';
 import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
 import GetCompanyOutputModel from '@/services/DTO/GetCompanyOutputModel';
@@ -16,37 +16,37 @@ interface CompanyProfileProps {
 
 export function CompanyProfile({ id }: CompanyProfileProps) {
   const [profile, setProfile] = useState<FullCompanyProfileOutputModel | null>(null);
-  const [company, setCompany] = useState<GetCompanyOutputModel| null>(null);
+  const [company, setCompany] = useState<GetCompanyOutputModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
-  
+
 
   const fetchProfile = async () => {
     try {
       const userId = parseInt(id);
       const data = await usersService.getFullCompanyProfile(userId);
-  
+
       if (data?.company) {
         setProfile(data);
         setCompany(data.company);
         setLoading(false);
       } else {
         toastError('Company not found', 'Invalid id');
-        await new Promise(resolve => setTimeout(resolve, 1500)); 
-        router.push('/dashboard'); 
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        router.push('/dashboard');
       }
     } catch (error) {
       console.error("Erro ao carregar perfil:", error);
       toastError('Error', 'Failed to load profile');
       router.push('/dashboard');
     }
-  };  
+  };
 
   useEffect(() => {
     console.log("useEffect")
     console.log("id", id)
-    fetchProfile(); 
+    fetchProfile();
   }, []);
 
   if (loading) {
@@ -59,20 +59,20 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
 
   return (
     <div className="text-white relative">
-          {profile?.isOwner && (
-            <div className="flex justify-end mb-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="hover:bg-zinc-800"
-                onClick={() => setIsEditModalOpen(true)}
-              >
-                <Settings className="w-8 h-8 text-white" />
-              </Button>
-            </div>
-          )}
+      {profile?.isOwner && (
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-zinc-800"
+            onClick={() => setIsEditModalOpen(true)}
+          >
+            <Settings className="w-8 h-8 text-white" />
+          </Button>
+        </div>
+      )}
 
-           {/* Botão de Voltar */}
+      {/* Botão de Voltar */}
       <div className="flex justify-start mb-4">
         <Button
           variant="ghost"
@@ -107,7 +107,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
             <p className="text-xl font-light"><span className="font-bold">Verified:</span> {profile?.company?.isVerified ? "Yes" : "No"}</p>
             <p className="text-xl font-light"><span className="font-bold">Description:</span> {profile?.company?.description || "N/A"}</p>
             <p className="text-xl font-light">
-                <span className="font-bold">Sectors:</span> {profile?.company?.sectors?.join(", ") || "N/A"}
+              <span className="font-bold">Sectors:</span> {profile?.company?.sectors?.join(", ") || "N/A"}
             </p>
             <p className="text-xl font-light"><span className="font-bold">Company Size:</span> {profile?.company?.companySize || "N/A"}</p>
             <p className="text-xl font-light"><span className="font-bold">Website:</span> {profile?.company?.websiteLink || "N/A"}</p>
@@ -116,8 +116,8 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
       </div>
 
       {isEditModalOpen && (
-        <EditCompanyModal 
-          initialData={profile?.company} 
+        <EditCompanyModal
+          initialData={profile?.company}
           onClose={() => setIsEditModalOpen(false)}
           onSuccess={fetchProfile}
         />
