@@ -3,7 +3,7 @@ import {
     CompanySearchInputModel, 
     CompanySearchResponse, 
     TrendingCompany 
-} from "../services/api/CompanyService";
+} from "../api/CompanyService";
 
 interface ICompanyService {
     registerCompany(data: CompanyData): Promise<any>;

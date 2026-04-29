@@ -10,6 +10,7 @@ using Hubly.api.Services.Interfaces;
 using Hubly.api.Services;
 using Mapster;
 using Hubly.api.DTOs;
+using Hubly.api.Services.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,8 @@ builder.Services.AddScoped<ICreatorService, CreatorService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ISocialPlatformService, SocialPlatformService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddSignalR(); //todo()
 
 //Encoders
 builder.Services.AddScoped<ITokenEncoder, Sha256TokenEncoder>();
@@ -85,7 +88,6 @@ builder.Services.AddScoped<ISocialPlatformRepository, SocialPlatformRepository>(
 builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 
 TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>
@@ -122,10 +124,10 @@ if (app.Environment.IsDevelopment())
 // Middlewares
 app.UseMiddleware<ExceptionMiddleware>();
 
-
 app.UseCors("AllowFrontend");
 
-app.UseHttpsRedirection();
+app.MapHub<HublyHub>("/api/hubly-events");
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

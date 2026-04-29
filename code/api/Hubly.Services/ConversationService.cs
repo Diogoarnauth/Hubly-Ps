@@ -15,11 +15,15 @@ namespace Hubly.api.Services
     {
         private readonly ITransactionManager _transactionManager;
 
+        private readonly IEventService _eventService;
+
         public ConversationService(
-            ITransactionManager transactionManager
+            ITransactionManager transactionManager,
+            IEventService eventService
         )
         {
             _transactionManager = transactionManager;
+            _eventService = eventService;
         }
 
 
@@ -99,7 +103,7 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<int, ConversationError>> SendMessage(int currentUserId, int conversationId, string content)
         {
-            return await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
+            var result = await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
             {
                 var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
                 if (!isParticipant) return new ConversationError.AccessDenied();
@@ -112,6 +116,7 @@ namespace Hubly.api.Services
                         SenderId = currentUserId,
                         Content = content,
                         SentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        IsEdited = false,
                         IsDeleted = false
                     };
 
@@ -131,6 +136,24 @@ namespace Hubly.api.Services
                     return new ConversationError.InternalError();
                 }
             });
+            if (result.IsT0) 
+            {
+                await _eventService.SendToTopic(
+                    $"chat_{conversationId}", 
+                    "NewMessage", 
+                    new { 
+                        id = result.AsT0, 
+                        ConversationId = conversationId,
+                        isEdited= false,
+                        senderId = currentUserId, 
+                        sentAt= DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        Content = content, 
+                        Type = "created" 
+                    }
+                );
+            }
+            
+            return result;
         }
 
         public async Task<OneOf<bool, ConversationError>> EditMessage(int currentUserId, int messageId, string newContent)
