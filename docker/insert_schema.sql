@@ -54,6 +54,18 @@ VALUES
     ('CodeForge Academy', 'contact9@empresa.com',  'hash_password_456', true, 1714560000),
     ('SkyRent Digital', 'contact10@empresa.com', 'hash_password_456', true, 1714560000);
 
+    INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+    VALUES 
+    ('Grip Performance', 'contact11@empresa.com', 'hash_password_456', true, 1714560000),
+    ('Urban Nest', 'contact12@empresa.com', 'hash_password_456', true, 1714560000),
+    ('Little Wonders', 'contact13@empresa.com', 'hash_password_456', true, 1714560000),
+    ('SoundWave Events', 'contact14@empresa.com', 'hash_password_456', true, 1714560000),
+    ('Velocity Motors', 'contact15@empresa.com', 'hash_password_456', true, 1714560000),
+    ('BioHacker Labs', 'contact16@empresa.com', 'hash_password_456', true, 1714560000),
+    ('Glow Up Retail', 'contact17@empresa.com', 'hash_password_456', true, 1714560000),
+    ('Oceanic Travel', 'contact18@empresa.com', 'hash_password_456', true, 1714560000),
+    ('GameChanger Agency', 'contact19@empresa.com', 'hash_password_456', true, 1714560000);
+
 
 
 -- =============================================================================
@@ -126,6 +138,17 @@ INSERT INTO dbo.companies (user_id, company_name, description, company_size, web
 (31, 'CodeForge Academy', 'Bootcamps.', '0 a 100', 'https://codeforge.edu', 'Portugal'),
 (32, 'SkyRent Digital', 'PropTech.', '100 a 1000', 'https://skyrent.io', 'Italy');
 
+INSERT INTO dbo.companies (user_id, company_name, description, company_size, website_link, country_headquarters) VALUES 
+(33, 'Grip Performance', 'Equipamento desportivo de alta gama.', '100 a 1000', 'https://gripperformance.com', 'Germany'),
+(34, 'Urban Nest', 'Consultoria imobiliária moderna.', '0 a 100', 'https://urbannest.pt', 'Portugal'),
+(35, 'Little Wonders', 'Brinquedos educativos e sustentáveis.', '0 a 100', 'https://littlewonders.com', 'Denmark'),
+(36, 'SoundWave Events', 'Gestão de festivais e concertos.', '100 a 1000', 'https://soundwave.events', 'UK'),
+(37, 'Velocity Motors', 'Stand de veículos elétricos.', '0 a 100', 'https://velocity.motors', 'Spain'),
+(38, 'BioHacker Labs', 'Suplementação e Biohacking.', '0 a 100', 'https://biohackerlabs.com', 'USA'),
+(39, 'Glow Up Retail', 'Marketplace de beleza e skincare.', '100 a 1000', 'https://glowup.com', 'France'),
+(40, 'Oceanic Travel', 'Cruzeiros e viagens de luxo.', '100 a 1000', 'https://oceanic.travel', 'Greece'),
+(41, 'GameChanger Agency', 'Agência de Talentos para E-sports.', '0 a 100', 'https://gamechanger.io', 'Portugal');
+
 -- =============================================================================
 -- 8. RELAÇÃO: EMPRESAS E SETORES (COMPANY SECTORS)
 -- =============================================================================
@@ -145,6 +168,21 @@ INSERT INTO dbo.company_sectors (company_user_id, sector_id) VALUES
     (30, 8),  -- PeakQuest -> Travel
     (31, 6),  -- CodeForge -> Education
     (32, 14); -- SkyRent -> Real Estate
+
+    INSERT INTO dbo.company_sectors (company_user_id, sector_id) VALUES 
+    (33, 13), -- Grip Performance -> Sports & Fitness
+    (34, 14), -- Urban Nest -> Real Estate
+    (35, 16), -- Little Wonders -> Children & Maternity
+    (35, 15), -- Little Wonders -> Sustainability & Ecology
+    (36, 11), -- SoundWave -> Entertainment & Media
+    (36, 20), -- SoundWave -> Events & Lifestyle
+    (37, 12), -- Velocity Motors -> Automotive
+    (38, 4),  -- BioHacker Labs -> Health & Wellness
+    (39, 3),  -- Glow Up -> Beauty & Personal Care
+    (39, 19), -- Glow Up -> Retail & E-commerce
+    (40, 8),  -- Oceanic Travel -> Travel & Tourism
+    (41, 9),  -- GameChanger -> Gaming & E-sports
+    (41, 18); -- GameChanger -> Marketing & Advertising
 
 
     
@@ -222,7 +260,7 @@ FROM generate_series(1, 15) n;
 
 -- 5º Lugar: VeraDigital (User ID 31) - 14 visualizações
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 31, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 11, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 14) n;
 
 -- 6º Lugar: BeaGlow (User ID 19) - 13 visualizações
@@ -232,7 +270,7 @@ FROM generate_series(1, 13) n;
 
 -- 7º Lugar: GoncaloPaws (User ID 26) - 12 visualizações
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 26, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 6, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 12) n;
 
 -- 8º Lugar: AnaLifestyle (User ID 13) - 11 visualizações
@@ -257,24 +295,93 @@ FROM generate_series(1, 8) n;
 
 -- 12º Lugar: ElenaSustainable (User ID 23) - 7 visualizações
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 23, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 3, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 7) n;
 
 -- 13º Lugar: LauraTeaching (User ID 27) - 6 visualizações
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 27, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 7, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 6) n;
 
 -- 14º Lugar: MiguelPerformance (User ID 28) - 5 visualizações
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 28, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 8, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 5) n;
 
 -- 15º Lugar: InesLiving (User ID 25) - 4 visualizações
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 25, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+SELECT 2, 5, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 4) n;
 
 -- EXTRA: Criador João (ID 1) - Apenas 1 view (não deve aparecer no top 15 se houver mais gente)
 INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
 VALUES (2, 1, CURRENT_TIMESTAMP);
+
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 22, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 23, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 24, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 25, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 26, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 27, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 28, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 29, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 30, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 31, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+
+-- Companies History
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed_at)
+SELECT 5, 32, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+FROM generate_series(1, 4) n;
+
+

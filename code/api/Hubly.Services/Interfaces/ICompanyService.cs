@@ -13,7 +13,7 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<PagedResponse<Company>, CompanyError>> Search(string? Name, List<string>? sectors, string? CompanySize, List<string>? countries, int Page, int PageSize);
         Task<OneOf<List<Company>, CompanyError>> GetTrendingCompanies(int limit);
         Task<List<string>> GetAllCountries();
-
+        Task<OneOf<List<Company>, CompanyError>> GetRecommendedCompanies(int userId);
     }
 
 //pesquisa por filtros

@@ -108,7 +108,7 @@ public class CompanyController : ControllerBase
         );
     }
 
-     [HttpGet(Uris.Uris.Countries.GetCountries)]
+    [HttpGet(Uris.Uris.Countries.GetCountries)]
     public async Task<IActionResult> GetCountries()
     {
         var countries = await _companyService.GetAllCountries();
@@ -139,6 +139,20 @@ public class CompanyController : ControllerBase
             {
                 _ => ProblemResponse.InternalServerError.ToResponse()
             });
+    }
+
+    [HttpGet(Uris.Uris.Companies.GetRecommendations)]
+    public async Task<IActionResult> GetRecommendations([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    {
+        var res = await _companyService.GetRecommendedCompanies(user.Id);
+
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<List<CompanyOutputModel>>()),
+            error => error switch
+            {
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
     }
 
 }

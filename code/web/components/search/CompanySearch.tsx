@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import companyService from '@/services/api/CompanyService';
 import sectorService, { Sector } from '@/services/api/SectorService';
+import { useRouter } from 'next/navigation';
+
 
 const SIZE_OPTIONS = [
     "0 a 100",
@@ -26,6 +28,8 @@ export function CompanySearch({ onBack }: { onBack: () => void }) {
     const [sectors, setSectors] = useState<Sector[]>([]);
     const [allCountries, setAllCountries] = useState<string[]>([]);
     const [countrySearch, setCountrySearch] = useState('');
+    const router = useRouter();
+    
 
     const [filters, setFilters] = useState({
         name: '',
@@ -252,6 +256,17 @@ export function CompanySearch({ onBack }: { onBack: () => void }) {
                                                 <Globe size={14} className="text-primary/50" />
                                                 <span className="text-xs font-medium text-white/60">{company.countryHeadquarters || "Global"}</span>
                                             </div>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                className="text-primary hover:text-primary hover:bg-primary/10 text-xs font-bold uppercase tracking-tighter"
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // Evita clicar no card e no botão ao mesmo tempo
+                                                    router.push(`/company/${company.id}`);
+                                                }}
+                                            >
+                                                Details
+                                            </Button>
                                             <div className="bg-white/5 px-3 py-1 rounded-md text-[10px] font-bold text-primary uppercase tracking-tighter">
                                                 {company.companySize} STAFF
                                             </div>

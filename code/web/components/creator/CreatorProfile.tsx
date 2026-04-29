@@ -103,7 +103,7 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
     : 0;
 
   return (
-    <div className="text-white relative">
+    <div className="text-white relative pt-[5vh]">
       {profile?.isOwner && (
         <div className="flex justify-end mb-4">
           <Button

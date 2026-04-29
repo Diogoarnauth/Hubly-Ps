@@ -8,4 +8,6 @@ public interface IHistoryRepository
     Task<List<Creator>> GetTopTrendingCreators(int limit);
     Task<List<Company>> GetTopTrendingCompanies(int limit);
     Task<List<ProfileViewHistory>> GetUserHistory(int userId, int limit = 20);
+    Task<UserInterestProfile> GetUserInterests(int userId, int limit = 50);
+
 }

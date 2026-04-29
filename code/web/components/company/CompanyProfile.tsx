@@ -58,7 +58,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
   }
 
   return (
-    <div className="text-white relative">
+    <div className="text-white relative pt-[5vh]">
           {profile?.isOwner && (
             <div className="flex justify-end mb-4">
               <Button 

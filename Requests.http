@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= ZRn8MkuEfFelZEYA/7G1U96QLNAKVHwETRIdOg1MVRI=
+@token= mCDEWTgJ99wJsfo78Shys7NaalRJSAFK9e54/77ZpDE=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -82,7 +82,7 @@ Content-Type: {{contentType}}
 
 {
     "email": "Carolzinha012@example.com",
-    "code": "514702" 
+    "code": "711616" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -379,3 +379,7 @@ GET http://{{host}}/api/conversation/1/messages?page=3&pageSize=2
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+### Get Recommended Companies (Baseado no histórico e scoring)
+GET http://{{host}}/api/company/getRecommendations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

@@ -72,5 +72,36 @@ namespace Hubly.api.Infrastructure
                 .AsNoTracking() //TODO() verificar se temos de ter isto 
                 .ToListAsync();
         }
+     
+        public async Task<UserInterestProfile> GetUserInterests(int userId, int limit = 50)
+        {
+            var history = await _context.ProfileViewHistory
+                .Where(h => h.ViewerUserId == userId && h.ViewedCompanyId != null)
+                .OrderByDescending(h => h.ViewedAt)
+                .Take(limit)
+                .Include(h => h.ViewedCompany)
+                    .ThenInclude(c => c.Sectors)
+                .ToListAsync();
+
+            if (!history.Any()) return new UserInterestProfile(new(), new(), new());
+
+            // Frequência de Setores
+            var sectorFreq = history
+                .SelectMany(h => h.ViewedCompany.Sectors)
+                .GroupBy(s => s.Id)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // Frequência de Países
+            var countryFreq = history
+                .GroupBy(h => h.ViewedCompany.CountryHeadquarters)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // Frequência de Tamanhos (usando as strings exatas: "0 a 100", etc)
+            var sizeFreq = history
+                .GroupBy(h => h.ViewedCompany.CompanySize)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            return new UserInterestProfile(sectorFreq, countryFreq, sizeFreq);
+        }
     }
 }
