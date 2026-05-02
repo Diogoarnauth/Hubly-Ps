@@ -55,5 +55,12 @@ namespace Hubly.api.Infrastructure
                 PageSize = pageSize
             };
         }
+        public async Task<Message?> GetLastMessageByConversation(int conversationId)
+        {
+            return await _context.Messages
+                .Where(m => m.ConversationId == conversationId)
+                .OrderByDescending(m => m.SentAt)
+                .FirstOrDefaultAsync();
+        }
     }
 }

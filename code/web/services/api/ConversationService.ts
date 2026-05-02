@@ -1,5 +1,6 @@
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
+import ConversationSummaryOutputModel from "../DTO/ConversationSummaryOutputModel";
 
 export interface Message {
     messageId: number;
@@ -87,6 +88,30 @@ class ConversationService {
             return false;
         }
     }
+
+    async getConversationsByProfileId(profileId: number): Promise<ConversationSummaryOutputModel[]> {
+        try {
+            const url = API_ENDPOINTS.conversation.getConversationsByProfileId.replace("{socialProfileId}", profileId.toString());
+            const response = await this.apiClient.get<ConversationSummaryOutputModel[]>(url);
+            return response || [];
+        } catch (error) {
+            console.error("Conversations not found:", error);
+            return [];
+        }
+    }
+
+    async getConversationsByCompanyId(companyId: number): Promise<ConversationSummaryOutputModel[]> {
+        try {
+            const url = API_ENDPOINTS.conversation.getConversationsByCompanyId.replace("{companyId}", companyId.toString());
+            const response = await this.apiClient.get<ConversationSummaryOutputModel[]>(url);
+            return response || [];
+        } catch (error) {
+            console.error("Company conversations not found:", error);
+            return [];
+        }
+    }
+    
 }
+
 
 export default new ConversationService();

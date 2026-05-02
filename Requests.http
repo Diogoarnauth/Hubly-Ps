@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= JBFeLIh/9XYsESnj9XYa7GsHZHJCGYRjITQk4okoVuI=
+@token= CfgE2wi+mVcgMAFvy0T+JomFr6k/l1bVz9/p2SgWYxs=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete10@gmail.com",
-    "password": "Carol2010!"
+    "email": "a51661@alunos.isel.pt",
+    "password": "Carolzinha2010!"
 }
 
 ### 3. Logout 
@@ -81,8 +81,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha012@example.com",
-    "code": "711616" 
+    "email": "carolbrazete10@gmail.com",
+    "code": "257882" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -104,7 +104,7 @@ Content-Type: {{contentType}}
 }
 
 ### Get creator info
-GET http://{{host}}/api/creator/15
+GET http://{{host}}/api/creator/42
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -231,13 +231,13 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Platform_user_name": "oioizinho",
+  "Platform_user_name": "caroli",
   "Link": "https://www.youtube.com/@KazzioProva",
   "Description": "Adoro fazer pranks",
   "Followers_count": 4,
   "PriceMin": 10.00,
   "PriceMax": 20.00,  
-  "PlatformId": 2,
+  "PlatformId": 3,
   "Sectors": ["Automotive & Mobility", "Pets"]
 }
 
@@ -319,7 +319,7 @@ Content-Type: {{contentType}}
 ##############################################################################
 
 ### Get full Creator profile
-GET http://{{host}}/api/users/33/fullCreatorProfile
+GET http://{{host}}/api/users/42/fullCreatorProfile
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -342,11 +342,11 @@ Content-Type: {{contentType}}
 
 {
   "Sender": {
-    "ProfileId": 34,
+    "ProfileId": 23,
     "Type": 2
   },
   "Receiver": {
-    "ProfileId": 35,
+    "ProfileId": 43,
     "Type": 1
   } 
 }
@@ -379,7 +379,21 @@ GET http://{{host}}/api/conversation/2/messages?page=1&pageSize=100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+### Get My Conversations Creator (List of conversations with last message and timestamp)
+GET http://{{host}}/api/conversation/23/my-conversations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+
+### Get My Conversations Company (List of conversations with last message and timestamp)
+GET http://{{host}}/api/conversation/43/company-conversations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+
+
 ### Get Recommended Companies (Baseado no histórico e scoring)
 GET http://{{host}}/api/company/getRecommendations
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
+

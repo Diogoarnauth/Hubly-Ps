@@ -47,5 +47,31 @@ namespace Hubly.api.Infrastructure
             _context.Conversations.Update(conversation);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Conversation>> GetCreatorConversationsByProfile(int userId, int socialProfileId)
+        {
+            return await _context.Conversations
+                .Include(c => c.Participants)
+                    .ThenInclude(p => p.User)
+                .Include(c => c.Participants)
+                    .ThenInclude(p => p.SocialProfile)
+                .Where(c => c.Participants.Any(p => p.UserId == userId && p.SocialProfileId == socialProfileId))
+                .OrderByDescending(c => c.LastMessageAt)
+                .ToListAsync();
+        }
+
+        public async Task<List<Conversation>> GetConversationsByCompany(int userId,int companyId)
+        {
+            return await _context.Conversations
+                .Include(c => c.Participants)
+                    .ThenInclude(p => p.User)
+                .Include(c => c.Participants)
+                    .ThenInclude(p => p.SocialProfile)
+                .Where(c => c.Participants.Any(p => p.UserId == userId && p.CompanyId == companyId))
+                .OrderByDescending(c => c.LastMessageAt)
+                .ToListAsync();
+        }
+
+        
     }
 }

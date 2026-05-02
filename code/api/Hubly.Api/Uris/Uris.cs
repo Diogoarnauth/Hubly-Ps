@@ -101,7 +101,8 @@ public static class Uris
         public const string EditMessage = $"{Prefix}/conversation/message/edit/{{messageId}}";
         public const string DeleteMessage = $"{Prefix}/conversation/message/{{messageId}}";
         public const string GetMessages = $"{Prefix}/conversation/{{conversationId}}/messages";
-
+        public const string GetMyConversationsCreator = $"{Prefix}/conversation/{{socialProfileId}}/my-conversations";
+        public const string GetCompanyConversations = $"{Prefix}/conversation/{{companyId}}/company-conversations";
     }
 
 

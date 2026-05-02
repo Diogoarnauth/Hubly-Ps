@@ -124,5 +124,61 @@ public class ConversationController : ControllerBase
         );
     }
 
+    [HttpGet(Uris.Uris.Conversations.GetMyConversationsCreator)]
+    public async Task<IActionResult> GetMyConversationsCreator(
+     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+     [FromRoute] int socialProfileId)
+    {
+        var result = await _conversationService.GetCreatorConversationsByProfile(user.Id, socialProfileId);
+
+        return result.Match<IActionResult>(
+            success => Ok(success.Select(s => new ConversationOutputModel
+            {
+                Id = s.Conversation.Id,
+                LastMessage = s.LastMessage?.Content ?? "",
+                LastMessageAt = s.Conversation.LastMessageAt,
+
+                OtherPartyName = s.Conversation.Participants
+                    .FirstOrDefault(p => p.UserId != user.Id)?.User.Name ?? "Unknown",
+
+                PlatformId = s.Conversation.Participants
+                    .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId
+            }).ToList()),
+            error => error switch
+            {
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpGet(Uris.Uris.Conversations.GetCompanyConversations)]
+    public async Task<IActionResult> GetCompanyConversations(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromRoute] int companyId)
+    {
+        var result = await _conversationService.GetCompanyConversations(user.Id, companyId);
+
+        return result.Match<IActionResult>(
+            success => Ok(success.Select(s => new ConversationOutputModel
+            {
+                Id = s.Conversation.Id,               
+                LastMessage = s.LastMessage?.Content ?? "",
+                LastMessageAt = s.Conversation.LastMessageAt,
+
+                OtherPartyName = s.Conversation.Participants
+                    .FirstOrDefault(p => p.UserId != user.Id)?.User.Name ?? "Unknown",
+                
+                PlatformId = s.Conversation.Participants
+                    .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId
+            }).ToList()),
+            error => error switch
+            {
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
 
 }
