@@ -136,23 +136,24 @@ namespace Hubly.api.Services
                     return new ConversationError.InternalError();
                 }
             });
-            if (result.IsT0) 
+            if (result.IsT0)
             {
                 await _eventService.SendToTopic(
-                    $"chat_{conversationId}", 
-                    "NewMessage", 
-                    new { 
-                        id = result.AsT0, 
+                    $"chat_{conversationId}",
+                    "NewMessage",
+                    new
+                    {
+                        id = result.AsT0,
                         ConversationId = conversationId,
-                        isEdited= false,
-                        senderId = currentUserId, 
-                        sentAt= DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                        Content = content, 
-                        Type = "created" 
+                        isEdited = false,
+                        senderId = currentUserId,
+                        sentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        Content = content,
+                        Type = "created"
                     }
                 );
             }
-            
+
             return result;
         }
 
@@ -228,7 +229,58 @@ namespace Hubly.api.Services
             });
         }
 
+
+        public async Task<OneOf<List<ConversationWithLastMessage>, ConversationError>> GetCreatorConversationsByProfile(int userId, int socialProfileId)
+        {
+            return await _transactionManager.Run<OneOf<List<ConversationWithLastMessage>, ConversationError>>(async (context) =>
+            {
+                var profile = await context.CreatorSocialRepository.GetById(socialProfileId);
+                if (profile == null || profile.CreatorId != userId) return new ConversationError.AccessDenied();
+
+                var conversations = await context.ConversationRepository.GetCreatorConversationsByProfile(userId, socialProfileId);
+
+                var result = new List<ConversationWithLastMessage>();
+
+                foreach (var conv in conversations)
+                {
+                    var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
+
+                    result.Add(new ConversationWithLastMessage
+                    {
+                        Conversation = conv,
+                        LastMessage = lastMsg
+                    });
+                }
+
+                return result;
+            });
+        }
+    
+
+        public async Task<OneOf<List<ConversationWithLastMessage>, ConversationError>> GetCompanyConversations(int userId, int companyId)
+        {
+            return await _transactionManager.Run<OneOf<List<ConversationWithLastMessage>, ConversationError>>(async (context) =>
+            {
+                var company = await context.CompanyRepository.GetByUserId(companyId);
+                if (company == null || company.Id != userId) return new ConversationError.AccessDenied();
+
+                var conversations = await context.ConversationRepository.GetConversationsByCompany(userId,companyId);
+
+                var result = new List<ConversationWithLastMessage>();
+
+                foreach (var conv in conversations)
+                {
+                    var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
+
+                    result.Add(new ConversationWithLastMessage
+                    {
+                        Conversation = conv,
+                        LastMessage = lastMsg
+                    });
+                }
+
+                return result;
+            });
+        }
     }
-
-
 }

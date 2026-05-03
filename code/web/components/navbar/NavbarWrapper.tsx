@@ -6,7 +6,7 @@ import { Navbar } from './Navbar';
 export function NavbarWrapper() {
   const pathname = usePathname();
 
-  // Define aqui as páginas onde a Navbar NÃO deve aparecer
+  // Páginas onde a Navbar NÃO deve aparecer
   const blackList = [
     '/login',
     '/register',

@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Search } from "lucide-react";
+import { Home, Search, MessageSquare } from "lucide-react";
 import { NavUser } from "./nav-user";
 import { useUser } from "@/providers/UserProvider";
 
@@ -14,8 +14,25 @@ export function Navbar() {
 
   const navItems = [
     { title: "Home", url: "/dashboard", icon: Home },
-    { title: "Pesquisar", url: "/search", icon: Search },
+    { title: "Search", url: "/search", icon: Search },
+    { title: "Messages", icon: MessageSquare },
   ];
+
+  const handleMessagesClick = () => {
+    const userData = user as any;
+
+    if (userData.role === 'creator') {
+      router.push('/chatsCreator');
+    } else if (userData.role === 'company') {
+      const idParaNavegar = userData.companyId || userData.id;
+      
+      if (idParaNavegar) {
+        router.push(`/chatsCompany/${idParaNavegar}`);
+      } else {
+        console.error("Hubly: Não foi possível encontrar um ID para a empresa");
+      }
+    }
+  };
 
   return (
     <nav className="fixed top-0 w-full h-16 border-b bg-background/95 backdrop-blur z-50">
@@ -32,11 +49,15 @@ export function Navbar() {
           
           <div className="flex items-center gap-6">
             {navItems.map((item) => {
-              const isActive = pathname === item.url;
+              const isMessages = item.title === "Messages";
+              const isActive = isMessages 
+                ? (pathname.includes("chatsCreator") || pathname.includes("chatsCompany"))
+                : pathname === item.url;
+
               return (
                 <button
-                  key={item.url}
-                  onClick={() => router.push(item.url)}
+                  key={item.title}
+                  onClick={() => isMessages ? handleMessagesClick() : router.push(item.url!)}
                   className={`flex items-center gap-2 text-sm font-medium transition-colors ${
                     isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   }`}

@@ -8,4 +8,6 @@ public interface IMessageRepository
     Task<Message?> GetById(int messageId);
     Task UpdateMessage(Message message);
     Task<PagedResponse<Message>> GetMessages(int conversationId, int page, int pageSize);
+    Task<Message?> GetLastMessageByConversation(int conversationId);    
+
 }
