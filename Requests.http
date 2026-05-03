@@ -75,7 +75,7 @@ Content-Type: {{contentType}}
 }
 
 
-### 6. Verificar Email
+### 6. Verificar Email //quando email nao existe dá 500 e nao devia
 POST http://{{host}}/api/users/verifyEmail
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
@@ -253,7 +253,7 @@ Content-Type: {{contentType}}
 
 
 ### Get platform do creator
-GET http://{{host}}/api/creator/socialProfile/23
+GET http://{{host}}/api/creator/socialProfile/11
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -397,3 +397,7 @@ GET http://{{host}}/api/company/getRecommendations
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+### Get Recommended Creators (Baseado no histórico e scoring)
+GET http://{{host}}/api/creators/getRecommendations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

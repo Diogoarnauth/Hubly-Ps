@@ -238,85 +238,84 @@ INSERT INTO dbo.creator_profile_sectors (profile_id, sector_id) VALUES
 -- =============================================================================
 -- 12. HISTÓRICO DE VISUALIZAÇÕES (MÉTRICAS DE POPULARIDADE)
 -- =============================================================================
-
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 12, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 1º Lugar: JoaoTech (Creator ID 12) -> Apontar para o seu Perfil Social
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 12 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 20) n;
 
--- 2º Lugar: MartaTrends (User ID 15) - 18 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 15, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 2º Lugar: MartaTrends (Creator ID 15)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 15 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 18) n;
 
--- 3º Lugar: CatTaste (User ID 21) - 16 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 21, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 3º Lugar: CatTaste (Creator ID 21)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 21 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 16) n;
 
--- 4º Lugar: RikyPlay (User ID 16) - 15 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 16, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 4º Lugar: RikyPlay (Creator ID 16)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 16 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 15) n;
 
--- 5º Lugar: VeraDigital (User ID 31) - 14 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 11, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 5º Lugar: VeraDigital (Creator ID 11)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 11 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 14) n;
 
--- 6º Lugar: BeaGlow (User ID 19) - 13 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 19, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 6º Lugar: BeaGlow (Creator ID 19)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 19 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 13) n;
 
--- 7º Lugar: GoncaloPaws (User ID 26) - 12 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 6, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 7º Lugar: GoncaloPaws (Creator ID 6)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 6 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 12) n;
 
--- 8º Lugar: AnaLifestyle (User ID 13) - 11 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 13, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 8º Lugar: AnaLifestyle (Creator ID 13)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 13 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 11) n;
 
--- 9º Lugar: CarlosGadgets (User ID 14) - 10 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 14, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 9º Lugar: CarlosGadgets (Creator ID 14)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 14 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 10) n;
 
--- 10º Lugar: SofiaZen (User ID 17) - 9 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 17, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 10º Lugar: SofiaZen (Creator ID 17)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 17 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 9) n;
 
--- 11º Lugar: PedroVoyage (User ID 18) - 8 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 18, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 11º Lugar: PedroVoyage (Creator ID 18)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 18 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 8) n;
 
--- 12º Lugar: ElenaSustainable (User ID 23) - 7 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 3, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 12º Lugar: ElenaSustainable (Creator ID 3)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 3 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 7) n;
 
--- 13º Lugar: LauraTeaching (User ID 27) - 6 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 7, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 13º Lugar: LauraTeaching (Creator ID 7)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 7 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 6) n;
 
--- 14º Lugar: MiguelPerformance (User ID 28) - 5 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 8, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 14º Lugar: MiguelPerformance (Creator ID 8)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 8 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 5) n;
 
--- 15º Lugar: InesLiving (User ID 25) - 4 visualizações
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-SELECT 2, 5, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
+-- 15º Lugar: InesLiving (Creator ID 5)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+SELECT 2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 5 LIMIT 1), CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 4) n;
 
--- EXTRA: Criador João (ID 1) - Apenas 1 view (não deve aparecer no top 15 se houver mais gente)
-INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_creator_id, viewed_at)
-VALUES (2, 1, CURRENT_TIMESTAMP);
-
+-- EXTRA: Criador João (ID 1)
+INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_social_profile_id, viewed_at)
+VALUES (2, (SELECT id FROM dbo.creator_social_profiles WHERE creator_id = 1 LIMIT 1), CURRENT_TIMESTAMP);
 
 
 -- Companies History

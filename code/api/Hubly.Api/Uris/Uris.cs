@@ -56,6 +56,8 @@ public static class Uris
         public const string EditCreatorSocialProfile = $"{Prefix}/creator/socialProfile/edit/{{socialProfileId}}";
         public const string Search = $"{Prefix}/creators";
         public const string GetTrending = $"{Prefix}/creator/trending";
+        public const string GetRecommendations = $"{Prefix}/creators/getRecommendations";
+
 
         //adicionar pesquisa com filtros e adicionar ver estatisticas sobre os chats e isso 
 

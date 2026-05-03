@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Hubly.api.Infrastructure.Data;
 using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Interfaces;
+using System.Text.Json;
 
 namespace Hubly.api.Infrastructure
 {
@@ -99,10 +100,10 @@ namespace Hubly.api.Infrastructure
             return await _context.Sectors.ToListAsync();
         }
 
-           public async Task<CreatorRating?> GetUserRating(int userId, int creatorId)
+        public async Task<CreatorRating?> GetUserRating(int userId, int creatorId)
         {
             return await _context.CreatorRatings
-                .AsNoTracking() 
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.EvaluatorId == userId && r.TargetCreatorId == creatorId);
         }
 
@@ -129,5 +130,50 @@ namespace Hubly.api.Infrastructure
             await _context.CreatorRatings.AddAsync(rating);
         }
 
+
+        public async Task<List<CreatorSocialProfile>> GetRecommendedSocialProfilesByScore(int userId, CreatorInterestProfile profile)
+        {
+            var payload = new
+            {
+                sectors = profile.SectorFrequencies,
+                platforms = profile.PlatformFrequencies,
+                avg_price = profile.AveragePriceViewed
+            };
+
+            // Debug: Print averagePriceViewed
+            Console.WriteLine($"\n--- DEBUG: Average Price Viewed: {profile.AveragePriceViewed} ---");
+            Console.WriteLine($"Payload: {JsonSerializer.Serialize(payload)}\n");
+
+            string json = JsonSerializer.Serialize(payload);
+
+            var rawResults = await _context.Database.SqlQueryRaw<ProfileRecommendationDto>(
+                "SELECT * FROM dbo.get_recommended_social_profiles({0}, {1}::jsonb)",
+                userId, json
+            ).ToListAsync();
+
+            // 2. Printamos os valores no terminal
+            Console.WriteLine("\n--- DEBUG: PONTUAÇÃO DE RECOMENDAÇÕES DE CREATORS ---");
+            foreach (var item in rawResults)
+            {
+                Console.WriteLine($"Social Profile ID: {item.social_profile_id} | Pontos: {item.recommendation_score}");
+            }
+            Console.WriteLine("------------------------------------------\n");
+
+            var ids = rawResults.Select(r => r.social_profile_id).ToList();
+
+            return await _context.CreatorSocialProfiles
+                .Include(sp => sp.Creator)
+                .Include(sp => sp.Platform)
+                .Include(sp => sp.Sectors)
+                .Where(sp => ids.Contains(sp.Id))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public class ProfileRecommendationDto
+        {
+            public int social_profile_id { get; set; }
+            public int recommendation_score { get; set; }
+        }
     }
 }

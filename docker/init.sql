@@ -87,13 +87,12 @@ CREATE TABLE IF NOT EXISTS dbo.profile_views_history (
     id SERIAL PRIMARY KEY,
     viewer_user_id INTEGER NOT NULL REFERENCES dbo.users(id),
     viewed_company_id INTEGER REFERENCES dbo.companies(user_id),
-    viewed_creator_id INTEGER REFERENCES dbo.creators(user_id),
+    viewed_social_profile_id INTEGER REFERENCES dbo.creator_social_profiles(id), 
     viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    -- Garante a lógica 1-0 ou 0-1 (XOR)
     CONSTRAINT chk_only_one_viewed CHECK (
-        (viewed_company_id IS NOT NULL AND viewed_creator_id IS NULL) OR 
-        (viewed_company_id IS NULL AND viewed_creator_id IS NOT NULL)
+        (viewed_company_id IS NOT NULL AND viewed_social_profile_id IS NULL) OR 
+        (viewed_company_id IS NULL AND viewed_social_profile_id IS NOT NULL)
     )
 );
 

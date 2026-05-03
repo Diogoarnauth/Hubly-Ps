@@ -38,3 +38,56 @@ BEGIN
     LIMIT 15;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION dbo.get_recommended_social_profiles(
+    p_user_id INT,
+    p_interests JSONB -- { sectors: {}, platforms: {}, avg_price: float }
+) 
+RETURNS TABLE (
+    social_profile_id INT,
+    recommendation_score INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        csp.id,
+        (
+            -- 1. SETORES (Peso 100): o fator mais importante, deve dominar o score
+            COALESCE((
+                SELECT SUM((p_interests->'sectors'->>cps.sector_id::text)::int)
+                FROM dbo.creator_profile_sectors cps 
+                WHERE cps.profile_id = csp.id
+            ), 0) * 100 +
+
+            -- 2. PLATAFORMA (Peso 10): relevante, mas secundário aos setores
+            COALESCE((p_interests->'platforms'->>csp.platform_id::text)::int, 0) * 10 +
+
+            -- 3. DISPONIBILIDADE DO CRIADOR (Peso 8)
+            (CASE WHEN cr.availability_status = 'AVAILABLE' THEN 8 ELSE 0 END) +
+
+            -- 4. RATING DO CRIADOR (Peso 5)
+            (COALESCE(cr.global_rating, 0) * 5)::int +
+
+            -- 5. PREÇO (Peso 5): influencia apenas se estiver dentro do range aceitável
+            (CASE 
+                WHEN p_interests ? 'avg_price'
+                     AND (p_interests->>'avg_price')::decimal > 0
+                     AND csp.price_min <= (p_interests->>'avg_price')::decimal * 1.2
+                THEN 5 
+                ELSE 0 
+             END)
+        )::int AS recommendation_score
+    FROM dbo.creator_social_profiles csp
+    JOIN dbo.creators cr ON csp.creator_id = cr.user_id
+    WHERE cr.user_id != p_user_id
+      AND csp.id NOT IN (
+          SELECT viewed_social_profile_id 
+          FROM dbo.profile_views_history 
+          WHERE viewer_user_id = p_user_id AND viewed_social_profile_id IS NOT NULL
+      )
+    ORDER BY recommendation_score DESC
+    LIMIT 15;
+END;
+$$ LANGUAGE plpgsql;

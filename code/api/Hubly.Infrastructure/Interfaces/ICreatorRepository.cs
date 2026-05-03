@@ -18,10 +18,10 @@ namespace Hubly.api.Infrastructure.Interfaces
         Task<Creator?> Edit(int user_id, string artisticName);
         Task<bool> HasUserRatedCreator(int userId, int creatorId);
         Task AddRating(CreatorRating rating);
+        Task<List<CreatorSocialProfile>> GetRecommendedSocialProfilesByScore(int userId, CreatorInterestProfile profile);
+
 
         
-        
-
         
         // Task<IEnumerable<Creator>> GetTopRatedCreators(int count);
         // Task<IEnumerable<Creator>> GetMostActiveCreators(int count);
