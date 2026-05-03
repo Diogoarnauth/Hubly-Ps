@@ -71,12 +71,18 @@ class CompanyService implements ICompanyService {
         const response = await this.apiClient.get<TrendingCompany[]>(
             `${API_ENDPOINTS.company.trending}?limit=${limit}`
         );
-        return response;
+        return Array.isArray(response) ? response : [];
+    }
+
+    async getRecommendedCompanies(): Promise<CompanyOutputModel[]> {
+        const response = await this.apiClient.get<CompanyOutputModel[]>(API_ENDPOINTS.company.getRecommendations);
+        return Array.isArray(response) ? response : [];
     }
 
     async getCountries(): Promise<string[]> {
         try {
-            return await this.apiClient.get<string[]>(API_ENDPOINTS.countries.getCountries);
+            const response = await this.apiClient.get<string[]>(API_ENDPOINTS.countries.getCountries);
+            return Array.isArray(response) ? response : [];
         } catch (error) {
             console.error("Erro ao buscar países:", error);
             return [];
@@ -84,10 +90,16 @@ class CompanyService implements ICompanyService {
     }
 
     async search(filters: CompanySearchInputModel): Promise<CompanySearchResponse> {
-        return await this.apiClient.get<CompanySearchResponse>(
+        const response = await this.apiClient.get<CompanySearchResponse>(
             API_ENDPOINTS.company.search,
             filters
         );
+
+        if (response && typeof response === "object" && "items" in response && "totalItems" in response) {
+            return response as CompanySearchResponse;
+        }
+
+        return { items: [], totalItems: 0 };
     }
     async editCompany(data: CompanyData): Promise<boolean> {
         try {

@@ -176,7 +176,7 @@ namespace Hubly.api.Services
 
                 if (!hasHistory)
                 {
-                    return await context.HistoryRepository.GetTopTrendingCompanies(10);
+                    return new List<Company>();
                 }
 
                 var recommendations = await context.CompanyRepository.GetRecommendedByScore(

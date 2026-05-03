@@ -50,17 +50,28 @@ class CreatorService implements ICreatorService {
     }
 
     async getTrendingCreators(limit: number = 15): Promise<TrendingCreator[]> {
-        return await this.apiClient.get<TrendingCreator[]>(
+        const response = await this.apiClient.get<TrendingCreator[]>(
             `${API_ENDPOINTS.creator.trending}?limit=${limit}`
         );
+        return Array.isArray(response) ? response : [];
+    }
+
+    async getRecommendedCreators(): Promise<GetSocialProfileOutputModel[]> {
+        const response = await this.apiClient.get<GetSocialProfileOutputModel[]>(API_ENDPOINTS.creator.getRecommendations);
+        return Array.isArray(response) ? response : [];
     }
 
     async searchCreators(filters: CreatorSearchInputModel): Promise<CreatorSearchResponse> {
-        // Agora o TypeScript sabe que isto devolve items e totalItems
-        return await this.apiClient.get<CreatorSearchResponse>(
+        const response = await this.apiClient.get<CreatorSearchResponse>(
             API_ENDPOINTS.creator.search,
             filters
         );
+
+        if (response && typeof response === "object" && "items" in response && "totalItems" in response) {
+            return response as CreatorSearchResponse;
+        }
+
+        return { items: [], totalItems: 0 };
     }
 
     async addSocialProfile(data: SocialProfileInputModel): Promise<{ success: boolean; message?: string; data?: any }> {
@@ -118,7 +129,11 @@ class CreatorService implements ICreatorService {
 
             const response = await this.apiClient.get<GetSocialProfileOutputModel>(url);
 
-            return response;
+            if (!response || typeof (response as any).status === "number") {
+                throw new Error("Failed to fetch social profile");
+            }
+
+            return response as GetSocialProfileOutputModel;
         } catch (error) {
             console.error(`Erro ao obter perfil social ${profileId}:`, error);
             throw error;
@@ -156,7 +171,12 @@ class CreatorService implements ICreatorService {
             const response = await this.apiClient.get<{ rating: number | null }>(url);
             console.log("resposta do rating", response)
 
-            return response?.rating ?? 0;
+            if (!response || typeof (response as any).status === "number") {
+                return 0;
+            }
+
+            const ratingResponse = response as { rating: number | null };
+            return ratingResponse.rating ?? 0;
         } catch (error) {
             console.error("Erro ao obter a minha avaliação:", error);
             return 0;

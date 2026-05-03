@@ -8,6 +8,7 @@ import {
 interface ICompanyService {
     registerCompany(data: CompanyData): Promise<any>;
     getTrendingCompanies(limit?: number): Promise<TrendingCompany[]>;
+    getRecommendedCompanies(): Promise<CompanyOutputModel[]>;
     search(filters: CompanySearchInputModel): Promise<CompanySearchResponse>;
     getCountries(): Promise<string[]>;
     editCompany(data: CompanyData): Promise<boolean>;

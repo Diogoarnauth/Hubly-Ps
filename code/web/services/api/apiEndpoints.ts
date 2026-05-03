@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
     creator: {
         register: `${API_BASE_URL}/creator`, 
         trending: `${API_BASE_URL}/creator/trending`,
+        getRecommendations: `${API_BASE_URL}/creators/getRecommendations`,
         search: `${API_BASE_URL}/creators`,
         addSocialProfile: `${API_BASE_URL}/creator/socialProfile`,
         status: `${API_BASE_URL}/creator/status`,
@@ -32,6 +33,7 @@ export const API_ENDPOINTS = {
     company: {
         register: `${API_BASE_URL}/company`, 
         trending: `${API_BASE_URL}/company/trending`,
+        getRecommendations: `${API_BASE_URL}/company/getRecommendations`,
         search: `${API_BASE_URL}/company/`,
 
 

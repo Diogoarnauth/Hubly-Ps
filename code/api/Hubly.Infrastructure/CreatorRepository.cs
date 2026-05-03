@@ -160,14 +160,19 @@ namespace Hubly.api.Infrastructure
             Console.WriteLine("------------------------------------------\n");
 
             var ids = rawResults.Select(r => r.social_profile_id).ToList();
+            var orderMap = ids.Select((id, index) => new { id, index }).ToDictionary(x => x.id, x => x.index);
 
-            return await _context.CreatorSocialProfiles
+            var profiles = await _context.CreatorSocialProfiles
                 .Include(sp => sp.Creator)
                 .Include(sp => sp.Platform)
                 .Include(sp => sp.Sectors)
                 .Where(sp => ids.Contains(sp.Id))
                 .AsNoTracking()
                 .ToListAsync();
+
+            return profiles
+                .OrderBy(sp => orderMap.ContainsKey(sp.Id) ? orderMap[sp.Id] : int.MaxValue)
+                .ToList();
         }
 
         public class ProfileRecommendationDto

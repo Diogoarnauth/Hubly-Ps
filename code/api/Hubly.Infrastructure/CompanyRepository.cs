@@ -144,12 +144,17 @@ namespace Hubly.api.Infrastructure
             Console.WriteLine("------------------------------------------\n");
 
             var companyIds = rawResults.Select(r => r.user_id).ToList();
+            var orderMap = companyIds.Select((id, index) => new { id, index }).ToDictionary(x => x.id, x => x.index);
 
-            return await _context.Companies
+            var companies = await _context.Companies
                 .Where(c => companyIds.Contains(c.Id))
                 .Include(c => c.Sectors)
                 .AsNoTracking()
                 .ToListAsync();
+
+            return companies
+                .OrderBy(c => orderMap.ContainsKey(c.Id) ? orderMap[c.Id] : int.MaxValue)
+                .ToList();
         }
 
     }
