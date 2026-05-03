@@ -371,11 +371,7 @@ namespace Hubly.api.Services
 
                 if (!hasHistory)
                 {
-                    Console.WriteLine("Hubly: Usuário sem histórico. Retornando perfis em alta.");
-
-                    var trending = await context.HistoryRepository.GetTopTrendingCreators(10);
-
-                    return trending ?? new List<CreatorSocialProfile>();
+                    return new List<CreatorSocialProfile>();
                 }
 
                 var recommendations = await context.CreatorRepository.GetRecommendedSocialProfilesByScore(userId, interests);
