@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= JBFeLIh/9XYsESnj9XYa7GsHZHJCGYRjITQk4okoVuI=
+@token= YPJQ0jGPiD66hNmY/EcgunorTBoM+hRFaGH9K08qYdU=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -75,14 +75,14 @@ Content-Type: {{contentType}}
 }
 
 
-### 6. Verificar Email
+### 6. Verificar Email //quando email nao existe dá 500 e nao devia
 POST http://{{host}}/api/users/verifyEmail
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Carolzinha012@example.com",
-    "code": "711616" 
+    "email": "carolbrazete10@gmail.com",
+    "code": "052017" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -253,7 +253,7 @@ Content-Type: {{contentType}}
 
 
 ### Get platform do creator
-GET http://{{host}}/api/creator/socialProfile/23
+GET http://{{host}}/api/creator/socialProfile/11
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -342,12 +342,12 @@ Content-Type: {{contentType}}
 
 {
   "Sender": {
-    "ProfileId": 34,
+    "ProfileId": 22,
     "Type": 2
   },
   "Receiver": {
-    "ProfileId": 35,
-    "Type": 1
+    "ProfileId": 23,
+    "Type": 2
   } 
 }
 
@@ -381,5 +381,10 @@ Content-Type: {{contentType}}
 
 ### Get Recommended Companies (Baseado no histórico e scoring)
 GET http://{{host}}/api/company/getRecommendations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get Recommended Creators (Baseado no histórico e scoring)
+GET http://{{host}}/api/creators/getRecommendations
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

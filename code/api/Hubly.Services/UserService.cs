@@ -317,20 +317,28 @@ namespace Hubly.api.Services
 
                 if (user == null) return new UserError.UserNotFound();
 
-                try
+                if (targetCreatorId != viewerId)
                 {
-                    var historyEntry = new ProfileViewHistory
+                    try
                     {
-                        ViewerUserId = viewerId,
-                        ViewedCreatorId = targetCreatorId,
-                        ViewedAt = DateTime.UtcNow
-                    };
+                        var primaryProfileId = user.Creator?.SocialProfiles?.FirstOrDefault()?.Id;
 
-                    await context.HistoryRepository.AddView(historyEntry);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                        if (primaryProfileId.HasValue)
+                        {
+                            var historyEntry = new ProfileViewHistory
+                            {
+                                ViewerUserId = viewerId,
+                                ViewedSocialProfileId = primaryProfileId.Value,
+                                ViewedAt = DateTime.UtcNow
+                            };
+
+                            await context.HistoryRepository.AddView(historyEntry);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Hubly: Erro ao gravar histórico: {ex.Message}");
+                    }
                 }
 
                 return user;

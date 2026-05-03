@@ -218,14 +218,18 @@ public class UserController : ControllerBase
         return res.Match<IActionResult>(
             success =>
             {
-                // Transformamos a Entidade no DTO aqui
                 var output = success.Select(h => new ProfileHistoryOutputModel
                 {
                     Id = h.Id,
                     ViewedAt = h.ViewedAt,
-                    TargetId = h.ViewedCompanyId ?? h.ViewedCreatorId ?? 0,
-                    TargetType = h.ViewedCompanyId.HasValue ? "Company" : "Creator",
-                    TargetName = h.ViewedCompany?.CompanyName ?? h.ViewedCreator?.ArtisticName ?? "Desconhecido"
+
+                    TargetId = h.ViewedCompanyId ?? h.ViewedSocialProfileId ?? 0,
+
+                    TargetType = h.ViewedCompanyId.HasValue ? "Company" : "CreatorSocialProfile",
+
+                    TargetName = h.ViewedCompanyId.HasValue
+                        ? (h.ViewedCompany?.CompanyName ?? "Empresa Desconhecida")
+                        : (h.ViewedSocialProfile?.Creator?.ArtisticName ?? "Criador Desconhecido")
                 }).ToList();
 
                 return Ok(output);
@@ -277,23 +281,23 @@ public class UserController : ControllerBase
 
 
     private UserInfoOutputModel MapToUserInfo(User user)
-{
-    var model = user.Adapt<UserInfoOutputModel>();
+    {
+        var model = user.Adapt<UserInfoOutputModel>();
 
-    if (user.Creator != null)
-    {
-        model.Role = "creator";
-    }
-    else if (user.Company != null)
-    {
-        model.Role = "company";
-    }
-    else
-    {
-        model.Role = null;
-    }
+        if (user.Creator != null)
+        {
+            model.Role = "creator";
+        }
+        else if (user.Company != null)
+        {
+            model.Role = "company";
+        }
+        else
+        {
+            model.Role = null;
+        }
 
-    return model;
-}
+        return model;
+    }
 
 }

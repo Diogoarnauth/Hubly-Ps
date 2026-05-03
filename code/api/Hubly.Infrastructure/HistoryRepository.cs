@@ -20,27 +20,32 @@ namespace Hubly.api.Infrastructure
             return true;
         }
 
-        public async Task<List<Creator>> GetTopTrendingCreators(int limit)
+        public async Task<List<CreatorSocialProfile>> GetTopTrendingCreators(int limit)
         {
-            var topIds = await _context.ProfileViewHistory
-                .Where(h => h.ViewedCreatorId != null)
-                .GroupBy(h => h.ViewedCreatorId)
+            var topProfileIds = await _context.ProfileViewHistory
+                .Where(h => h.ViewedSocialProfileId.HasValue) 
+                .GroupBy(h => h.ViewedSocialProfileId)
                 .OrderByDescending(g => g.Count())
                 .Take(limit)
-                .Select(g => g.Key.Value)
+                .Select(g => g.Key!.Value) 
                 .ToListAsync();
 
-            var creators = await _context.Creators
-                .Include(c => c.SocialProfiles)
-                    .ThenInclude(sp => sp.Platform)
-                .Where(c => topIds.Contains(c.Id))
+            if (topProfileIds == null || !topProfileIds.Any())
+                return new List<CreatorSocialProfile>();
+
+            var profiles = await _context.CreatorSocialProfiles
+                .Include(sp => sp.Creator)
+                .Include(sp => sp.Platform)
+                .Include(sp => sp.Sectors)
+                .Where(sp => topProfileIds.Contains(sp.Id))
                 .ToListAsync();
 
-            return creators
-                .OrderBy(c => topIds.IndexOf(c.Id))
+            return topProfileIds
+                .Select(id => profiles.FirstOrDefault(p => p.Id == id))
+                .Where(p => p != null)
+                .Cast<CreatorSocialProfile>()
                 .ToList();
         }
-
         public async Task<List<Company>> GetTopTrendingCompanies(int limit)
         {
             var topIds = await _context.ProfileViewHistory
@@ -65,14 +70,15 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.ProfileViewHistory
                 .Include(h => h.ViewedCompany)
-                .Include(h => h.ViewedCreator)
+                .Include(h => h.ViewedSocialProfile)
+                    .ThenInclude(sp => sp.Creator)
                 .Where(h => h.ViewerUserId == userId)
                 .OrderByDescending(h => h.ViewedAt)
                 .Take(limit)
-                .AsNoTracking() //TODO() verificar se temos de ter isto 
+                .AsNoTracking()
                 .ToListAsync();
         }
-     
+
         public async Task<UserInterestProfile> GetUserInterests(int userId, int limit = 50)
         {
             var history = await _context.ProfileViewHistory
@@ -102,6 +108,44 @@ namespace Hubly.api.Infrastructure
                 .ToDictionary(g => g.Key, g => g.Count());
 
             return new UserInterestProfile(sectorFreq, countryFreq, sizeFreq);
+        }
+
+
+        public async Task<CreatorInterestProfile> GetCreatorInterests(int userId, int limit = 50)
+        {
+            // 1. Procurar o histórico filtrando apenas por visualizações de perfis sociais
+            var history = await _context.ProfileViewHistory
+                .Where(h => h.ViewerUserId == userId && h.ViewedSocialProfileId != null)
+                .OrderByDescending(h => h.ViewedAt)
+                .Take(limit)
+                .Include(h => h.ViewedSocialProfile)
+                    .ThenInclude(sp => sp.Sectors)
+                .ToListAsync();
+
+            if (!history.Any()) return new CreatorInterestProfile();
+
+            // 2 Frequência de Setores 
+            var sectorFreq = history
+                .Where(h => h.ViewedSocialProfile?.Sectors != null)
+                .SelectMany(h => h.ViewedSocialProfile.Sectors)
+                .GroupBy(s => s.Id)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // 3. Frequência de Plataformas
+            var platformFreq = history
+                .Where(h => h.ViewedSocialProfile != null)
+                .GroupBy(h => h.ViewedSocialProfile.PlatformId)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // 4. Média de Preços
+            var prices = history
+                .Where(h => h.ViewedSocialProfile?.PriceMin != null)
+                .Select(h => (double)h.ViewedSocialProfile.PriceMin!.Value)
+                .ToList();
+
+            double avgPrice = prices.Any() ? prices.Average() : 0;
+
+            return new CreatorInterestProfile(sectorFreq, platformFreq, avgPrice);
         }
     }
 }

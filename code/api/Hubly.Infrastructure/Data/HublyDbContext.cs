@@ -211,16 +211,16 @@ public class HublyDbContext : DbContext
             entity.Property(h => h.Id).HasColumnName("id");
             entity.Property(h => h.ViewerUserId).HasColumnName("viewer_user_id");
             entity.Property(h => h.ViewedCompanyId).HasColumnName("viewed_company_id");
-            entity.Property(h => h.ViewedCreatorId).HasColumnName("viewed_creator_id");
+            entity.Property(h => h.ViewedSocialProfileId).HasColumnName("viewed_social_profile_id");
             entity.Property(h => h.ViewedAt).HasColumnName("viewed_at");
 
             entity.HasOne(h => h.ViewedCompany)
           .WithMany()
           .HasForeignKey(h => h.ViewedCompanyId);
 
-            entity.HasOne(h => h.ViewedCreator)
+            entity.HasOne(h => h.ViewedSocialProfile)
                   .WithMany()
-                  .HasForeignKey(h => h.ViewedCreatorId);
+                  .HasForeignKey(h => h.ViewedSocialProfileId);
         });
 
         modelBuilder.Entity<Conversation>(entity =>

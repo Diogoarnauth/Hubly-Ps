@@ -19,8 +19,10 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<List<Sector>, CreatorError>> GetAllSectors();
         Task<OneOf<int?, CreatorError>> GetUserRatingForCreator(int currentUserId, int creatorId);
 
-        Task<OneOf<List<Creator>, CreatorError>> GetTrendingCreators(int limit);
+        Task<OneOf<List<CreatorSocialProfile>, CreatorError>> GetTrendingCreators(int limit);
         Task<OneOf<Creator, CreatorError>> Edit(int user_id, string artisticName);
+        Task<OneOf<List<CreatorSocialProfile>, CreatorError>> GetRecommendedCreators(int userId);
+
         
     }
 

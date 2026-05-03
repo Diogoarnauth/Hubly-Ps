@@ -17,8 +17,8 @@ public class ProfileViewHistory
     [Column("viewed_company_id")]
     public int? ViewedCompanyId { get; set; }
 
-    [Column("viewed_creator_id")]
-    public int? ViewedCreatorId { get; set; }
+    [Column("viewed_social_profile_id")]
+    public int? ViewedSocialProfileId { get; set; }
 
     [Column("viewed_at")]
     public DateTime ViewedAt { get; set; } = DateTime.UtcNow;
@@ -30,6 +30,6 @@ public class ProfileViewHistory
     [ForeignKey("ViewedCompanyId")]
     public virtual Company? ViewedCompany { get; set; }
 
-    [ForeignKey("ViewedCreatorId")]
-    public virtual Creator? ViewedCreator { get; set; }
+    [ForeignKey("ViewedSocialProfileId")] 
+    public virtual CreatorSocialProfile? ViewedSocialProfile { get; set; }
 }

@@ -81,31 +81,13 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<Creator, CreatorError>> GetById(int targetCreatorId, int viewerId)
         {
-            var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserIdSocialProfiles(targetCreatorId);
                 if (creator == null) return new CreatorError.CreatorNotFound();
 
-                try
-                {
-                    var historyEntry = new ProfileViewHistory
-                    {
-                        ViewerUserId = viewerId,
-                        ViewedCreatorId = targetCreatorId,
-                        ViewedAt = DateTime.UtcNow
-                    };
-
-                    await context.HistoryRepository.AddView(historyEntry);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
-                }
-
                 return creator;
             });
-
-            return result;
         }
 
         public async Task<OneOf<bool, CreatorError>> RateCreator(int evaluatorId, int creatorId, int rating)
@@ -181,10 +163,26 @@ namespace Hubly.api.Services
                 var profile = await context.CreatorSocialRepository.GetById(creatorProfileId);
                 if (profile == null) return new CreatorError.SocialProfileNotFound();
 
-                var creator = await context.CreatorRepository.GetByUserId(userId);
-                if (creator == null) return new CreatorError.CreatorNotFound();
+                bool isOwner = profile.CreatorId == userId;
 
-                bool isOwner = profile.CreatorId == creator.Id;
+                if (!isOwner)
+                {
+                    try
+                    {
+                        var historyEntry = new ProfileViewHistory
+                        {
+                            ViewerUserId = userId,
+                            ViewedSocialProfileId = creatorProfileId,
+                            ViewedAt = DateTime.UtcNow
+                        };
+
+                        await context.HistoryRepository.AddView(historyEntry);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+                    }
+                }
 
                 return (profile, isOwner);
             });
@@ -330,16 +328,16 @@ namespace Hubly.api.Services
 
 
 
-        public async Task<OneOf<List<Creator>, CreatorError>> GetTrendingCreators(int limit)
+        public async Task<OneOf<List<CreatorSocialProfile>, CreatorError>> GetTrendingCreators(int limit)
         {
-            return await _transactionManager.Run<OneOf<List<Creator>, CreatorError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<List<CreatorSocialProfile>, CreatorError>>(async (context) =>
             {
-                var creators = await context.HistoryRepository.GetTopTrendingCreators(limit);
+                var trendingProfiles = await context.HistoryRepository.GetTopTrendingCreators(limit);
 
-                if (creators == null)
-                    return new List<Creator>();
+                if (trendingProfiles == null)
+                    return new List<CreatorSocialProfile>();
 
-                return creators;
+                return trendingProfiles;
             });
         }
 
@@ -362,6 +360,28 @@ namespace Hubly.api.Services
             return result;
         }
 
-    }
+        public async Task<OneOf<List<CreatorSocialProfile>, CreatorError>> GetRecommendedCreators(int userId)
+        {
+            return await _transactionManager.Run<OneOf<List<CreatorSocialProfile>, CreatorError>>(async (context) =>
+            {
+                var interests = await context.HistoryRepository.GetCreatorInterests(userId);
 
+                bool hasHistory = interests.SectorFrequencies.Any() ||
+                                  interests.PlatformFrequencies.Any();
+
+                if (!hasHistory)
+                {
+                    Console.WriteLine("Hubly: Usuário sem histórico. Retornando perfis em alta.");
+
+                    var trending = await context.HistoryRepository.GetTopTrendingCreators(10);
+
+                    return trending ?? new List<CreatorSocialProfile>();
+                }
+
+                var recommendations = await context.CreatorRepository.GetRecommendedSocialProfilesByScore(userId, interests);
+
+                return recommendations ?? new List<CreatorSocialProfile>();
+            });
+        }
+    }
 }

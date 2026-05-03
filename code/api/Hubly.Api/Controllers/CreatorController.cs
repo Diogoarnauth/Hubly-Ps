@@ -275,16 +275,17 @@ public class CreatorController : ControllerBase
         var result = await _creatorService.GetTrendingCreators(limit);
 
         return result.Match(
-            creators =>
+            profiles =>
             {
-                var response = creators.SelectMany(c => c.SocialProfiles.Select(sp => new
+                var response = profiles.Select(p => new
                 {
-                    user_id = c.Id,
-                    socialProfile_id = sp.Id,
-                    PlatformUserName = sp.PlatformUserName,
-                    PlatformName = sp.Platform.NamePlatform,
-                    Description = sp.Description
-                })).Take(limit).ToList();
+                    user_id = p.CreatorId,
+                    socialProfile_id = p.Id,
+                    PlatformUserName = p.PlatformUserName,
+                    PlatformName = p.Platform?.NamePlatform, 
+                    Description = p.Description,
+                    ArtisticName = p.Creator?.ArtisticName 
+                }).ToList();
 
                 return Ok(response);
             },
@@ -294,6 +295,33 @@ public class CreatorController : ControllerBase
             }
         );
     }
+
+
+[HttpGet(Uris.Uris.Creators.GetRecommendations)]
+public async Task<IActionResult> GetRecommendations([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+{
+    var res = await _creatorService.GetRecommendedCreators(user.Id);
+
+    return res.Match<IActionResult>(
+        success => 
+        {
+            var output = success.Select(sp => {
+                var dto = sp.Adapt<GetSocialProfileOutputModel>();
+                dto.PlatformName = sp.Platform?.NamePlatform; 
+                dto.Sectors = sp.Sectors?.Select(s => s.SectorName).ToList() ?? new();
+                return dto;
+            }).ToList();
+
+            return Ok(output);
+        },
+        error => error switch
+        {
+            _ => ProblemResponse.InternalServerError.ToResponse()
+        }
+    );
+}
+
+
 }
 //verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
 
