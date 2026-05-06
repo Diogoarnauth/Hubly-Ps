@@ -20,10 +20,18 @@ export interface PagedMessages {
 }
 
 export interface CreateConversationData {
-    senderCompanyId?: number;
-    senderSocialProfileId?: number;
-    receiverCompanyId?: number;
-    receiverSocialProfileId?: number;
+    Sender: {
+        ProfileId: number;
+        Type: number;
+    };
+    Receiver: {
+        ProfileId: number;
+        Type: number;
+    };
+}
+
+export interface ConversationResponse {
+    id: number;
 }
 
 
@@ -57,7 +65,8 @@ class ConversationService {
 
     async createConversation(data: CreateConversationData) {
         try {
-            const response = await this.apiClient.post(API_ENDPOINTS.conversation.create, data);
+            const response = await this.apiClient.post<ConversationResponse>(API_ENDPOINTS.conversation.create, data);
+            console.log("Create conversation response:", response);
             return { success: true, data: response };
         } catch (error: any) {
             return { 
@@ -108,6 +117,25 @@ class ConversationService {
         } catch (error) {
             console.error("Company conversations not found:", error);
             return [];
+        }
+    }
+
+    async checkConversationExists(senderProfileId: number, senderType: number, receiverProfileId: number, receiverType: number): Promise<{ exists: boolean; conversationId?: number } | null> {
+        try {
+            const response = await this.apiClient.post<{ exists: boolean; conversationId?: number }>(API_ENDPOINTS.conversation.checkExists, {
+                Sender: {
+                    ProfileId: senderProfileId,
+                    Type: senderType,
+                },
+                Receiver: {
+                    ProfileId: receiverProfileId,
+                    Type: receiverType,
+                },
+            });
+            return response ? { exists: response.exists ?? false, conversationId: response.conversationId } : null;
+        } catch (error) {
+            console.error("Error checking conversation:", error);
+            return null;
         }
     }
     

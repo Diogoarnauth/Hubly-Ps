@@ -56,6 +56,7 @@ export const API_ENDPOINTS = {
         editMessage: `${API_BASE_URL}/conversation/message/edit/{messageId}`,
         deleteMessage: `${API_BASE_URL}/conversation/message/{messageId}`,
         getConversationsByProfileId: `${API_BASE_URL}/conversation/{socialProfileId}/my-conversations`,
-        getConversationsByCompanyId: `${API_BASE_URL}/conversation/{companyId}/company-conversations`
+        getConversationsByCompanyId: `${API_BASE_URL}/conversation/{companyId}/company-conversations`,
+        checkExists: `${API_BASE_URL}/conversation/check-exists`
     }
 }

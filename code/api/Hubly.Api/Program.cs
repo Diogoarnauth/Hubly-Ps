@@ -71,6 +71,7 @@ builder.Services.AddScoped<ICreatorService, CreatorService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ISocialPlatformService, SocialPlatformService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IConversationTagService, ConversationTagService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddSignalR(); //todo()
 

@@ -279,4 +279,28 @@ public class ProblemResponse
         "message-already-deleted",
         "Message Already Deleted",
     404);
+    public static readonly ProblemResponse TagNotFound = new(
+        "tag-not-found",
+        "Tag Not Found",
+    404);
+    public static readonly ProblemResponse TagNameAlreadyExists = new(
+        "tag-name-already-exists",
+        "Tag Name Already Exists",
+    409);
+    public static readonly ProblemResponse InvalidTagName = new(
+        "invalid-tag-name",
+        "Invalid Tag Name",
+    400);
+    public static readonly ProblemResponse InvalidColorHex = new(
+        "invalid-color-hex",
+        "Invalid Color Hex",
+    400);
+    public static readonly ProblemResponse ConversationNotFound = new(
+        "conversation-not-found",
+        "Conversation Not Found",
+    404);
+    public static readonly ProblemResponse UnauthorizedAccess = new(
+        "unauthorized-access",
+        "Unauthorized Access",
+    403);
 }

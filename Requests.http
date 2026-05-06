@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= OBespr2h8WY+iMOHLy1JR8dBokTsPGNmSKISC3szftc=
+@token= kQjNao1b+Y3Tu/PY27wi/uewXFnLhrYy1f1jd7nqEaw=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -342,11 +342,27 @@ Content-Type: {{contentType}}
 
 {
   "Sender": {
-    "ProfileId": 23,
+    "ProfileId": 22,
     "Type": 2
   },
   "Receiver": {
-    "ProfileId": 22,
+    "ProfileId": 13,
+    "Type": 2
+  } 
+}
+
+### Check if Conversation Exists
+POST  http://{{host}}/api/conversation/check-exists
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "Sender": {
+    "ProfileId": 25,
+    "Type": 2
+  },
+  "Receiver": {
+    "ProfileId": 13,
     "Type": 2
   } 
 }
@@ -375,12 +391,12 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Get Messages (Paginated)
-GET http://{{host}}/api/conversation/2/messages?page=1&pageSize=100
+GET http://{{host}}/api/conversation/31/messages?page=1&pageSize=100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Get My Conversations Creator (List of conversations with last message and timestamp)
-GET http://{{host}}/api/conversation/23/my-conversations
+GET http://{{host}}/api/conversation/22/my-conversations
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -399,5 +415,58 @@ Content-Type: {{contentType}}
 
 ### Get Recommended Creators (Baseado no histórico e scoring)
 GET http://{{host}}/api/creators/getRecommendations
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+##############################################################################
+
+########################## Conversation Tags ##########################
+
+### Create Tag
+POST http://{{host}}/api/conversation/tags
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "tagName": "Accepted before presenting",
+  "colorHex": "#FF6B7B"
+}
+
+### Get All My Tags
+GET http://{{host}}/api/conversation/tags/my-tags
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get Conversation Tags (for a specific conversation)
+GET http://{{host}}/api/conversation/1/tags
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Update Tag
+PUT http://{{host}}/api/conversation/tags/2
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "tagName": "Negotiatingahjaos",
+  "colorHex": "#FF966D"
+}
+
+### Tag a Conversation (Assign tag to conversation)
+POST http://{{host}}/api/conversation/1/assign-tag
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "tagId": 2
+}
+
+### Remove Tag from Conversation
+POST http://{{host}}/api/conversation/1/remove-tag
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Delete Tag
+DELETE http://{{host}}/api/conversation/tags/72
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

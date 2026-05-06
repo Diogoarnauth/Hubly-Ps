@@ -1,21 +1,12 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSignalR } from '@/providers/SignalRContext'; 
-import conversationService from '@/services/api/ConversationService';
+import conversationService, { Message } from '@/services/api/ConversationService';
 import userService from '@/services/api/UsersService';
 
 
 interface ChatPageProps {
   id: string;
-}
-
-interface Message {
-    content: string;
-    conversationId: number;
-    id: number;
-    isEdited: boolean;
-    senderId: number;
-    sentAt: number;
 }
 
 export const ChatPage = ({ id }: ChatPageProps) => {
@@ -29,7 +20,9 @@ export const ChatPage = ({ id }: ChatPageProps) => {
   useEffect(() => {
     const fetchMe = async () => {
         const myProfile = await userService.getCurrentUser(); 
-        setCurrentUserId(myProfile.id);
+        if (myProfile) {
+          setCurrentUserId(myProfile.id);
+        }
     };
     fetchMe();
 }, []);
@@ -54,7 +47,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       connection.on("NewMessage", (newMessage: Message) => {
         console.log("Nova mensagem recebida via SignalR:", newMessage);
         setMessages((prev) => {
-          if (prev.some(m => m.id === newMessage.id)) return prev;
+          if (prev.some(m => m.messageId === newMessage.messageId)) return prev;
           return [...prev, newMessage];
         });
       });
@@ -70,6 +63,19 @@ export const ChatPage = ({ id }: ChatPageProps) => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const formatMessageTime = (timestamp: number) => {
+    const now = new Date();
+    const msgDate = new Date(timestamp * 1000); // Assuming timestamp is in seconds
+    const isToday = msgDate.toDateString() === now.toDateString();
+    
+    if (isToday) {
+      return msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    } else {
+      return msgDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }) + ' ' + 
+             msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    }
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +104,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div 
-            key={msg.id} 
+            key={msg.messageId} 
             className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow-sm ${
@@ -107,6 +113,9 @@ export const ChatPage = ({ id }: ChatPageProps) => {
                 : 'bg-zinc-800 text-zinc-200 rounded-tl-none border border-zinc-700'
             }`}>
               {msg.content}
+              <div className="text-xs text-zinc-400 mt-1 opacity-75">
+                {formatMessageTime(msg.sentAt)}
+              </div>
             </div>
           </div>
         ))}

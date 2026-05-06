@@ -20,6 +20,8 @@ public class HublyDbContext : DbContext
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<ConversationTag> ConversationTags { get; set; }
+    public DbSet<ConversationTagAssignment> ConversationTagAssignments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -286,6 +288,51 @@ public class HublyDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ConversationTag>(entity =>
+        {
+            entity.ToTable("conversation_tags", "dbo");
+            entity.HasKey(ct => ct.Id);
+            entity.Property(ct => ct.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(ct => ct.UserId).HasColumnName("user_id").IsRequired(false);
+            entity.Property(ct => ct.TagName).HasColumnName("tag_name").IsRequired().HasMaxLength(50);
+            entity.Property(ct => ct.ColorHex).HasColumnName("color_hex").HasDefaultValue("#808080").HasMaxLength(7);
+            entity.Property(ct => ct.CreatedAt).HasColumnName("created_at");
+
+            entity.HasIndex(ct => new { ct.UserId, ct.TagName }).IsUnique();
+
+            entity.HasOne(ct => ct.User)
+                .WithMany()
+                .HasForeignKey(ct => ct.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ConversationTagAssignment>(entity =>
+        {
+            entity.ToTable("conversation_tag_assignments", "dbo");
+            entity.HasKey(cta => new { cta.UserId, cta.ConversationId });
+
+            entity.Property(cta => cta.UserId).HasColumnName("user_id");
+            entity.Property(cta => cta.ConversationId).HasColumnName("conversation_id");
+            entity.Property(cta => cta.TagId).HasColumnName("tag_id");
+            entity.Property(cta => cta.UpdatedAt).HasColumnName("updated_at");
+
+            entity.HasOne(cta => cta.User)
+                .WithMany()
+                .HasForeignKey(cta => cta.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cta => cta.Conversation)
+                .WithMany()
+                .HasForeignKey(cta => cta.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cta => cta.Tag)
+                .WithMany(ct => ct.Assignments)
+                .HasForeignKey(cta => cta.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
