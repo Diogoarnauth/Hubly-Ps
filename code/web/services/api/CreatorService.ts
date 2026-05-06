@@ -182,6 +182,17 @@ class CreatorService implements ICreatorService {
             return 0;
         }
     }
+
+    async deleteSocialProfile(profileId: number): Promise<boolean> {
+        try {
+            const url = API_ENDPOINTS.creator.getSocialProfileById.replace("{profileId}", profileId.toString());
+            await this.apiClient.delete(url);
+            return true;
+        } catch (error) {
+            console.error(`Erro ao deletar perfil social ${profileId}:`, error);
+            return false;
+        }
+    }
 }
 
 export default new CreatorService();

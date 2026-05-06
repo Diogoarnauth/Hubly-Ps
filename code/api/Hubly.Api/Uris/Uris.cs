@@ -99,6 +99,7 @@ public static class Uris
     public static class Conversations
     {
         public const string Create = $"{Prefix}/conversation";
+        public const string CheckExists = $"{Prefix}/conversation/check-exists";
         public const string SendMessage = $"{Prefix}/conversation/{{conversationId}}/message";
         public const string EditMessage = $"{Prefix}/conversation/message/edit/{{messageId}}";
         public const string DeleteMessage = $"{Prefix}/conversation/message/{{messageId}}";
@@ -107,6 +108,17 @@ public static class Uris
         public const string GetCompanyConversations = $"{Prefix}/conversation/{{companyId}}/company-conversations";
         public const string MarkMessagesAsRead = $"{Prefix}/conversation/{{conversationId}}/mark-read/{{lastMessageId}}";
         public const string GetUnreadMessageCount = $"{Prefix}/conversation/{{conversationId}}/unread-count";
+    }
+
+    public static class ConversationTags
+    {
+        public const string CreateTag = $"{Prefix}/conversation/tags";
+        public const string GetUserTags = $"{Prefix}/conversation/tags/my-tags";
+        public const string GetConversationTags = $"{Prefix}/conversation/{{conversationId}}/tags";
+        public const string UpdateTag = $"{Prefix}/conversation/tags/{{tagId}}";
+        public const string DeleteTag = $"{Prefix}/conversation/tags/{{tagId}}";
+        public const string TagConversation = $"{Prefix}/conversation/{{conversationId}}/assign-tag";
+        public const string UntagConversation = $"{Prefix}/conversation/{{conversationId}}/remove-tag";
     }
 
 

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Star, Plus, Settings, UserCircle, Loader2, ExternalLink } from 'lucide-react';
@@ -43,7 +43,7 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
     }
   }
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const userId = parseInt(id);
       setLoading(true);
@@ -79,13 +79,14 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, router]);
 
   useEffect(() => {
     console.log("useEffect")
     console.log("id", id)
     fetchProfile();
-  }, [id]);
+  }, [id, fetchProfile]);
+
 
   if (loading) {
     return (
@@ -101,8 +102,8 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
 
   return (
     <div className="text-white relative pt-[5vh]">
-      {profile?.isOwner && (
-        <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 gap-2">
+        {profile?.isOwner && (
           <Button
             variant="ghost"
             size="icon"
@@ -111,8 +112,8 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
           >
             <Settings className="w-8 h-8 text-white" />
           </Button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Botão de Voltar */}
       <div className="flex justify-start mb-4">

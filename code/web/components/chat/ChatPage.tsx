@@ -7,6 +7,10 @@ import Message from '@/services/DTO/message/MessageOutputModel';
 import ChatPageProps from '@/services/DTO/conversation/ChatPagePropsOutputModel';
 import { MoreVertical, Pencil, Trash2, X, Check } from 'lucide-react';
 
+interface ChatPageProps {
+  id: string;
+}
+
 export const ChatPage = ({ id }: ChatPageProps) => {
   const { connection, isConnected } = useSignalR();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -26,8 +30,10 @@ export const ChatPage = ({ id }: ChatPageProps) => {
 
   useEffect(() => {
     const fetchMe = async () => {
-      const myProfile = await userService.getCurrentUser();
-      setCurrentUserId(myProfile.id);
+        const myProfile = await userService.getCurrentUser(); 
+        if (myProfile) {
+          setCurrentUserId(myProfile.id);
+        }
     };
     fetchMe();
   }, []);
@@ -98,7 +104,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       connection.on("NewMessage", (newMessage: Message) => {
         console.log("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH: messages", messages);
         setMessages((prev) => {
-          if (prev.some(m => m.id === newMessage.id)) return prev;
+          if (prev.some(m => m.messageId === newMessage.messageId)) return prev;
           return [...prev, newMessage];
         });
       });
@@ -129,6 +135,19 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, page]);
+
+  const formatMessageTime = (timestamp: number) => {
+    const now = new Date();
+    const msgDate = new Date(timestamp * 1000); // Assuming timestamp is in seconds
+    const isToday = msgDate.toDateString() === now.toDateString();
+    
+    if (isToday) {
+      return msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    } else {
+      return msgDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }) + ' ' + 
+             msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    }
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();

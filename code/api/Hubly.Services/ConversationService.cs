@@ -32,17 +32,21 @@ namespace Hubly.api.Services
         {
             return await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
             {
+
+                int senderUserId;
                 if (senderCompanyId.HasValue)
                 {
                     var company = await context.CompanyRepository.GetByUserId(senderCompanyId.Value);
                     if (company == null || company.Id != currentUserId)
                         return new ConversationError.InvalidParticipantRole();
+                    senderUserId = company.Id;
                 }
                 else if (senderSocialProfileId.HasValue)
                 {
                     var profile = await context.CreatorSocialRepository.GetById(senderSocialProfileId.Value);
                     if (profile == null || profile.CreatorId != currentUserId)
                         return new ConversationError.InvalidParticipantRole();
+                    senderUserId = profile.Id;
                 }
                 else return new ConversationError.InvalidParticipantRole();
 
@@ -61,7 +65,14 @@ namespace Hubly.api.Services
                 }
                 else return new ConversationError.UserNotFound();
 
-                var existing = await context.ConversationRepository.GetConversationBetweenUsers(currentUserId, targetUserId);
+                var existing = await context.ConversationRepository.GetConversationByParticipants(
+                                    senderCompanyId,
+                                    senderSocialProfileId,
+                                    receiverCompanyId,
+                                    receiverSocialProfileId
+                                );
+                Console.WriteLine($"Creating conversation between user {senderUserId} and user {targetUserId} result {existing?.Id}");
+
                 if (existing != null) return new ConversationError.ConversationAlreadyExists();
 
                 try
@@ -99,7 +110,54 @@ namespace Hubly.api.Services
             });
         }
 
+        public async Task<OneOf<bool, ConversationError>> CheckConversationExists(
+     int currentUserId,
+     int? senderCompanyId, int? senderSocialProfileId,
+     int? receiverCompanyId, int? receiverSocialProfileId)
+        {
+            return await _transactionManager.Run<OneOf<bool, ConversationError>>(async (context) =>
+            {
+                // 1. Validação do Sender (Quem está a tentar verificar)
+                if (senderCompanyId.HasValue)
+                {
+                    var company = await context.CompanyRepository.GetByUserId(senderCompanyId.Value);
+                    // Verifica se a empresa existe e se pertence ao utilizador logado
+                    if (company == null || company.Id != currentUserId)
+                        return new ConversationError.InvalidParticipantRole();
+                }
+                else if (senderSocialProfileId.HasValue)
+                {
+                    var profile = await context.CreatorSocialRepository.GetById(senderSocialProfileId.Value);
+                    // Verifica se o perfil existe e se pertence ao utilizador logado
+                    if (profile == null || profile.CreatorId != currentUserId)
+                        return new ConversationError.InvalidParticipantRole();
+                }
+                else return new ConversationError.InvalidParticipantRole();
 
+                // 2. Validação do Target (Destinatário)
+                if (receiverCompanyId.HasValue)
+                {
+                    var targetComp = await context.CompanyRepository.GetByUserId(receiverCompanyId.Value);
+                    if (targetComp == null) return new ConversationError.UserNotFound();
+                }
+                else if (receiverSocialProfileId.HasValue)
+                {
+                    var targetProf = await context.CreatorSocialRepository.GetById(receiverSocialProfileId.Value);
+                    if (targetProf == null) return new ConversationError.UserNotFound();
+                }
+                else return new ConversationError.UserNotFound();
+
+                // 3. Busca tipada no Repositório
+                var existing = await context.ConversationRepository.GetConversationByParticipants(
+                    senderCompanyId,
+                    senderSocialProfileId,
+                    receiverCompanyId,
+                    receiverSocialProfileId
+                );
+
+                return existing != null;
+            });
+        }
 
         internal record SendMessageResult(int MessageId, List<int> ParticipantProfileIds);
 

@@ -383,4 +383,10 @@ INSERT INTO dbo.profile_views_history (viewer_user_id, viewed_company_id, viewed
 SELECT 5, 32, CURRENT_TIMESTAMP - (n || ' minutes')::interval 
 FROM generate_series(1, 4) n;
 
-
+-- Exemplo para o sistema criar as bases
+INSERT INTO dbo.conversation_tags (user_id, tag_name, color_hex, created_at) 
+VALUES 
+(NULL, 'Contacted', '#3498db', 1715012345),
+(NULL, 'Negotiating', '#f1c40f', 1715012345),
+(NULL, 'Accepted', '#2ecc71', 1715012345),
+(NULL, 'Rejected', '#e74c3c', 1715012345);

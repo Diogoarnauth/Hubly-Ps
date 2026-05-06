@@ -46,6 +46,30 @@ public class ConversationController : ControllerBase
         );
     }
 
+    [HttpPost(Uris.Uris.Conversations.CheckExists)]
+    public async Task<IActionResult> CheckExists(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromBody] CreateConversationInputModel input)
+    {
+        int? senderCompanyId = input.Sender.Type == ParticipantType.Company ? input.Sender.ProfileId : null;
+        int? senderSocialProfileId = input.Sender.Type == ParticipantType.SocialProfile ? input.Sender.ProfileId : null;
+
+        int? receiverCompanyId = input.Receiver.Type == ParticipantType.Company ? input.Receiver.ProfileId : null;
+        int? receiverSocialProfileId = input.Receiver.Type == ParticipantType.SocialProfile ? input.Receiver.ProfileId : null;
+
+        var res = await _conversationService.CheckConversationExists(user.Id, senderCompanyId, senderSocialProfileId, receiverCompanyId, receiverSocialProfileId);
+
+        return res.Match<IActionResult>(
+            success => Ok(new { exists = success }),
+            error => error switch
+            {
+                ConversationError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                ConversationError.InvalidParticipantRole => ProblemResponse.InvalidParticipantRole.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
     [HttpPost(Uris.Uris.Conversations.SendMessage)]
     public async Task<IActionResult> SendMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int conversationId, [FromBody] SendMessageInputModel input)
     {

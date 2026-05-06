@@ -140,6 +140,29 @@ CREATE TABLE IF NOT EXISTS dbo.messages (
 CREATE TABLE IF NOT EXISTS dbo.message_read_status (
     conversation_id INTEGER NOT NULL REFERENCES dbo.conversations(id) ON DELETE CASCADE,
     user_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    last_read_message_id INTEGER REFERENCES dbo.messages(id),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (chat_id, user_id)
+);*/
+
+CREATE TABLE IF NOT EXISTS dbo.conversation_tags (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES dbo.users(id) ON DELETE CASCADE, 
+    tag_name VARCHAR(50) NOT NULL,
+    color_hex VARCHAR(7) DEFAULT '#808080', 
+    created_at BIGINT NOT NULL,
+    
+    CONSTRAINT unique_user_tag_name UNIQUE(user_id, tag_name)
+);
+
+CREATE TABLE IF NOT EXISTS dbo.conversation_tag_assignments (
+    user_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    conversation_id INTEGER NOT NULL REFERENCES dbo.conversations(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES dbo.conversation_tags(id) ON DELETE CASCADE,
+    
+    PRIMARY KEY (user_id, conversation_id), 
+    updated_at BIGINT NOT NULL
+);
     last_read_message_id INTEGER REFERENCES dbo.messages(id) ON DELETE SET NULL,
     last_read_at BIGINT,
     PRIMARY KEY (conversation_id, user_id)
