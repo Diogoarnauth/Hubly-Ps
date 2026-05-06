@@ -5,14 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Loader2 } from "lucide-react";
 import CompanyService from "@/services/api/CompanyService";
 import { useRouter } from "next/navigation";
-
-interface CompanyRecommendation {
-  id: number;
-  companyName: string;
-  description?: string;
-  countryHeadquarters?: string;
-  sectors?: string[];
-}
+import CompanyRecommendation from "@/services/DTO/company/GetCompanyRecommendationOutputModel";
 
 const PAGE_SIZE = 4;
 

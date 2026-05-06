@@ -166,7 +166,8 @@ public class ConversationController : ControllerBase
                     .FirstOrDefault(p => p.UserId != user.Id)?.User.Name ?? "Unknown",
 
                 PlatformId = s.Conversation.Participants
-                    .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId
+                    .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId,
+                UnreadCount = s.UnreadCount
             }).ToList()),
             error => error switch
             {
@@ -194,7 +195,8 @@ public class ConversationController : ControllerBase
                     .FirstOrDefault(p => p.UserId != user.Id)?.User.Name ?? "Unknown",
                 
                 PlatformId = s.Conversation.Participants
-                    .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId
+                    .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId,
+                UnreadCount = s.UnreadCount
             }).ToList()),
             error => error switch
             {
@@ -204,5 +206,41 @@ public class ConversationController : ControllerBase
         );
     }
 
+    [HttpPost(Uris.Uris.Conversations.MarkMessagesAsRead)]
+    public async Task<IActionResult> MarkMessagesAsRead(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromRoute] int conversationId,
+        [FromRoute] int lastMessageId)
+    {
+        Console.WriteLine($"Controller");
+        var res = await _conversationService.MarkMessagesAsRead(user.Id, conversationId, lastMessageId);
+
+        return res.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                ConversationError.MessageNotFound => ProblemResponse.MessageNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpGet(Uris.Uris.Conversations.GetUnreadMessageCount)]
+    public async Task<IActionResult> GetUnreadMessageCount(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromRoute] int conversationId)
+    {
+        var res = await _conversationService.GetUnreadMessageCount(user.Id, conversationId);
+
+        return res.Match<IActionResult>(
+            success => Ok(new { unreadCount = success }),
+            error => error switch
+            {
+                ConversationError.AccessDenied => ProblemResponse.AccessDenied.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 
 }

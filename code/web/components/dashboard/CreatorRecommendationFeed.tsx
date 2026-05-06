@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, User } from "lucide-react";
 import CreatorService from "@/services/api/CreatorService";
-import { GetSocialProfileOutputModel } from "@/services/DTO/GetSocialProfileOutputModel";
+import { GetSocialProfileOutputModel } from "@/services/DTO/creator/GetSocialProfileOutputModel";
 import { useRouter } from "next/navigation";
 
 const PAGE_SIZE = 4;

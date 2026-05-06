@@ -1,9 +1,9 @@
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
-import ConversationSummaryOutputModel from "../DTO/ConversationSummaryOutputModel";
+import ConversationSummaryOutputModel from "../DTO/conversation/ConversationSummaryOutputModel";
 
 export interface Message {
-    messageId: number;
+    id: number;
     senderId: number;
     content: string;
     sentAt: number; 
@@ -79,7 +79,7 @@ class ConversationService {
     async editMessage(messageId: number, newContent: string): Promise<boolean> {
         try {
             const url = API_ENDPOINTS.conversation.editMessage.replace("{messageId}", messageId.toString());
-            await this.apiClient.post(url, { newContent });
+            await this.apiClient.post(url, { content: newContent });
             return true;
         } catch (error) {
             console.error("Message not found:", error);
@@ -90,7 +90,7 @@ class ConversationService {
     async deleteMessage(messageId: number): Promise<boolean> {
         try {
             const url = API_ENDPOINTS.conversation.deleteMessage.replace("{messageId}", messageId.toString());
-            await this.apiClient.post(url, {}); // Usei POST aqui porque é o que tens no service, mas no backend confirma se é DELETE
+            await this.apiClient.delete(url); 
             return true;
         } catch (error) {
             console.error("Message not found:", error);
@@ -136,6 +136,33 @@ class ConversationService {
         } catch (error) {
             console.error("Error checking conversation:", error);
             return null;
+        }
+    }
+  
+  
+    async markMessagesAsRead(conversationId: number, lastMessageId: number): Promise<boolean> {
+        try {
+            console.log(`SERVICES: Marking messages as read for conversation ${conversationId} up to message ${lastMessageId}`);
+            const url = API_ENDPOINTS.conversation.markMessagesAsRead
+                .replace("{conversationId}", conversationId.toString())
+                .replace("{lastMessageId}", lastMessageId.toString());
+            const response = await this.apiClient.post(url, {});
+            console.log("SERVICES: Mark messages as read response:", response);
+            return true;
+        } catch (error) {
+            console.error("Failed to mark messages as read:", error);
+            return false;
+        }
+    }
+
+    async getUnreadMessageCount(conversationId: number): Promise<number> {
+        try {
+            const url = API_ENDPOINTS.conversation.getUnreadMessageCount.replace("{conversationId}", conversationId.toString());
+            const response = await this.apiClient.get<{ unreadCount: number }>(url);
+            return response?.unreadCount || 0;
+        } catch (error) {
+            console.error("Failed to get unread message count:", error);
+            return 0;
         }
     }
     

@@ -22,6 +22,7 @@ public class HublyDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<ConversationTag> ConversationTags { get; set; }
     public DbSet<ConversationTagAssignment> ConversationTagAssignments { get; set; }
+    public DbSet<MessageReadStatus> MessageReadStatuses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -333,6 +334,32 @@ public class HublyDbContext : DbContext
                 .WithMany(ct => ct.Assignments)
                 .HasForeignKey(cta => cta.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
+       });         
+                
+        modelBuilder.Entity<MessageReadStatus>(entity =>
+        {
+            entity.ToTable("message_read_status", "dbo");
+            entity.HasKey(mrs => new { mrs.ConversationId, mrs.UserId });
+
+            entity.Property(mrs => mrs.ConversationId).HasColumnName("conversation_id");
+            entity.Property(mrs => mrs.UserId).HasColumnName("user_id");
+            entity.Property(mrs => mrs.LastReadMessageId).HasColumnName("last_read_message_id");
+            entity.Property(mrs => mrs.LastReadAt).HasColumnName("last_read_at");
+
+            entity.HasOne(mrs => mrs.Conversation)
+                .WithMany()
+                .HasForeignKey(mrs => mrs.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(mrs => mrs.User)
+                .WithMany()
+                .HasForeignKey(mrs => mrs.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(mrs => mrs.LastReadMessage)
+                .WithMany()
+                .HasForeignKey(mrs => mrs.LastReadMessageId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

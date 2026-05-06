@@ -3,14 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import usersService from '@/services/api/UsersService';
 import creatorService from '@/services/api/CreatorService'; 
-
-interface EditCreatorModalProps {
-  currentUsername: string;
-  currentArtisticName: string; // <-- Nova prop
-  currentStatus: string;
-  onClose: () => void;
-  onSuccess: () => void;
-}
+import EditCreatorModalProps  from '@/services/DTO/creator/EditCreatorModalPropsInputModal';
 
 export function EditCreatorModal({ 
   currentUsername, 

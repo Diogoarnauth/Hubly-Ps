@@ -11,11 +11,8 @@ import conversationService from '@/services/api/ConversationService';
 import { GetSocialProfileOutputModel } from '@/services/DTO/GetSocialProfileOutputModel';
 import { SocialProfileOutputModel } from '@/services/DTO/GetCreatorOutputModel';
 import { EditSocialProfileModal } from './EditSocialProfileModal';
+import SocialProfileProps from '@/services/DTO/creator/SocialProfilePropsInputModel';
 
-
-interface SocialProfileProps {
-  profileId: string;
-}
 
 export function SocialProfile({ profileId }: SocialProfileProps) {
   const [data, setData] = useState<GetSocialProfileOutputModel | null>(null);

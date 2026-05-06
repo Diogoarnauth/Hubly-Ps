@@ -6,14 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Loader2, X } from 'lucide-react';
 import creatorService from '@/services/api/CreatorService';
 import sectorService, { Sector } from '@/services/api/SectorService';
-import { GetSocialProfileOutputModel } from '@/services/DTO/GetSocialProfileOutputModel';
 import { toastError, toastSuccess } from '../ToastImplementations';
-
-interface EditSocialProfileModalProps {
-    initialData: GetSocialProfileOutputModel;
-    onClose: () => void;
-    onSuccess: () => void;
-}
+import  EditSocialProfileModalProps from '@/services/DTO/creator/EditSocialProfileModalPropsInputModel';
 
 export function EditSocialProfileModal({ initialData, onClose, onSuccess }: EditSocialProfileModalProps) {
     const [formData, setFormData] = useState({

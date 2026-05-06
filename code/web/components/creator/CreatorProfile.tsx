@@ -8,13 +8,10 @@ import { Button } from '@/components/ui/button';
 import { toastSuccess, toastError } from '../ToastImplementations';
 import usersService from '@/services/api/UsersService';
 import creatorService from '@/services/api/CreatorService';
-import { FullUserProfileOutputModel } from '@/services/DTO/FullUserProfileOutputModel';
-import GetCreatorOutputModel from '@/services/DTO/GetCreatorOutputModel';
+import { FullUserProfileOutputModel } from '@/services/DTO/creator/FullUserProfileOutputModel';
+import GetCreatorOutputModel from '@/services/DTO/creator/GetCreatorOutputModel';
 import { EditCreatorModal } from './EditCreatorModal';
-
-interface CreatorProfileProps {
-  id: string;
-}
+import CreatorProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
 
 export function CreatorProfile({ id }: CreatorProfileProps) {
   const [profile, setProfile] = useState<FullUserProfileOutputModel | null>(null);
@@ -32,7 +29,7 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
 
     setIsSubmittingRating(true);
     try {
-      const result = await creatorService.rateCreator(parseInt(id), rating);
+      const result = await creatorService.rateCreator(parseInt(id || '0'), rating);
       console.log("result", result)
       if (result) {
         toastSuccess('Success', 'Rating submitted successfully!');

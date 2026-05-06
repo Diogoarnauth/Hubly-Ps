@@ -4,6 +4,7 @@ export interface ConversationSummaryOutputModel {
     lastMessageAt: number;
     otherPartyName: string;
     platformId: number;
+    unreadCount: number;
 }
 
 export default ConversationSummaryOutputModel;

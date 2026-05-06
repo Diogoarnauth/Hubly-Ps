@@ -10,11 +10,8 @@ import { useRouter } from 'next/navigation';
 import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
 import { SocialProfileOutputModel } from '@/services/DTO/GetCreatorOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
-import GetCompanyOutputModel from '@/services/DTO/GetCompanyOutputModel';
-
-interface CompanyProfileProps {
-  id: string;
-}
+import GetCompanyOutputModel from '@/services/DTO/company/GetCompanyOutputModel';
+import CompanyProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
 
 export function CompanyProfile({ id }: CompanyProfileProps) {
   const [profile, setProfile] = useState<FullCompanyProfileOutputModel | null>(null);
@@ -32,7 +29,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
 
   const fetchProfile = useCallback(async () => {
     try {
-      const userId = parseInt(id);
+      const userId = parseInt(id || '0');
       const data = await usersService.getFullCompanyProfile(userId);
 
       if (data?.company) {

@@ -3,10 +3,10 @@
 import IUserService from "../interfaces/IUserService";
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
-import { FullUserProfileOutputModel } from "../DTO/FullUserProfileOutputModel";
+import { FullUserProfileOutputModel } from "../DTO/creator/FullUserProfileOutputModel";
 import { FullCompanyProfileOutputModel } from "../DTO/FullCompanyProfileOutputModel";
-import GetCreatorOutputModel from "../DTO/GetCreatorOutputModel";
-import GetCompanyOutputModel from "../DTO/GetCompanyOutputModel";
+import GetCreatorOutputModel from "../DTO/creator/GetCreatorOutputModel";
+import GetCompanyOutputModel from "../DTO/company/GetCompanyOutputModel";
 
 
 export interface UserInfo {

@@ -1,5 +1,5 @@
 import { CreatorSearchInputModel, TrendingCreator, CreatorSearchResponse } from "../api/CreatorService";
-import { GetSocialProfileOutputModel } from "../DTO/GetSocialProfileOutputModel";
+import { GetSocialProfileOutputModel } from "../DTO/creator/GetSocialProfileOutputModel";
 
 interface ICreatorService {
     registerCreator(artisticName: string): Promise<any>;

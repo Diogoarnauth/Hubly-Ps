@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS dbo.messages (
     is_deleted BOOLEAN DEFAULT false
 );
 
-/*CREATE TABLE IF NOT EXISTS dbo.chat_read_status (
+CREATE TABLE IF NOT EXISTS dbo.message_read_status (
     conversation_id INTEGER NOT NULL REFERENCES dbo.conversations(id) ON DELETE CASCADE,
     user_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
     last_read_message_id INTEGER REFERENCES dbo.messages(id),
@@ -162,4 +162,8 @@ CREATE TABLE IF NOT EXISTS dbo.conversation_tag_assignments (
     
     PRIMARY KEY (user_id, conversation_id), 
     updated_at BIGINT NOT NULL
+);
+    last_read_message_id INTEGER REFERENCES dbo.messages(id) ON DELETE SET NULL,
+    last_read_at BIGINT,
+    PRIMARY KEY (conversation_id, user_id)
 );
