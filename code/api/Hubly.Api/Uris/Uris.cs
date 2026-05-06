@@ -105,6 +105,8 @@ public static class Uris
         public const string GetMessages = $"{Prefix}/conversation/{{conversationId}}/messages";
         public const string GetMyConversationsCreator = $"{Prefix}/conversation/{{socialProfileId}}/my-conversations";
         public const string GetCompanyConversations = $"{Prefix}/conversation/{{companyId}}/company-conversations";
+        public const string MarkMessagesAsRead = $"{Prefix}/conversation/{{conversationId}}/mark-read/{{lastMessageId}}";
+        public const string GetUnreadMessageCount = $"{Prefix}/conversation/{{conversationId}}/unread-count";
     }
 
 

@@ -101,21 +101,29 @@ namespace Hubly.api.Services
 
 
 
+        internal record SendMessageResult(int MessageId, List<int> ParticipantProfileIds);
+
         public async Task<OneOf<int, ConversationError>> SendMessage(int currentUserId, int conversationId, string content)
         {
-            var result = await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
+            Console.WriteLine($"Hubly: 0");
+            var result = await _transactionManager.Run<OneOf<SendMessageResult, ConversationError>>(async (context) =>
             {
+                Console.WriteLine($"Hubly: 1");
+
                 var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
                 if (!isParticipant) return new ConversationError.AccessDenied();
 
                 try
                 {
+                    Console.WriteLine($"Hubly: 2");
+
+                    var sentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                     var message = new Message
                     {
                         ConversationId = conversationId,
                         SenderId = currentUserId,
                         Content = content,
-                        SentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        SentAt = sentAt,
                         IsEdited = false,
                         IsDeleted = false
                     };
@@ -125,48 +133,83 @@ namespace Hubly.api.Services
                     var conversation = await context.ConversationRepository.GetById(conversationId);
                     if (conversation != null)
                     {
-                        conversation.LastMessageAt = message.SentAt;
+                        conversation.LastMessageAt = sentAt;
                         await context.ConversationRepository.Update(conversation);
                     }
 
-                    return messageId;
+                    // Fetch participants with Include to load navigation property
+                    var conversationWithParticipants = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
+                    var participants = conversationWithParticipants?.Participants
+                        .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
+                        .Where(id => id != 0)
+                        .ToList() ?? new List<int>();
+
+                    Console.WriteLine($"Hubly: 3, {participants.Count} participants found in conversation {conversationId}");
+
+                    return new SendMessageResult(messageId, participants);
                 }
                 catch (Exception)
                 {
                     return new ConversationError.InternalError();
                 }
             });
+
             if (result.IsT0)
             {
+
+                Console.WriteLine($"Hubly: 4");
+
+                var data = result.AsT0;
+                var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
                 await _eventService.SendToTopic(
                     $"chat_{conversationId}",
                     "NewMessage",
                     new
                     {
-                        id = result.AsT0,
+                        id = data.MessageId,
                         ConversationId = conversationId,
                         isEdited = false,
                         senderId = currentUserId,
-                        sentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                        Content = content,
-                        Type = "created"
+                        sentAt = now,
+                        content = content,
+                        type = "created"
                     }
                 );
+
+                Console.WriteLine($"Hubly: 5, data: {data.ParticipantProfileIds.Count}");
+
+                foreach (var profileId in data.ParticipantProfileIds)
+                {
+                    Console.WriteLine($"Hubly: Enviando atualização de sidebar para perfil {profileId} sobre nova mensagem na conversa {conversationId}");
+                    await _eventService.SendToTopic(
+                        $"all_conversations_topic_{profileId}",
+                        "SidebarUpdate",
+                        new
+                        {
+                            conversationId = conversationId,
+                            content = content,
+                            sentAt = now,
+                            senderId = currentUserId,
+                            type = "MESSAGE_CREATE"
+                        }
+                    );
+                }
+
+                return data.MessageId;
             }
 
-            return result;
+            return result.AsT1;
         }
 
         public async Task<OneOf<bool, ConversationError>> EditMessage(int currentUserId, int messageId, string newContent)
         {
-            return await _transactionManager.Run<OneOf<bool, ConversationError>>(async (context) =>
+            var result = await _transactionManager.Run<OneOf<(int ConversationId, List<int> ParticipantProfileIds), ConversationError>>(async (context) =>
             {
                 var message = await context.MessageRepository.GetById(messageId);
 
                 if (message == null) return new ConversationError.MessageNotFound();
-
                 if (message.SenderId != currentUserId) return new ConversationError.AccessDenied();
-
                 if (message.IsDeleted) return new ConversationError.MessageAlreadyDeleted();
 
                 try
@@ -175,38 +218,111 @@ namespace Hubly.api.Services
                     message.IsEdited = true;
 
                     await context.MessageRepository.UpdateMessage(message);
-                    return true;
+
+                    var conversation = await context.ConversationRepository.GetConversationWithParticipants(message.ConversationId);
+                    var participants = conversation?.Participants
+                        .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
+                        .Where(id => id != 0)
+                        .ToList() ?? new List<int>();
+
+                    return (message.ConversationId, participants);
                 }
                 catch (Exception)
                 {
                     return new ConversationError.InternalError();
                 }
             });
+
+            if (result.IsT0)
+            {
+                var (convId, participantProfileIds) = result.AsT0;
+
+                await _eventService.SendToTopic(
+                    $"chat_{convId}",
+                    "MessageUpdated",
+                    new { id = messageId, content = newContent, isEdited = true }
+                );
+
+                foreach (var profileId in participantProfileIds)
+                {
+                    await _eventService.SendToTopic(
+                        $"all_conversations_topic_{profileId}",
+                        "SidebarUpdate",
+                        new
+                        {
+                            conversationId = convId,
+                            content = newContent,
+                            sentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                            senderId = currentUserId,
+                            type = "MESSAGE_EDIT"
+                        }
+                    );
+                }
+
+                return true;
+            }
+
+            return result.AsT1;
         }
 
         public async Task<OneOf<bool, ConversationError>> DeleteMessage(int currentUserId, int messageId)
         {
-            return await _transactionManager.Run<OneOf<bool, ConversationError>>(async (context) =>
+            var result = await _transactionManager.Run<OneOf<(int ConversationId, List<int> ParticipantProfileIds), ConversationError>>(async (context) =>
             {
                 var message = await context.MessageRepository.GetById(messageId);
 
                 if (message == null) return new ConversationError.MessageNotFound();
-
-                if (message.SenderId != currentUserId)
-                    return new ConversationError.AccessDenied();
+                if (message.SenderId != currentUserId) return new ConversationError.AccessDenied();
 
                 try
                 {
                     message.IsDeleted = true;
                     await context.MessageRepository.UpdateMessage(message);
 
-                    return true;
+                    var conversation = await context.ConversationRepository.GetConversationWithParticipants(message.ConversationId);
+                    var participants = conversation?.Participants
+                        .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
+                        .Where(id => id != 0)
+                        .ToList() ?? new List<int>();
+
+                    return (message.ConversationId, participants);
                 }
                 catch (Exception)
                 {
                     return new ConversationError.InternalError();
                 }
             });
+
+            if (result.IsT0)
+            {
+                var (convId, participantProfileIds) = result.AsT0;
+
+                await _eventService.SendToTopic(
+                    $"chat_{convId}",
+                    "MessageUpdated",
+                    new { id = messageId, isDeleted = true }
+                );
+
+                foreach (var profileId in participantProfileIds)
+                {
+                    Console.WriteLine($"Hubly: Enviando atualização de sidebar para perfil {profileId} sobre mensagem deletada na conversa {convId}");
+                    await _eventService.SendToTopic(
+                        $"all_conversations_topic_{profileId}",
+                        "SidebarUpdate",
+                        new
+                        {
+                            conversationId = convId,
+                            isDeleted = true,
+                            senderId = currentUserId,
+                            type = "MESSAGE_DELETE"
+                        }
+                    );
+                }
+
+                return true;
+            }
+
+            return result.AsT1;
         }
 
         public async Task<OneOf<PagedResponse<Message>, ConversationError>> GetMessages(int currentUserId, int conversationId, int page = 1, int pageSize = 25)
@@ -244,18 +360,20 @@ namespace Hubly.api.Services
                 foreach (var conv in conversations)
                 {
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
+                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(userId, conv.Id);
 
                     result.Add(new ConversationWithLastMessage
                     {
                         Conversation = conv,
-                        LastMessage = lastMsg
+                        LastMessage = lastMsg,
+                        UnreadCount = unreadCount
                     });
                 }
 
                 return result;
             });
         }
-    
+
 
         public async Task<OneOf<List<ConversationWithLastMessage>, ConversationError>> GetCompanyConversations(int userId, int companyId)
         {
@@ -264,22 +382,97 @@ namespace Hubly.api.Services
                 var company = await context.CompanyRepository.GetByUserId(companyId);
                 if (company == null || company.Id != userId) return new ConversationError.AccessDenied();
 
-                var conversations = await context.ConversationRepository.GetConversationsByCompany(userId,companyId);
+                var conversations = await context.ConversationRepository.GetConversationsByCompany(userId, companyId);
 
                 var result = new List<ConversationWithLastMessage>();
 
                 foreach (var conv in conversations)
                 {
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
+                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(userId, conv.Id);
 
                     result.Add(new ConversationWithLastMessage
                     {
                         Conversation = conv,
-                        LastMessage = lastMsg
+                        LastMessage = lastMsg,
+                        UnreadCount = unreadCount
                     });
                 }
 
                 return result;
+            });
+        }
+        public async Task<OneOf<bool, ConversationError>> MarkMessagesAsRead(int currentUserId, int conversationId, int lastMessageId)
+        {
+            var result = await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
+            {
+                var conversation = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
+                if (conversation == null) return new ConversationError.InternalError(); 
+
+                var participant = conversation.Participants
+                    .FirstOrDefault(p => p.UserId == currentUserId);
+
+                if (participant == null) return new ConversationError.AccessDenied();
+
+                var message = await context.MessageRepository.GetById(lastMessageId);
+                if (message == null || message.ConversationId != conversationId)
+                {
+                    return new ConversationError.MessageNotFound();
+                }
+
+                try
+                {
+                    await context.ConversationRepository.UpdateLastReadMessage(conversationId, currentUserId, lastMessageId);
+
+                    int targetProfileId = participant.SocialProfileId ?? participant.CompanyId ?? 0;
+
+                    return targetProfileId;
+                }
+                catch (Exception)
+                {
+                    return new ConversationError.InternalError();
+                }
+            });
+
+            if (result.IsT0)
+            {
+                var profileIdForTopic = result.AsT0;
+
+                if (profileIdForTopic != 0)
+                {
+                    Console.WriteLine($"Hubly: Enviando atualização de sidebar para o perfil {profileIdForTopic} na conversa {conversationId}");
+
+                    await _eventService.SendToTopic(
+                        $"all_conversations_topic_{profileIdForTopic}",
+                        "SidebarUpdate",
+                        new
+                        {
+                            conversationId = conversationId,
+                            lastReadMessageId = lastMessageId,
+                            currentUserId = currentUserId,
+                            type = "READ_UPDATE"
+                        }
+                    );
+                }
+
+                return true;
+            }
+
+            return result.AsT1;
+        }
+        public async Task<OneOf<int, ConversationError>> GetUnreadMessageCount(int currentUserId, int conversationId)
+        {
+            return await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
+            {
+                // Verify user is participant in conversation
+                var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
+                if (!isParticipant)
+                {
+                    return new ConversationError.AccessDenied();
+                }
+
+                var count = await context.ConversationRepository.GetUnreadMessageCount(conversationId, currentUserId);
+                return count;
             });
         }
     }

@@ -2,17 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import userService from '@/services/api/UsersService';
-
-interface SocialProfile {
-    id: number;
-    platformUserName: string;
-    platformName: string;
-    platformId: number;
-}
-
-interface CreatorChatSelectionProps {
-    id?: string; 
-}
+import SocialProfile from '@/services/DTO/creator/SocialProfileOutputModel';
+import  CreatorChatSelectionProps  from '@/services/DTO/creator/CreatorChatSelectionPros';
 
 export const CreatorChatSelection = ({ id }: CreatorChatSelectionProps) => {
     const [profiles, setProfiles] = useState<SocialProfile[]>([]);

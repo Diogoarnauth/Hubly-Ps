@@ -59,6 +59,7 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.Messages
                 .Where(m => m.ConversationId == conversationId)
+                .Where(m => !m.IsDeleted)
                 .OrderByDescending(m => m.SentAt)
                 .FirstOrDefaultAsync();
         }

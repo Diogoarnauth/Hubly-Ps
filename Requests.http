@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= OBespr2h8WY+iMOHLy1JR8dBokTsPGNmSKISC3szftc=
+@token= K3EsE6zBHUM2Kvmpnpis2Y+lL2sLGR4vEhfdAPYJCs8=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth@gmail.com",
+    "email": "a51661@alunos.isel.p",
     "password": "Diogo2005."
 }
 
@@ -342,12 +342,12 @@ Content-Type: {{contentType}}
 
 {
   "Sender": {
-    "ProfileId": 23,
-    "Type": 2
+    "ProfileId": 44,
+    "Type": 1
   },
   "Receiver": {
-    "ProfileId": 22,
-    "Type": 2
+    "ProfileId": 33,
+    "Type": 1
   } 
 }
 
@@ -375,12 +375,12 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Get Messages (Paginated)
-GET http://{{host}}/api/conversation/2/messages?page=1&pageSize=100
+GET http://{{host}}/api/conversation/1/messages?page=1&pageSize=100
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Get My Conversations Creator (List of conversations with last message and timestamp)
-GET http://{{host}}/api/conversation/23/my-conversations
+GET http://{{host}}/api/conversation/22/my-conversations
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

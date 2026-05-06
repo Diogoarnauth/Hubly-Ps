@@ -8,13 +8,7 @@ import companyService from '@/services/api/CompanyService';
 import usersService from '@/services/api/UsersService';
 import sectorService, { Sector } from '@/services/api/SectorService'; 
 import { CompanyData } from '@/services/interfaces/ICompanyService';
-
-interface EditCompanyModalProps {
-  currentUsername: string;
-  initialData: any;
-  onClose: () => void;
-  onSuccess: () => void;
-}
+import { EditCompanyModalProps } from '@/services/DTO/company/EditCompanyModalProsInputModel';
 
 export function EditCompanyModal({ currentUsername, initialData, onClose, onSuccess }: EditCompanyModalProps) {
   const [username, setUsername] = useState(currentUsername);

@@ -1,4 +1,4 @@
-import { FullUserProfileOutputModel } from "../DTO/FullUserProfileOutputModel";
+import { FullUserProfileOutputModel } from "../DTO/creator/FullUserProfileOutputModel";
 
 interface IUserService {
     login(email: string, password: string): Promise<boolean>;

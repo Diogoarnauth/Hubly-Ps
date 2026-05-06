@@ -6,13 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toastSuccess, toastError } from '../ToastImplementations';
 import creatorService from '@/services/api/CreatorService'; 
-import { GetSocialProfileOutputModel } from '@/services/DTO/GetSocialProfileOutputModel';
+import { GetSocialProfileOutputModel } from '@/services/DTO/creator/GetSocialProfileOutputModel';
 import { EditSocialProfileModal } from './EditSocialProfileModal';
+import SocialProfileProps from '@/services/DTO/creator/SocialProfilePropsInputModel';
 
-
-interface SocialProfileProps {
-  profileId: string;
-}
 
 export function SocialProfile({ profileId }: SocialProfileProps) {
   const [data, setData] = useState<GetSocialProfileOutputModel | null>(null);

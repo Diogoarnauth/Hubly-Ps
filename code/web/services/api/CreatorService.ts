@@ -1,8 +1,8 @@
 import ICreatorService from "../interfaces/ICreatorService";
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
-import GetCreatorOutputModel from "../DTO/GetCreatorOutputModel";
-import { GetSocialProfileOutputModel } from "../DTO/GetSocialProfileOutputModel";
+import GetCreatorOutputModel from "../DTO/creator/GetCreatorOutputModel";
+import { GetSocialProfileOutputModel } from "../DTO/creator/GetSocialProfileOutputModel";
 
 export interface TrendingCreator {
     user_id: number;

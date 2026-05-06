@@ -3,15 +3,7 @@
 import { useState } from 'react';
 import { LogOut, User as UserIcon, Settings, Plus, ArrowLeft, Check, X } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import { useUser } from "@/providers/UserProvider";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";

@@ -6,13 +6,10 @@ import { Button } from '@/components/ui/button';
 import usersService from '@/services/api/UsersService';
 import { useRouter } from 'next/navigation';
 import { toastError } from '../ToastImplementations';
-import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
+import { FullCompanyProfileOutputModel } from '@/services/DTO/company/FullCompanyProfileOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
-import GetCompanyOutputModel from '@/services/DTO/GetCompanyOutputModel';
-
-interface CompanyProfileProps {
-  id: string;
-}
+import GetCompanyOutputModel from '@/services/DTO/company/GetCompanyOutputModel';
+import CompanyProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
 
 export function CompanyProfile({ id }: CompanyProfileProps) {
   const [profile, setProfile] = useState<FullCompanyProfileOutputModel | null>(null);
@@ -24,7 +21,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
 
   const fetchProfile = async () => {
     try {
-      const userId = parseInt(id);
+      const userId = parseInt(id || '0');
       const data = await usersService.getFullCompanyProfile(userId);
 
       if (data?.company) {
