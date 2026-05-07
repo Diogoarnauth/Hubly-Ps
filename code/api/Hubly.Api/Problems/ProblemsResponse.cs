@@ -14,7 +14,7 @@ private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/blob/m
 
     private ProblemResponse(string type, string message, int status) // private constuctor 
     {
-        Type = $"{BASE_URL}{type}";
+        Type = $"{BASE_URL}{type}.md";
         Message = message;
         Status = status;
     }
