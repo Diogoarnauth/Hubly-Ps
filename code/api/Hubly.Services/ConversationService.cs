@@ -415,10 +415,8 @@ namespace Hubly.api.Services
 
                 var result = new List<ConversationWithLastMessage>();
                 
-                console.WriteLine($"Hubly: Found {conversations.Count} conversations for user {userId} and profile {socialProfileId}");
                 foreach (var conv in conversations)
                 {
-                    console.WriteLine($"ENTREI 222");
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
                     var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
 

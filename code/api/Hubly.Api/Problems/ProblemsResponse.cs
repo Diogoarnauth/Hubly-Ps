@@ -5,7 +5,7 @@ namespace Hubly.api.Problems;
 public class ProblemResponse
 {
 
-    private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/";
+    private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/docs/errors/";
     private const string MEDIA_TYPE = "application/problem+json";
 
     public string Type { get; }
