@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= K3EsE6zBHUM2Kvmpnpis2Y+lL2sLGR4vEhfdAPYJCs8=
+@token= HX6+iT1vIAy2ZhNFrngZ35hnSFw1XSLmyqMg8D3RW0w=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "a51661@alunos.isel.p",
-    "password": "Diogo2005."
+    "email": "carolbrazete10@gmail.com",
+    "password": "Carol2010!"
 }
 
 ### 3. Logout 
@@ -358,12 +358,12 @@ Content-Type: {{contentType}}
 
 {
   "Sender": {
-    "ProfileId": 25,
+    "ProfileId": 23,
     "Type": 2
   },
   "Receiver": {
-    "ProfileId": 13,
-    "Type": 2
+    "ProfileId": 43,
+    "Type": 1
   } 
 }
 

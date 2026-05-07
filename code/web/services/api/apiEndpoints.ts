@@ -57,7 +57,7 @@ export const API_ENDPOINTS = {
         deleteMessage: `${API_BASE_URL}/conversation/message/{messageId}`,
         getConversationsByProfileId: `${API_BASE_URL}/conversation/{socialProfileId}/my-conversations`,
         getConversationsByCompanyId: `${API_BASE_URL}/conversation/{companyId}/company-conversations`,
-        checkExists: `${API_BASE_URL}/conversation/check-exists`
+        checkExists: `${API_BASE_URL}/conversation/check-exists`,
         markMessagesAsRead: `${API_BASE_URL}/conversation/{conversationId}/mark-read/{lastMessageId}`,
         getUnreadMessageCount: `${API_BASE_URL}/conversation/{conversationId}/unread-count`
     }

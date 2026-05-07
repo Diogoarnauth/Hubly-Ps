@@ -73,7 +73,6 @@ export const ChatPage = ({ id }: ChatPageProps) => {
 
   // Mark messages as read when messages are loaded
   useEffect(() => {
-    console.log("BHHHHHHHHH");
     if (messages.length > 0 && currentUserId) {
       const lastMessage = messages[messages.length - 1];
       const lastMessageId = Number(lastMessage.id);
@@ -102,9 +101,9 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       connection.invoke("JoinTopic", `chat_${id}`);
 
       connection.on("NewMessage", (newMessage: Message) => {
-        console.log("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH: messages", messages);
+        console.log("Nova mensagem recebida:", newMessage);
         setMessages((prev) => {
-          if (prev.some(m => m.messageId === newMessage.messageId)) return prev;
+          if (prev.some(m => m.id === newMessage.id)) return prev;
           return [...prev, newMessage];
         });
       });
@@ -160,6 +159,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
     if (!result.success) {
       console.error(result.message);
     }
+    // SignalR will handle the message update
   };
 
   const handleDelete = async (msgId: number) => {

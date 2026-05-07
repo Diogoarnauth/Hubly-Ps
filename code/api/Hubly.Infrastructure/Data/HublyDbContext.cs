@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
 using Hubly.api.Domain.Entities;
 
 namespace Hubly.api.Infrastructure.Data;

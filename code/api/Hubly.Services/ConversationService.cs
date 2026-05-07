@@ -426,6 +426,8 @@ namespace Hubly.api.Services
                         LastMessage = lastMsg,
                         UnreadCount = unreadCount
                     });
+
+                    Console.WriteLine($"Hubly: Conversation {conv.Id} - LastMessageId: {lastMsg?.Id}, UnreadCount: {unreadCount}");
                 }
 
                 return result;
@@ -530,6 +532,7 @@ namespace Hubly.api.Services
                 }
 
                 var count = await context.ConversationRepository.GetUnreadMessageCount(conversationId, currentUserId);
+                Console.WriteLine($"Hubly: Unread message count for user {currentUserId} in conversation {conversationId} is {count}");
                 return count;
             });
         }
