@@ -414,11 +414,13 @@ namespace Hubly.api.Services
                 var conversations = await context.ConversationRepository.GetCreatorConversationsByProfile(userId, socialProfileId);
 
                 var result = new List<ConversationWithLastMessage>();
-
+                
+                console.WriteLine($"Hubly: Found {conversations.Count} conversations for user {userId} and profile {socialProfileId}");
                 foreach (var conv in conversations)
                 {
+                    console.WriteLine($"ENTREI 222");
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
-                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(userId, conv.Id);
+                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
 
                     result.Add(new ConversationWithLastMessage
                     {
@@ -449,7 +451,7 @@ namespace Hubly.api.Services
                 foreach (var conv in conversations)
                 {
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
-                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(userId, conv.Id);
+                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
 
                     result.Add(new ConversationWithLastMessage
                     {
@@ -524,7 +526,6 @@ namespace Hubly.api.Services
         {
             return await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
             {
-                // Verify user is participant in conversation
                 var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
                 if (!isParticipant)
                 {

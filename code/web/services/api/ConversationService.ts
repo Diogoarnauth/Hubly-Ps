@@ -54,6 +54,7 @@ class ConversationService {
         try {
             const url = API_ENDPOINTS.conversation.sendMessage.replace("{conversationId}", conversationId.toString());
             const response = await this.apiClient.post(url, {content});
+            console.log("Send message response:", response);
             return { success: true, data: response };
         } catch (error: any) {
             return { 
@@ -142,7 +143,6 @@ class ConversationService {
   
     async markMessagesAsRead(conversationId: number, lastMessageId: number): Promise<boolean> {
         try {
-            console.log(`SERVICES: Marking messages as read for conversation ${conversationId} up to message ${lastMessageId}`);
             const url = API_ENDPOINTS.conversation.markMessagesAsRead
                 .replace("{conversationId}", conversationId.toString())
                 .replace("{lastMessageId}", lastMessageId.toString());

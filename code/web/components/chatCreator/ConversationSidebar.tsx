@@ -1,7 +1,9 @@
 'use client';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import conversationService from '@/services/api/ConversationService';
+import creatorService from '@/services/api/CreatorService';
 import ConversationSummary from '@/services/DTO/conversation/ConversationSummaryOutputModel';
+import { GetSocialProfileOutputModel } from '@/services/DTO/creator/GetSocialProfileOutputModel';
 import SidebarProps from '@/services/DTO/conversation/SidebarPropsInputModel';
 import { useSignalR } from '@/providers/SignalRContext';
 
@@ -12,14 +14,14 @@ export const ConversationSidebar = ({
     isCompany = false
 }: SidebarProps) => {
     const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+    const [creatorProfile, setCreatorProfile] = useState<GetSocialProfileOutputModel | null>(null);
     const { connection, isConnected } = useSignalR();
     const [loading, setLoading] = useState(true);
-    const activeIdRef = useRef(activeConversationId);
-    console.log("DEBUG: ConversationSidebar render - activeConversationId:", activeIdRef.current);
 
     const loadConversations = useCallback(async () => {
         try {
             let response;
+            console.log(`Hubly: Loading conversations for profileId ${profileId} (isCompany: ${isCompany})`);
             if (isCompany) {
                 response = await conversationService.getConversationsByCompanyId(profileId);
             } else {
@@ -44,6 +46,28 @@ export const ConversationSidebar = ({
     }, [loadConversations]);
 
     useEffect(() => {
+        if (!isCompany && profileId) {
+            const loadCreatorProfile = async () => {
+                try {
+                    const profile = await creatorService.getSocialProfileById(profileId);
+                    setCreatorProfile(profile);
+                } catch (error) {
+                    console.error("Hubly: Erro ao carregar creator profile:", error);
+                    setCreatorProfile(null);
+                }
+            };
+
+            loadCreatorProfile();
+        }
+    }, [isCompany, profileId]);
+
+    useEffect(() => {
+        if (creatorProfile) {
+            console.log("Creator profile loaded:", creatorProfile);
+        }
+    }, [creatorProfile]);
+
+    useEffect(() => {
         if (isConnected && connection && profileId) {
             const sidebarTopic = `all_conversations_topic_${profileId}`;
 
@@ -58,10 +82,12 @@ export const ConversationSidebar = ({
                     setConversations((prev) => {
                         const updated = prev.map((conv) => {
                             if (conv.id === update.conversationId) {
+                                // Determine the current user ID based on isCompany flag
+                                const currentUserId = isCompany ? profileId : creatorProfile?.creatorId;
 
                                 if (update.type === "READ_UPDATE") {
                                     console.log("DEBUG READ_UPDATE:", update);
-                                    if (update.currentUserId === profileId) {
+                                    if (update.currentUserId === currentUserId) {
                                         return { ...conv, unreadCount: 0 };
                                     }
                                     return conv;
@@ -69,22 +95,16 @@ export const ConversationSidebar = ({
 
                                 if (update.type === "MESSAGE_CREATE") {
                                     console.log("DEBUG MESSAGE_CREATE:", update);
-                                    const isFromMe = update.senderId === profileId;
-
-                                    // NOVIDADE: Se a conversa está aberta, o contador deve ser 0
-                                    const isChatOpen = activeConversationId === update.conversationId;
-                                    console.log("DEBUG: isFromMe:", isFromMe, "isChatOpen:", isChatOpen);
-
+                                    const isFromMe = update.senderId === currentUserId;
                                     return {
                                         ...conv,
                                         lastMessage: update.content,
                                         lastMessageAt: update.sentAt || new Date().toISOString(),
-                                        unreadCount: (isFromMe || isChatOpen) ? 0 : conv.unreadCount + 1
+                                        unreadCount: (isFromMe) ? 0 : conv.unreadCount + 1
                                     };
                                 }
 
                                 if (update.type === "MESSAGE_EDIT") {
-                                    console.log("DEBUG MESSAGE_EDIT:", update);
                                     return {
                                         ...conv,
                                         lastMessage: update.content,
