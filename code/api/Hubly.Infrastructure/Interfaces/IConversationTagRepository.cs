@@ -9,8 +9,7 @@ public interface IConversationTagRepository
     Task<int> CreateTag(ConversationTag tag);
     Task UpdateTag(ConversationTag tag);
     Task DeleteTag(int tagId);
-    Task<ConversationTag?> GetAssignment(int userId, int conversationId);
-    Task<List<ConversationTag>> GetConversationTags(int userId, int conversationId);
+    Task<ConversationTagAssignment> GetAssignment(int userId, int conversationId);
     Task AssignTag(ConversationTagAssignment assignment);
     Task RemoveTag(int userId, int conversationId);
     Task<bool> TagNameExistsForUser(int userId, string tagName);

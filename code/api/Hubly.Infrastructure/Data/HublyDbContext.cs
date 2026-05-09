@@ -1,4 +1,4 @@
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Hubly.api.Domain.Entities;
 
 namespace Hubly.api.Infrastructure.Data;
@@ -238,7 +238,7 @@ public class HublyDbContext : DbContext
         modelBuilder.Entity<ConversationParticipant>(entity =>
         {
             entity.ToTable("conversation_participants", "dbo");
-            
+
             entity.HasKey(cp => new { cp.ConversationId, cp.UserId });
 
             entity.Property(cp => cp.ConversationId).HasColumnName("conversation_id");
@@ -252,7 +252,7 @@ public class HublyDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(cp => cp.User)
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(cp => cp.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -298,6 +298,7 @@ public class HublyDbContext : DbContext
             entity.Property(ct => ct.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
             entity.Property(ct => ct.UserId).HasColumnName("user_id").IsRequired(false);
+
             entity.Property(ct => ct.TagName).HasColumnName("tag_name").IsRequired().HasMaxLength(50);
             entity.Property(ct => ct.ColorHex).HasColumnName("color_hex").HasDefaultValue("#808080").HasMaxLength(7);
             entity.Property(ct => ct.CreatedAt).HasColumnName("created_at");
@@ -313,6 +314,7 @@ public class HublyDbContext : DbContext
         modelBuilder.Entity<ConversationTagAssignment>(entity =>
         {
             entity.ToTable("conversation_tag_assignments", "dbo");
+            
             entity.HasKey(cta => new { cta.UserId, cta.ConversationId });
 
             entity.Property(cta => cta.UserId).HasColumnName("user_id");
@@ -321,21 +323,21 @@ public class HublyDbContext : DbContext
             entity.Property(cta => cta.UpdatedAt).HasColumnName("updated_at");
 
             entity.HasOne(cta => cta.User)
-                .WithMany()
+                .WithMany() 
                 .HasForeignKey(cta => cta.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(cta => cta.Conversation)
-                .WithMany()
-                .HasForeignKey(cta => cta.ConversationId)
+                .WithOne(c => c.TagAssignment) 
+                .HasForeignKey<ConversationTagAssignment>(cta => cta.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(cta => cta.Tag)
-                .WithMany(ct => ct.Assignments)
+            entity.HasOne(cta => cta.ConversationTag)
+                .WithMany()
                 .HasForeignKey(cta => cta.TagId)
-                .OnDelete(DeleteBehavior.Cascade);
-       });         
-                
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<MessageReadStatus>(entity =>
         {
             entity.ToTable("message_read_status", "dbo");

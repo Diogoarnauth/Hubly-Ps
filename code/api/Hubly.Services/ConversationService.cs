@@ -412,21 +412,24 @@ namespace Hubly.api.Services
                 if (profile == null || profile.CreatorId != userId) return new ConversationError.AccessDenied();
 
                 var conversations = await context.ConversationRepository.GetCreatorConversationsByProfile(userId, socialProfileId);
+                Console.WriteLine($"Hubly: Found {conversations.Count} conversations for user {userId} and profile {socialProfileId}");
 
                 var result = new List<ConversationWithLastMessage>();
                 
                 foreach (var conv in conversations)
                 {
+                    Console.WriteLine($"Hubly: Processing conversation {conv.Id} for profile {socialProfileId}");
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
                     var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
                     var tag = await context.ConversationTagRepository.GetAssignment(userId, conv.Id);
+                    Console.WriteLine($"vjdkkdd {tag.ConversationTag}");
 
                     result.Add(new ConversationWithLastMessage
                     {
                         Conversation = conv,
                         LastMessage = lastMsg,
                         UnreadCount = unreadCount,
-                        Tag = tag
+                        Tag = tag?.ConversationTag
                     });
 
                     Console.WriteLine($"Hubly: Conversation {conv.Id} - LastMessageId: {lastMsg?.Id}, UnreadCount: {unreadCount}");
@@ -459,7 +462,7 @@ namespace Hubly.api.Services
                         Conversation = conv,
                         LastMessage = lastMsg,
                         UnreadCount = unreadCount,
-                        Tag = tag
+                        Tag = tag.ConversationTag
                     });
                 }
 

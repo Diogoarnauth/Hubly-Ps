@@ -11,4 +11,5 @@ public class Conversation
 
     public virtual ICollection<ConversationParticipant> Participants { get; set; } = new List<ConversationParticipant>();
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
-}
+    public virtual ConversationTagAssignment? TagAssignment { get; set; }
+}   

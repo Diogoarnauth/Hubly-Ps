@@ -10,7 +10,6 @@ public interface IConversationTagService
     Task<OneOf<bool, ConversationTagError>> UpdateTag(int userId, int tagId, string tagName, string colorHex);
     Task<OneOf<bool, ConversationTagError>> DeleteTag(int userId, int tagId);
     Task<OneOf<List<ConversationTag>, ConversationTagError>> GetUserTags(int userId);
-    Task<OneOf<List<ConversationTag>, ConversationTagError>> GetConversationTags(int userId, int conversationId);
     Task<OneOf<bool, ConversationTagError>> TagConversation(int userId, int conversationId, int tagId);
     Task<OneOf<bool, ConversationTagError>> UntagConversation(int userId, int conversationId);
 }

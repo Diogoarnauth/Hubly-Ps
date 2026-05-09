@@ -1,3 +1,5 @@
+namespace Hubly.api.DTOs;
+
 public class ConversationSummaryDto
 {
     public int Id { get; set; }

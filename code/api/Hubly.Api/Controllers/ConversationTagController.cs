@@ -54,23 +54,6 @@ public class ConversationTagController : ControllerBase
         );
     }
 
-    [HttpGet(Uris.Uris.ConversationTags.GetConversationTags)]
-    public async Task<IActionResult> GetConversationTags(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-        int conversationId)
-    {
-        var res = await _conversationTagService.GetConversationTags(user.Id, conversationId);
-
-        return res.Match<IActionResult>(
-            success => Ok(success.Select(ConversationTagOutputModel.FromEntity)),
-            error => error switch
-            {
-                ConversationTagError.UnauthorizedAccess => ProblemResponse.AccessDenied.ToResponse(),
-                _ => ProblemResponse.InternalServerError.ToResponse()
-            }
-        );
-    }
-
     [HttpPut(Uris.Uris.ConversationTags.UpdateTag)]
     public async Task<IActionResult> UpdateTag(
         [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,

@@ -117,20 +117,6 @@ public class ConversationTagService : IConversationTagService
         });
     }
 
-    public async Task<OneOf<List<ConversationTag>, ConversationTagError>> GetConversationTags(int userId, int conversationId)
-    {
-        return await _transactionManager.Run<OneOf<List<ConversationTag>, ConversationTagError>>(async (context) =>
-        {
-            // Verificar se user é participante da conversa
-            var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, userId);
-            if (!isParticipant)
-                return new ConversationTagError.UnauthorizedAccess();
-
-            var tags = await context.ConversationTagRepository.GetConversationTags(userId, conversationId);
-            return tags;
-        });
-    }
-
     public async Task<OneOf<bool, ConversationTagError>> TagConversation(int userId, int conversationId, int tagId)
     {
         return await _transactionManager.Run<OneOf<bool, ConversationTagError>>(async (context) =>

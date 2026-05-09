@@ -50,19 +50,11 @@ public class ConversationTagRepository : IConversationTagRepository
         }
     }
 
-    public async Task<ConversationTag?> GetAssignment(int userId, int conversationId)
+    public async Task<ConversationTagAssignment> GetAssignment(int userId, int conversationId)
     {
         return await _context.ConversationTagAssignments
+            .Include(a => a.ConversationTag)
             .FirstOrDefaultAsync(a => a.UserId == userId && a.ConversationId == conversationId);
-    }
-
-    public async Task<List<ConversationTag>> GetConversationTags(int userId, int conversationId)
-    {
-        return await _context.ConversationTagAssignments
-            .Where(a => a.UserId == userId && a.ConversationId == conversationId)
-            .Include(a => a.Tag)
-            .Select(a => a.Tag!)
-            .ToListAsync();
     }
 
     public async Task AssignTag(ConversationTagAssignment assignment)

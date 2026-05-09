@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= 95a9z4Oh1rUGD9EXZoCDJQmkrwLsU/ZEl2Nf/NJbFTA=
+@token= HsGnI1wOX5IE6cyVAq/zoAW6pzfdzCEPH1cl92SWkQg=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users

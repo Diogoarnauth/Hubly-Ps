@@ -103,6 +103,7 @@ class ConversationService {
         try {
             const url = API_ENDPOINTS.conversation.getConversationsByProfileId.replace("{socialProfileId}", profileId.toString());
             const response = await this.apiClient.get<ConversationSummaryOutputModel[]>(url);
+            console.log("Conversations response:", response);
             return response || [];
         } catch (error) {
             console.error("Conversations not found:", error);
