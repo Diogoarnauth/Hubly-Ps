@@ -419,12 +419,14 @@ namespace Hubly.api.Services
                 {
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
                     var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
+                    var tag = await context.ConversationTagRepository.GetAssignment(userId, conv.Id);
 
                     result.Add(new ConversationWithLastMessage
                     {
                         Conversation = conv,
                         LastMessage = lastMsg,
-                        UnreadCount = unreadCount
+                        UnreadCount = unreadCount,
+                        Tag = tag
                     });
 
                     Console.WriteLine($"Hubly: Conversation {conv.Id} - LastMessageId: {lastMsg?.Id}, UnreadCount: {unreadCount}");
@@ -450,12 +452,14 @@ namespace Hubly.api.Services
                 {
                     var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
                     var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
+                    var tag = await context.ConversationTagRepository.GetAssignment(userId, conv.Id);
 
                     result.Add(new ConversationWithLastMessage
                     {
                         Conversation = conv,
                         LastMessage = lastMsg,
-                        UnreadCount = unreadCount
+                        UnreadCount = unreadCount,
+                        Tag = tag
                     });
                 }
 

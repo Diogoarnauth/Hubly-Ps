@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= HX6+iT1vIAy2ZhNFrngZ35hnSFw1XSLmyqMg8D3RW0w=
+@token= 95a9z4Oh1rUGD9EXZoCDJQmkrwLsU/ZEl2Nf/NJbFTA=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -458,7 +458,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "tagId": 2
+  "tagId": 3
 }
 
 ### Remove Tag from Conversation

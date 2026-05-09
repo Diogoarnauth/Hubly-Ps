@@ -60,5 +60,15 @@ export const API_ENDPOINTS = {
         checkExists: `${API_BASE_URL}/conversation/check-exists`,
         markMessagesAsRead: `${API_BASE_URL}/conversation/{conversationId}/mark-read/{lastMessageId}`,
         getUnreadMessageCount: `${API_BASE_URL}/conversation/{conversationId}/unread-count`
+    },
+
+    conversationTags: {
+        createTag : `${API_BASE_URL}/conversation/tags`,
+        getUserTags : `${API_BASE_URL}/conversation/tags/my-tags`,
+        getConversationTags : `${API_BASE_URL}/conversation/{conversationId}/tags`,
+        updateTag : `${API_BASE_URL}/conversation/tags/{tagId}`,
+        deleteTag : `${API_BASE_URL}/conversation/tags/{tagId}`,
+        tagConversation : `${API_BASE_URL}/conversation/{conversationId}/assign-tag`,
+        untagConversation : `${API_BASE_URL}/conversation/{conversationId}/remove-tag`
     }
 }

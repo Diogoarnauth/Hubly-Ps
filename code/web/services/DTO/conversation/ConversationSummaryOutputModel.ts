@@ -1,3 +1,5 @@
+import { ConversationTagInputModel } from "./ConversationTagInputModel";
+
 export interface ConversationSummaryOutputModel {
     id: number;
     lastMessage: string;
@@ -5,6 +7,7 @@ export interface ConversationSummaryOutputModel {
     otherPartyName: string;
     platformId: number;
     unreadCount: number;
+    tag?: ConversationTagInputModel; 
 }
 
 export default ConversationSummaryOutputModel;

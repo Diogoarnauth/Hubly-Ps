@@ -167,7 +167,8 @@ public class ConversationController : ControllerBase
 
                 PlatformId = s.Conversation.Participants
                     .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId,
-                UnreadCount = s.UnreadCount
+                UnreadCount = s.UnreadCount,
+                Tag = s.Tag != null ? ConversationTagOutputModel.FromEntity(s.Tag) : null
             }).ToList()),
             error => error switch
             {
@@ -196,7 +197,8 @@ public class ConversationController : ControllerBase
                 
                 PlatformId = s.Conversation.Participants
                     .FirstOrDefault(p => p.UserId == user.Id)?.SocialProfile?.PlatformId,
-                UnreadCount = s.UnreadCount
+                UnreadCount = s.UnreadCount,
+                Tag = s.Tag != null ? ConversationTagOutputModel.FromEntity(s.Tag) : null
             }).ToList()),
             error => error switch
             {
@@ -242,5 +244,7 @@ public class ConversationController : ControllerBase
             }
         );
     }
+
+
 
 }

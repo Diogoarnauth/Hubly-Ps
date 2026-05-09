@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { ConversationSidebar } from '../chatCreator/ConversationSidebar';
+import { ConversationSidebar } from './ConversationSidebar';
 import { ChatPage } from '@/components/chat/ChatPage';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';

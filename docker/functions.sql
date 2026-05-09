@@ -9,7 +9,7 @@ RETURNS TABLE (
     company_size VARCHAR,
     website_link VARCHAR,
     country_headquarters VARCHAR,
-    recommendation_score INT  -- <--- Nova coluna com os pontos
+    recommendation_score INT 
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -43,7 +43,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION dbo.get_recommended_social_profiles(
     p_user_id INT,
-    p_interests JSONB -- { sectors: {}, platforms: {}, avg_price: float }
+    p_interests JSONB 
 ) 
 RETURNS TABLE (
     social_profile_id INT,
@@ -54,7 +54,6 @@ BEGIN
     SELECT 
         csp.id,
         (
-            -- 1. SETORES (Peso 100): o fator mais importante, deve dominar o score
             COALESCE((
                 SELECT SUM((p_interests->'sectors'->>cps.sector_id::text)::int)
                 FROM dbo.creator_profile_sectors cps 

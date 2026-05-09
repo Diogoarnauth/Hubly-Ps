@@ -8,4 +8,5 @@ public class ConversationWithLastMessage
     public Conversation Conversation { get; set; }
     public Message? LastMessage { get; set; }
     public int UnreadCount { get; set; }
+    public ConversationTag? Tag { get; set; }
 }

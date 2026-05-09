@@ -6,4 +6,5 @@ public class ConversationOutputModel
     public string OtherPartyName { get; set; } = string.Empty;
     public int? PlatformId { get; set; }
     public int UnreadCount { get; set; }
+    public ConversationTagOutputModel? Tag { get; set; }
 }
