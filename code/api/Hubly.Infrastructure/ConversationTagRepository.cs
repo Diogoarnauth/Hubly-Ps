@@ -50,7 +50,7 @@ public class ConversationTagRepository : IConversationTagRepository
         }
     }
 
-    public async Task<ConversationTagAssignment?> GetAssignment(int userId, int conversationId)
+    public async Task<ConversationTag?> GetAssignment(int userId, int conversationId)
     {
         return await _context.ConversationTagAssignments
             .FirstOrDefaultAsync(a => a.UserId == userId && a.ConversationId == conversationId);

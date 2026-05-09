@@ -9,5 +9,4 @@ public class ConversationTag
     public long CreatedAt { get; set; }
 
     public virtual User? User { get; set; }
-    public virtual ICollection<ConversationTagAssignment> Assignments { get; set; } = new List<ConversationTagAssignment>();
 }
