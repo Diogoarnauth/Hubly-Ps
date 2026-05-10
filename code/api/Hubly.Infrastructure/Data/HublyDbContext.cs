@@ -314,7 +314,6 @@ public class HublyDbContext : DbContext
         modelBuilder.Entity<ConversationTagAssignment>(entity =>
         {
             entity.ToTable("conversation_tag_assignments", "dbo");
-            
             entity.HasKey(cta => new { cta.UserId, cta.ConversationId });
 
             entity.Property(cta => cta.UserId).HasColumnName("user_id");
@@ -323,13 +322,13 @@ public class HublyDbContext : DbContext
             entity.Property(cta => cta.UpdatedAt).HasColumnName("updated_at");
 
             entity.HasOne(cta => cta.User)
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(cta => cta.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(cta => cta.Conversation)
-                .WithOne(c => c.TagAssignment) 
-                .HasForeignKey<ConversationTagAssignment>(cta => cta.ConversationId)
+                .WithMany(c => c.TagAssignments) 
+                .HasForeignKey(cta => cta.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(cta => cta.ConversationTag)
@@ -337,6 +336,7 @@ public class HublyDbContext : DbContext
                 .HasForeignKey(cta => cta.TagId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
 
         modelBuilder.Entity<MessageReadStatus>(entity =>
         {

@@ -409,72 +409,32 @@ namespace Hubly.api.Services
             return await _transactionManager.Run<OneOf<List<ConversationWithLastMessage>, ConversationError>>(async (context) =>
             {
                 var profile = await context.CreatorSocialRepository.GetById(socialProfileId);
-                if (profile == null || profile.CreatorId != userId) return new ConversationError.AccessDenied();
+                if (profile == null || profile.CreatorId != userId)
+                    return new ConversationError.AccessDenied();
 
-                var conversations = await context.ConversationRepository.GetCreatorConversationsByProfile(userId, socialProfileId);
-                Console.WriteLine($"Hubly: Found {conversations.Count} conversations for user {userId} and profile {socialProfileId}");
-
-                var result = new List<ConversationWithLastMessage>();
-                
-                foreach (var conv in conversations)
-                {
-                    Console.WriteLine($"Hubly: Processing conversation {conv.Id} for profile {socialProfileId}");
-                    var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
-                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
-                    var tag = await context.ConversationTagRepository.GetAssignment(userId, conv.Id);
-                    Console.WriteLine($"vjdkkdd {tag.ConversationTag}");
-
-                    result.Add(new ConversationWithLastMessage
-                    {
-                        Conversation = conv,
-                        LastMessage = lastMsg,
-                        UnreadCount = unreadCount,
-                        Tag = tag?.ConversationTag
-                    });
-
-                    Console.WriteLine($"Hubly: Conversation {conv.Id} - LastMessageId: {lastMsg?.Id}, UnreadCount: {unreadCount}");
-                }
-
-                return result;
+                var results = await context.ConversationRepository.GetCreatorConversationsByProfileExtended(userId, socialProfileId);
+                return results;
             });
         }
-
 
         public async Task<OneOf<List<ConversationWithLastMessage>, ConversationError>> GetCompanyConversations(int userId, int companyId)
         {
             return await _transactionManager.Run<OneOf<List<ConversationWithLastMessage>, ConversationError>>(async (context) =>
             {
                 var company = await context.CompanyRepository.GetByUserId(companyId);
-                if (company == null || company.Id != userId) return new ConversationError.AccessDenied();
+                if (company == null || company.Id != userId)
+                    return new ConversationError.AccessDenied();
 
-                var conversations = await context.ConversationRepository.GetConversationsByCompany(userId, companyId);
-
-                var result = new List<ConversationWithLastMessage>();
-
-                foreach (var conv in conversations)
-                {
-                    var lastMsg = await context.MessageRepository.GetLastMessageByConversation(conv.Id);
-                    var unreadCount = await context.ConversationRepository.GetUnreadMessageCount(conv.Id, userId);
-                    var tag = await context.ConversationTagRepository.GetAssignment(userId, conv.Id);
-
-                    result.Add(new ConversationWithLastMessage
-                    {
-                        Conversation = conv,
-                        LastMessage = lastMsg,
-                        UnreadCount = unreadCount,
-                        Tag = tag.ConversationTag
-                    });
-                }
-
-                return result;
+                return await context.ConversationRepository.GetCompanyConversationsExtended(userId, companyId);
             });
         }
+        
         public async Task<OneOf<bool, ConversationError>> MarkMessagesAsRead(int currentUserId, int conversationId, int lastMessageId)
         {
             var result = await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
             {
                 var conversation = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
-                if (conversation == null) return new ConversationError.InternalError(); 
+                if (conversation == null) return new ConversationError.InternalError();
 
                 var participant = conversation.Participants
                     .FirstOrDefault(p => p.UserId == currentUserId);

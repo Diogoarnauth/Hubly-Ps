@@ -3,7 +3,7 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= HsGnI1wOX5IE6cyVAq/zoAW6pzfdzCEPH1cl92SWkQg=
+@token= iELK+PqsBQNvJxpCDvmdWp6N5HZ5wSZi8nEVk4s7EDA=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,8 +20,8 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete10@gmail.com",
-    "password": "Carol2010!"
+    "email": "dioarnauth@gmail.com",
+    "password": "Diogo2005."
 }
 
 ### 3. Logout 
@@ -346,8 +346,8 @@ Content-Type: {{contentType}}
     "Type": 2
   },
   "Receiver": {
-    "ProfileId": 13,
-    "Type": 2
+    "ProfileId": 34,
+    "Type": 1
   } 
 }
 
@@ -358,11 +358,11 @@ Content-Type: {{contentType}}
 
 {
   "Sender": {
-    "ProfileId": 23,
+    "ProfileId": 22,
     "Type": 2
   },
   "Receiver": {
-    "ProfileId": 43,
+    "ProfileId": 46,
     "Type": 1
   } 
 }
@@ -402,7 +402,7 @@ Content-Type: {{contentType}}
 
 
 ### Get My Conversations Company (List of conversations with last message and timestamp)
-GET http://{{host}}/api/conversation/43/company-conversations
+GET http://{{host}}/api/conversation/46/company-conversations
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -458,7 +458,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "tagId": 3
+  "tagId": 2
 }
 
 ### Remove Tag from Conversation

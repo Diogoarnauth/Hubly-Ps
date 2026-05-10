@@ -67,27 +67,119 @@ namespace Hubly.api.Infrastructure
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Conversation>> GetCreatorConversationsByProfile(int userId, int socialProfileId)
+        public async Task<List<ConversationWithLastMessage>> GetCreatorConversationsByProfileExtended(int userId, int socialProfileId)
         {
             return await _context.Conversations
-                .Include(c => c.Participants)
-                    .ThenInclude(p => p.User)
-                .Include(c => c.Participants)
-                    .ThenInclude(p => p.SocialProfile)
                 .Where(c => c.Participants.Any(p => p.UserId == userId && p.SocialProfileId == socialProfileId))
-                .OrderByDescending(c => c.LastMessageAt)
+                .Select(c => new ConversationWithLastMessage
+                {
+                    // PROJEÇÃO DA CONVERSA: Garantimos que os participantes vão lá dentro
+                    Conversation = new Conversation
+                    {
+                        Id = c.Id,
+                        CreatedAt = c.CreatedAt,
+                        LastMessageAt = c.LastMessageAt,
+                        Participants = c.Participants.Select(p => new ConversationParticipant
+                        {
+                            UserId = p.UserId,
+                            CompanyId = p.CompanyId,
+                            SocialProfileId = p.SocialProfileId,
+                            // Incluímos os objetos de navegação para o Controller não dar null
+                            User = p.User,
+                            Company = p.Company,
+                            SocialProfile = p.SocialProfile
+                        }).ToList()
+                    },
+
+                    // LÓGICA DO NOME: Creator (User.Name) ou Company (Company.CompanyName)
+                    OtherPartyName = c.Participants
+                        .Where(p => p.UserId != userId)
+                        .Select(p => p.CompanyId != null
+                            ? p.Company.CompanyName
+                            : p.User.Name)
+                        .FirstOrDefault() ?? "Unknown",
+
+                    PlatformId = c.Participants
+                        .Where(p => p.UserId == userId)
+                        .Select(p => p.SocialProfileId)
+                        .FirstOrDefault(),
+
+                    LastMessage = c.Messages
+                        .Where(m => !m.IsDeleted)
+                        .OrderByDescending(m => m.SentAt)
+                        .FirstOrDefault(),
+
+                    UnreadCount = c.Messages.Count(m =>
+                        !m.IsDeleted &&
+                        m.SenderId != userId &&
+                        (!_context.MessageReadStatuses.Any(rs => rs.ConversationId == c.Id && rs.UserId == userId) ||
+                         m.Id > _context.MessageReadStatuses
+                            .Where(rs => rs.ConversationId == c.Id && rs.UserId == userId)
+                            .Select(rs => rs.LastReadMessageId).FirstOrDefault())),
+
+                    Tag = _context.ConversationTagAssignments
+                        .Where(cta => cta.ConversationId == c.Id && cta.UserId == userId)
+                        .Select(cta => cta.ConversationTag)
+                        .FirstOrDefault()
+                })
+                .OrderByDescending(x => x.Conversation.LastMessageAt)
                 .ToListAsync();
         }
-
-        public async Task<List<Conversation>> GetConversationsByCompany(int userId, int companyId)
+        public async Task<List<ConversationWithLastMessage>> GetCompanyConversationsExtended(int userId, int companyId)
         {
             return await _context.Conversations
-                .Include(c => c.Participants)
-                    .ThenInclude(p => p.User)
-                .Include(c => c.Participants)
-                    .ThenInclude(p => p.SocialProfile)
                 .Where(c => c.Participants.Any(p => p.UserId == userId && p.CompanyId == companyId))
-                .OrderByDescending(c => c.LastMessageAt)
+                .Select(c => new ConversationWithLastMessage
+                {
+                    Conversation = new Conversation
+                    {
+                        Id = c.Id,
+                        CreatedAt = c.CreatedAt,
+                        LastMessageAt = c.LastMessageAt,
+                        Participants = c.Participants.Select(p => new ConversationParticipant
+                        {
+                            UserId = p.UserId,
+                            CompanyId = p.CompanyId,
+                            SocialProfileId = p.SocialProfileId,
+                            User = p.User,
+                            Company = p.Company,
+                            SocialProfile = p.SocialProfile
+                        }).ToList()
+                    },
+
+                    // O outro lado para uma Company é SEMPRE um Creator (SocialProfile)
+                    OtherPartyName = c.Participants
+                        .Where(p => p.UserId != userId)
+                        .Select(p => p.SocialProfile != null
+                            ? p.SocialProfile.Creator.ArtisticName
+                            : p.User.Name)
+                        .FirstOrDefault() ?? "Unknown",
+
+                    // Para Company, o PlatformId vem do perfil do Creator com quem ela fala
+                    PlatformId = c.Participants
+                        .Where(p => p.UserId != userId)
+                        .Select(p => p.SocialProfileId)
+                        .FirstOrDefault(),
+
+                    LastMessage = c.Messages
+                        .Where(m => !m.IsDeleted)
+                        .OrderByDescending(m => m.SentAt)
+                        .FirstOrDefault(),
+
+                    UnreadCount = c.Messages.Count(m =>
+                        !m.IsDeleted &&
+                        m.SenderId != userId &&
+                        (!_context.MessageReadStatuses.Any(rs => rs.ConversationId == c.Id && rs.UserId == userId) ||
+                         m.Id > _context.MessageReadStatuses
+                            .Where(rs => rs.ConversationId == c.Id && rs.UserId == userId)
+                            .Select(rs => rs.LastReadMessageId).FirstOrDefault())),
+
+                    Tag = _context.ConversationTagAssignments
+                        .Where(cta => cta.ConversationId == c.Id && cta.UserId == userId)
+                        .Select(cta => cta.ConversationTag)
+                        .FirstOrDefault()
+                })
+                .OrderByDescending(x => x.Conversation.LastMessageAt)
                 .ToListAsync();
         }
 
