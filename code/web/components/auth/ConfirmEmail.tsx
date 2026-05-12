@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { toastSuccess } from '../ToastImplementations';
 import { useRegisterContext } from '@/providers/RegisterContext';
 import authService from '@/services/api/UsersService';
 import { useRouter } from 'next/navigation';
@@ -12,6 +13,7 @@ import { toastError } from '../ToastImplementations';
 
 export function ConfirmEmail() {
   const [userEmail] = useRegisterContext();
+  const [isResending, setIsResending] = useState(false);
   const router = useRouter();
   const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +96,24 @@ export function ConfirmEmail() {
     }
   }
 
+  async function handleResendEmail() {
+    if (!userEmail) {
+      toastError('Erro', 'Email não encontrado.');
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const success = await authService.resendEmailConfirmation(userEmail);
+      if (success) {
+        toastSuccess('Email Sended', 'We have sent a new code to your inbox.');
+      }
+    } catch (error) {
+      toastError('Error', 'Failed to resend confirmation email.');
+    } finally {
+      setIsResending(false);
+    }
+  }
 
   return (
     <Card>
@@ -105,6 +125,7 @@ export function ConfirmEmail() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
+          <fieldset disabled={isLoading || isResending} className="space-y-4"></fieldset>
           <fieldset disabled={isLoading} className="space-y-4">
             <Label htmlFor="confirmationCode">Confirmation Code</Label>
             <div className="flex justify-between gap-2">
@@ -134,6 +155,21 @@ export function ConfirmEmail() {
             >
               {isLoading ? 'Verifying...' : 'Confirm Email'}
             </Button>
+            <div className="text-center mt-6">
+              <p className="text-sm text-muted-foreground mb-2">
+                Didn&apos;t receive the code?
+              </p>
+              <Button
+                type="button"
+                variant="ghost" 
+                size="sm"
+                onClick={handleResendEmail}
+                disabled={isResending || isLoading}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                {isResending ? 'Sending...' : 'Resend Confirmation Email'}
+              </Button>
+            </div>
           </fieldset>
         </form>
       </CardContent>

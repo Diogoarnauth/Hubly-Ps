@@ -4,7 +4,7 @@ import IUserService from "../interfaces/IUserService";
 import { ApiClient } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
 import { FullUserProfileOutputModel } from "../DTO/creator/FullUserProfileOutputModel";
-import { FullCompanyProfileOutputModel } from "../DTO/FullCompanyProfileOutputModel";
+import { FullCompanyProfileOutputModel } from "../DTO/company/FullCompanyProfileOutputModel";
 import GetCreatorOutputModel from "../DTO/creator/GetCreatorOutputModel";
 import GetCompanyOutputModel from "../DTO/company/GetCompanyOutputModel";
 
@@ -60,6 +60,14 @@ class UsersService implements IUserService {
             code: confirmationCode
         }
         const response = await this.apiClient.post(API_ENDPOINTS.user.verifyEmail, user);
+        return !!response;
+    }
+
+    async resendEmailConfirmation(email: string): Promise<boolean> {
+        const request = {
+            email: email
+        }
+        const response = await this.apiClient.post(API_ENDPOINTS.user.resendEmailConfirmation, request);
         return !!response;
     }
 
