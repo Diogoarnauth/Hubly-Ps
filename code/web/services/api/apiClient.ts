@@ -113,10 +113,12 @@ export class ApiClient {
   }
 
   async post<T>(url: string, data: any): Promise<T | ConflictResponse | null> {
-    return this.request<T>(url, {
+    const response = await this.request<T>(url, {
       method: 'POST',
       body: JSON.stringify(data)
     });
+    console.log("POSTTTTTTT response", response);
+    return response;
   }
 
   async put<T>(url: string, data: any): Promise<T | ConflictResponse | null> {

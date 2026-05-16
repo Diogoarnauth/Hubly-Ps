@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import usersService from "@/services/api/UsersService";
+import { usePathname } from 'next/navigation';
 
 interface User {
     id: number;
@@ -13,7 +14,7 @@ interface User {
 interface UserContextType {
     user: User | null;
     loading: boolean;
-    refreshUser: () => Promise<void>; 
+    refreshUser: () => Promise<void>;
     logout: () => void;
 }
 
@@ -22,6 +23,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const pathname = usePathname();
 
     const fetchUser = async () => {
         try {
@@ -48,19 +50,26 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
+        const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/' || pathname === '/onboarding' || pathname === '/register/confirmEmail';
+
+        if (isAuthPage) {
+            setLoading(false);
+            return;
+        }
+
         const savedUser = localStorage.getItem('hubly_user');
         if (savedUser) {
             setUser(JSON.parse(savedUser));
-            setLoading(false);
+            fetchUser().finally(() => setLoading(false));
         } else {
             fetchUser().finally(() => setLoading(false));
         }
-    }, []);
+    }, [pathname]);
 
-   const logout = async () => {
+    const logout = async () => {
         try {
             // 1. Chama a API para fazer logout no servidor
-            await usersService.logout(); 
+            await usersService.logout();
         } catch (error) {
             console.error("Erro ao fazer logout na API:", error);
         } finally {
@@ -70,11 +79,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <UserContext.Provider value={{ 
-            user, 
-            loading, 
-            refreshUser: fetchUser, 
-            logout 
+        <UserContext.Provider value={{
+            user,
+            loading,
+            refreshUser: fetchUser,
+            logout
         }}>
             {children}
         </UserContext.Provider>
