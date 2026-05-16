@@ -45,7 +45,7 @@ export function CreatorRecommendationFeed() {
   if (!recommendations || recommendations.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-border/50 bg-muted/10 p-8 text-center text-sm text-muted-foreground">
-        Nenhuma recomendação de creators disponível no momento.
+        None of the creators are recommended at the moment.
       </div>
     );
   }
@@ -71,7 +71,7 @@ export function CreatorRecommendationFeed() {
               </div>
 
               <p className="text-[12px] text-muted-foreground line-clamp-3">
-                {profile.description || "Sem descrição disponível."}
+                {profile.description || "No description available."}
               </p>
 
               <div className="flex flex-wrap gap-1">
@@ -83,9 +83,9 @@ export function CreatorRecommendationFeed() {
               </div>
 
               <div className="flex flex-wrap gap-2 text-[11px] text-muted-foreground">
-                <span>Seguidores: {profile.followersCount ?? 0}</span>
+                <span>Followers: {profile.followersCount ?? 0}</span>
                 <span>
-                  Preço: {profile.priceMin ?? "--"}
+                  Price: {profile.priceMin ?? "--"}
                   {profile.priceMax ? ` - ${profile.priceMax}` : profile.priceMin ? "" : " --"}
                 </span>
               </div>
@@ -101,7 +101,7 @@ export function CreatorRecommendationFeed() {
             onClick={() => setVisibleCount((current) => Math.min(current + PAGE_SIZE, recommendations.length))}
             className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
           >
-            Ver mais
+            See more
           </button>
         </div>
       )}

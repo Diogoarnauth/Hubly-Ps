@@ -29,7 +29,7 @@ export function Navbar() {
       if (idParaNavegar) {
         router.push(`/chatsCompany/${idParaNavegar}`);
       } else {
-        console.error("Hubly: Não foi possível encontrar um ID para a empresa");
+        console.error("Hubly: User data is missing companyId for company role or id for creator role.");
       }
     }
   };

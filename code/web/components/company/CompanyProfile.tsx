@@ -7,8 +7,8 @@ import { toastError, toastSuccess } from '../ToastImplementations';
 import usersService, { UserInfo } from '@/services/api/UsersService';
 import conversationService from '@/services/api/ConversationService';
 import { useRouter } from 'next/navigation';
-import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
-import { SocialProfileOutputModel } from '@/services/DTO/GetCreatorOutputModel';
+import { FullCompanyProfileOutputModel } from '@/services/DTO/company/FullCompanyProfileOutputModel';
+import { SocialProfileOutputModel } from '@/services/DTO/creator/GetCreatorOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
 import GetCompanyOutputModel from '@/services/DTO/company/GetCompanyOutputModel';
 import CompanyProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
@@ -42,7 +42,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
         router.push('/dashboard');
       }
     } catch (error) {
-      console.error("Erro ao carregar perfil:", error);
+      console.error("Error loading profile:", error);
       toastError('Error', 'Failed to load profile');
       router.push('/dashboard');
     }
@@ -197,7 +197,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
                 {showDropdown && currentUser?.role === 'creator' && mySocialProfiles.length > 0 && (
                   <div className="absolute top-full right-0 mt-2 w-64 bg-[#414141] border border-zinc-600 rounded-lg shadow-lg z-10">
                     <div className="p-3">
-                      <p className="text-sm text-zinc-300 mb-2">Queres iniciar este chat com qual destes teus social profiles?</p>
+                      <p className="text-sm text-zinc-300 mb-2">Do you want to start a conversation with any of these social profiles?</p>
                       <div className="space-y-1">
                         {mySocialProfiles.map((profile) => (
                           <button

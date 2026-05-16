@@ -155,7 +155,6 @@ export const ConversationSidebar = ({
             connection.invoke("JoinTopic", sidebarTopic);
 
             connection.on("SidebarUpdate", (update: any) => {
-                console.log("DEBUG SIDEBAR RECEBIDO:", update);
 
                 if (update.isDeleted || update.type === "MESSAGE_DELETE") {
                     loadConversations();
@@ -166,7 +165,6 @@ export const ConversationSidebar = ({
                                 const currentUserId = isCompany ? profileId : creatorProfile?.creatorId;
 
                                 if (update.type === "READ_UPDATE") {
-                                    console.log("DEBUG READ_UPDATE:", update);
                                     if (update.currentUserId === currentUserId) {
                                         return { ...conv, unreadCount: 0 };
                                     }
@@ -174,7 +172,6 @@ export const ConversationSidebar = ({
                                 }
 
                                 if (update.type === "MESSAGE_CREATE") {
-                                    console.log("DEBUG MESSAGE_CREATE:", update);
                                     const isFromMe = update.senderId === currentUserId;
                                     return {
                                         ...conv,
