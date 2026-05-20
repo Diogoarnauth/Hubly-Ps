@@ -45,11 +45,9 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<User, UserError>> Register(string userName, string email, string password)
         {
-            if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
-
             if (!_usersDomain.IsValidUsername(userName)) return new UserError.InvalidName();
-
-            if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();
+            if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();      
+            if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
 
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
@@ -182,35 +180,20 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<string, UserError>> ChangePassword(int userId, string oldPassword, string newPassword)
         {
-            if (!_usersDomain.IsSafePassword(newPassword))
-            {
-                return new UserError.InvalidPassword();
-            }
+            if (!_usersDomain.IsSafePassword(newPassword)) return new UserError.InvalidPassword();
 
             return await _transactionManager.Run<OneOf<string, UserError>>(async (context) =>
             {
                 var user = await context.UserRepository.GetUserById(userId);
-                if (user == null)
-                {
-                    return new UserError.UserNotFound();
-                }
+                if (user == null) return new UserError.UserNotFound();
 
-                var oldPasswordHash = _passwordEncoder.createValidationInformation(oldPassword);
-                Console.Write("oldPassordHash:");
-                Console.Write(oldPasswordHash);
-                if (user.PasswordValidation != oldPasswordHash)
-                {
-                    return new UserError.OldPasswordIsIncorrect();
-                }
+                if (!_passwordEncoder.Verify(oldPassword, user.PasswordValidation)) return new UserError.OldPasswordIsIncorrect();
+
+                if (oldPassword == newPassword)return new UserError.NewPasswordCannotBeTheSameAsTheOldPassword();
+
                 var newPasswordHash = _passwordEncoder.createValidationInformation(newPassword);
-                Console.Write("newPasswordHash:");
-                Console.Write(newPasswordHash);
-                if (user.PasswordValidation == newPasswordHash)
-                {
-                    return new UserError.NewPasswordCannotBeTheSameAsTheOldPassword();
-                }
-
                 await context.UserRepository.ChangePassword(userId, newPasswordHash);
+
                 return "Password changed successfully";
             });
         }
