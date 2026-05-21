@@ -103,7 +103,7 @@ public class ConversationTagController : ControllerBase
         var res = await _conversationTagService.TagConversation(user.Id, conversationId, input.TagId);
 
         return res.Match<IActionResult>(
-            success => Ok(),
+            success => Ok(new { success = true }),
             error => error switch
             {
                 ConversationTagError.UnauthorizedAccess => ProblemResponse.AccessDenied.ToResponse(),
@@ -122,7 +122,7 @@ public class ConversationTagController : ControllerBase
         var res = await _conversationTagService.UntagConversation(user.Id, conversationId);
 
         return res.Match<IActionResult>(
-            success => Ok(),
+            success => Ok(new { success = true }),
             error => error switch
             {
                 ConversationTagError.UnauthorizedAccess => ProblemResponse.AccessDenied.ToResponse(),

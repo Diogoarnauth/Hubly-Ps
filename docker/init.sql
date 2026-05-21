@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS dbo.sectors (
 
 CREATE TABLE IF NOT EXISTS dbo.companies (
     user_id INTEGER PRIMARY KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
-    company_name VARCHAR(150) NOT NULL,
+    company_name VARCHAR(150) NOT NULL UNIQUE,
     is_verified BOOLEAN DEFAULT false,
     description TEXT,
     company_size VARCHAR(100),    
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS dbo.creator_social_profiles (
     id SERIAL PRIMARY KEY,
     creator_id INTEGER NOT NULL REFERENCES dbo.creators(user_id) ON DELETE CASCADE,
     platform_id INTEGER NOT NULL REFERENCES dbo.social_platforms(id) ON DELETE CASCADE,
-    platform_user_name VARCHAR(100), 
+    platform_user_name VARCHAR(100) NOT NULL, 
     link VARCHAR(255),
     description TEXT,
     followers_count INTEGER DEFAULT 0 CHECK (followers_count >= 0),

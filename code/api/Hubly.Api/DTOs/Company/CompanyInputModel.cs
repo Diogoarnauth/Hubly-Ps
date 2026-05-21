@@ -4,22 +4,22 @@ namespace Hubly.api.DTOs;
 
 public class CompanyInputModel
 {
-    [Required]
+    [Required(ErrorMessage = "Company size is required.")]
     public int CompanySize { get; set; } = 0;
 
-    [Required]
+    [Required(ErrorMessage = "Company name is required.")]
     public string CompanyName { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Description is required.")]
     public string Description { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Sectors are required.")]
     public List<string> Sectors { get; set; } = new(); 
     
-    [Required]
+    [Required(ErrorMessage = "Website link is required.")]
     public string WebsiteLink { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Country of headquarters is required.")]
     public string CountryHeadquarters { get; set; } = null!;
 
 }

@@ -6,6 +6,7 @@ import sectorService, { Sector } from '@/services/api/SectorService';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea"; // Importado aqui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from "@/components/ui/checkbox"; 
@@ -144,16 +145,24 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {/* PASSO 3: Descrição */}
+          {/* PASSO 3: Descrição Expandida */}
           {step === 3 && (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="description">Brief description of the company</Label>
-                <Input 
+                <Textarea 
                   id="description"
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="What do you do?"
+                  rows={6}
+                  className="resize-none min-h-[150px] bg-background/50 text-sm placeholder:text-muted-foreground/70"
+                  placeholder={
+                    "Tell us about your business:\n\n" +
+                    "• Budgets & Price Ranges (e.g., Gifting, Paid placements)\n" +
+                    "• Partnership Types (e.g., Affiliate, UGC, Long-term ambassadorship)\n" +
+                    "• Key Interests & Target Audience\n" +
+                    "• Campaign Goals (e.g., Brand awareness, Sales conversion)"
+                  }
                   required
                 />
               </div>

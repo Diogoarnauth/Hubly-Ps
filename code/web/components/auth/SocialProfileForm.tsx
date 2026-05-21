@@ -8,6 +8,7 @@ import platformService, { Platform } from '@/services/api/PlatformService';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea"; // Importação adicionada aqui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from "@/components/ui/checkbox";
@@ -80,11 +81,12 @@ export function SocialProfileForm() {
     try {
       const result = await creatorService.addSocialProfile(formData);
       console.log("result", result)
-      if (result.success) {
+      console.log("result.message", result.data.message != null)
+      if (result.data.message == null) {
         toastSuccess('Success!', 'Social profile added.');
         router.push(`/creator/${result.data.creatorId}`);
       } else {
-        setError(result.message || 'Error adding profile.');
+        setError(result.data.message || 'Error adding profile.');
       }
     } catch (err) {
       setError('Server connection failed.');
@@ -162,16 +164,23 @@ export function SocialProfileForm() {
             </div>
           )}
 
-          {/* PASSO 3: Descrição (Usando Input como no CompanyForm) */}
+          {/* PASSO 3: Descrição Modificada para Textarea Expandido */}
           {step === 3 && (
             <div className="space-y-4 animate-in fade-in slide-in-from-right-2">
               <div className="space-y-2">
                 <Label htmlFor="description">Profile Description</Label>
-                <Input 
+                <Textarea 
                   id="description"
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="Tell us about your content..."
+                  rows={6}
+                  className="resize-none min-h-[150px] bg-background/50 text-sm placeholder:text-muted-foreground/70"
+                  placeholder={
+                    "Tell us about your content:\n\n" +
+                    "• Your Rates / Media Kit (e.g., Price per Reel, Post, Story, UGC)\n" +
+                    "• Audience Demographics (e.g., Main countries, Age groups, Gender)\n" +
+                    "• Types of Partnerships open to (e.g., Paid campaigns, Affiliate, Gifting)"
+                  }
                   required
                 />
               </div>
