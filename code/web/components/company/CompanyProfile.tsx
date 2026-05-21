@@ -7,8 +7,8 @@ import { toastError, toastSuccess } from '../ToastImplementations';
 import usersService, { UserInfo } from '@/services/api/UsersService';
 import conversationService from '@/services/api/ConversationService';
 import { useRouter } from 'next/navigation';
-import { FullCompanyProfileOutputModel } from '@/services/DTO/FullCompanyProfileOutputModel';
-import { SocialProfileOutputModel } from '@/services/DTO/GetCreatorOutputModel';
+import { FullCompanyProfileOutputModel } from '@/services/DTO/company/FullCompanyProfileOutputModel';
+import { SocialProfileOutputModel } from '@/services/DTO/creator/GetCreatorOutputModel';
 import { EditCompanyModal } from './EditCompanyModal';
 import GetCompanyOutputModel from '@/services/DTO/company/GetCompanyOutputModel';
 import CompanyProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
@@ -41,7 +41,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
         router.push('/dashboard');
       }
     } catch (error) {
-      console.error("Erro ao carregar perfil:", error);
+      console.error("Error loading profile:", error);
       toastError('Error', 'Failed to load profile');
       router.push('/dashboard');
     }

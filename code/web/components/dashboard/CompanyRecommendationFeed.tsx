@@ -21,7 +21,7 @@ export function CompanyRecommendationFeed() {
         const data = await CompanyService.getRecommendedCompanies();
         setRecommendations(data || []);
       } catch (error) {
-        console.error("Erro ao carregar recomendações de companies:", error);
+        console.error("Error loading recommendations:", error);
         setRecommendations([]);
       } finally {
         setLoading(false);
@@ -45,7 +45,7 @@ export function CompanyRecommendationFeed() {
   if (!recommendations || recommendations.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-border/50 bg-muted/10 p-8 text-center text-sm text-muted-foreground">
-        Nenhuma recomendação de empresas disponível no momento.
+        No company recommendations available at the moment.
       </div>
     );
   }
@@ -66,12 +66,12 @@ export function CompanyRecommendationFeed() {
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-sm truncate">{company.companyName}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{company.countryHeadquarters || "Localização não disponível"}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{company.countryHeadquarters || "Location not available"}</p>
                 </div>
               </div>
 
               <p className="text-[12px] text-muted-foreground line-clamp-3">
-                {company.description || "Sem descrição disponível."}
+                {company.description || "No description available."}
               </p>
 
               <div className="flex flex-wrap gap-1">
@@ -93,7 +93,7 @@ export function CompanyRecommendationFeed() {
             onClick={() => setVisibleCount((current) => Math.min(current + PAGE_SIZE, recommendations.length))}
             className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
           >
-            Ver mais
+            See more
           </button>
         </div>
       )}

@@ -31,7 +31,7 @@ export function EditCreatorModal({
       onSuccess();
       onClose();
     } else {
-      alert("Ocorreu um erro ao atualizar um ou mais campos.");
+      alert("Failed to save changes. Please try again.");
     }
     setLoading(false);
   }

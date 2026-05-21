@@ -85,7 +85,7 @@ export function CompanySearch({ onBack }: { onBack: () => void }) {
             });
             setResults(response);
         } catch (error) {
-            console.error("Erro na pesquisa:", error);
+            console.error("Error searching companies:", error);
         } finally {
             setIsLoading(false);
         }

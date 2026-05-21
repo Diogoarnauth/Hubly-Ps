@@ -219,7 +219,7 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
             {showDropdown && currentUser?.role === 'creator' && mySocialProfiles.length > 0 && (
               <div className="absolute top-full right-0 mt-2 w-64 bg-[#414141] border border-zinc-600 rounded-lg shadow-lg z-10">
                 <div className="p-3">
-                  <p className="text-sm text-zinc-300 mb-2">Queres iniciar este chat com qual destes teus social profiles?</p>
+                  <p className="text-sm text-zinc-300 mb-2">Do you want to start a conversation with any of these social profiles?</p>
                   <div className="space-y-1">
                     {mySocialProfiles.map((profile) => (
                       <button
@@ -249,7 +249,7 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
               size="icon"
               className="hover:bg-red-950/30 hover:text-red-500 text-zinc-400 transition-colors"
               onClick={handleDelete}
-              title="Eliminar Perfil Social"
+              title="Delete Social Profile"
             >
               <Trash2 className="w-6 h-6" />
             </Button>

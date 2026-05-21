@@ -40,7 +40,7 @@ export function CreatorCarousel() {
   if (!creators || creators.length === 0) {
     return (
       <div className="text-center p-10 border border-dashed rounded-lg text-muted-foreground">
-        Nenhum criador em destaque no momento.
+        No trending creators at the moment.
       </div>
     )
   }
@@ -62,7 +62,7 @@ export function CreatorCarousel() {
                   
                   <div className="p-4 border-t">
                     <p className="font-bold truncate">
-                      {c.PlatformUserName || (c as any).platformUserName || "Sem nome"}
+                      {c.PlatformUserName || (c as any).platformUserName || "No name"}
                     </p>
                     <p className="text-xs text-muted-foreground italic">
                       {c.PlatformName || (c as any).platformName || "Plataforma"}

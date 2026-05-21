@@ -59,7 +59,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
         }
       }
     } catch (error) {
-      console.error("Erro ao carregar mensagens:", error);
+      console.error("Error loading messages:", error);
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +115,6 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       connection.invoke("JoinTopic", `chat_${id}`);
 
       connection.on("NewMessage", (newMessage: Message) => {
-        console.log("Nova mensagem recebida:", newMessage);
         setMessages((prev) => {
           if (prev.some(m => m.id === newMessage.id)) return prev;
           return [...prev, newMessage];

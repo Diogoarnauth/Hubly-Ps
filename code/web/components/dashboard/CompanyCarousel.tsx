@@ -40,7 +40,7 @@ export function CompanyCarousel() {
     if (companies.length === 0) {
         return (
             <div className="text-center p-10 border border-dashed rounded-lg text-muted-foreground">
-                Nenhuma empresa em destaque.
+                None of the companies are trending at the moment
             </div>
         );
     }
