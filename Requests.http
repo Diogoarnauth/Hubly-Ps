@@ -3,14 +3,14 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= iELK+PqsBQNvJxpCDvmdWp6N5HZ5wSZi8nEVk4s7EDA=
+@token= WPq1xZF6Zs2CVD1GT/GuxbRCXGVZAsSpe0CpHdF3P2A=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
 Content-Type: {{contentType}}
 
 {
-    "name": "Bananinha",
+    "name": "olo",
     "email": "carolbrazete10@gmail.com",
     "password": "Carol2010!"
 }
@@ -20,7 +20,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete10@gmail.com",
+    "email": "carolbrazete100@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -61,7 +61,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "newUsername": "banana"
+    "newUsername": "ba"
 }
 
 ### 5. Editar password
@@ -81,8 +81,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete10@gmail.com",
-    "code": "257882" 
+    "email": "carolbrazete100@gmail.com",
+    "code": "555029" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -91,7 +91,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "Bananinha1234@example.com"
+    "email": "carolbrazete10@gmail.com"
 }
 
 ### Register Creator
@@ -100,7 +100,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "artisticName": "Kazio"
+  "artisticName": "Kazio0000"
 }
 
 ### Get creator info
@@ -231,7 +231,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "Platform_user_name": "caroli",
+  "Platform_user_name": "carolina",
   "Link": "https://www.youtube.com/@KazzioProva",
   "Description": "Adoro fazer pranks",
   "Followers_count": 4,

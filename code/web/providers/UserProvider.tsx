@@ -34,7 +34,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
                     id: userData.id,
                     name: userData.name,
                     email: userData.email,
-                    role: userData.role
+                    role: "company"//userData.role
                 };
                 setUser(userToSave);
                 localStorage.setItem('hubly_user', JSON.stringify(userToSave));

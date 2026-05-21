@@ -13,7 +13,7 @@ import { CreateTagModal } from './CreateTagModal';
 
 
 const TagBadge = ({ tag }: { tag: any }) => (
-    <div 
+    <div
         className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 flex items-center"
         title={tag.tagName}
     >
@@ -48,7 +48,7 @@ export const ConversationSidebar = ({
     const [isTagCreating, setIsTagCreating] = useState(false);
     const [pendingConversationId, setPendingConversationId] = useState<string | number | null>(null);
 
-   useEffect(() => {
+    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setActiveMenuId(null);
@@ -113,6 +113,11 @@ export const ConversationSidebar = ({
                 response = await conversationService.getConversationsByProfileId(profileId);
             }
             const dataToSet = Array.isArray(response) ? response : (response?.data || []);
+
+            dataToSet.forEach((conv: any) => {
+                //console.log(`[Carga Inicial - Conversa ${conv.id}] UnreadCount atual:`, conv.unreadCount);
+            });
+
             setConversations(dataToSet);
         } catch (err) {
             setConversations([]);
@@ -144,7 +149,7 @@ export const ConversationSidebar = ({
 
     useEffect(() => {
         if (creatorProfile) {
-            console.log("Creator profile loaded:", creatorProfile);
+            //console.log("Creator profile loaded:", creatorProfile);
         }
     }, [creatorProfile]);
 
@@ -155,6 +160,7 @@ export const ConversationSidebar = ({
             connection.invoke("JoinTopic", sidebarTopic);
 
             connection.on("SidebarUpdate", (update: any) => {
+                //console.log("DEBUG SIDEBAR RECEBIDO:", update);
 
                 if (update.isDeleted || update.type === "MESSAGE_DELETE") {
                     loadConversations();
@@ -165,14 +171,19 @@ export const ConversationSidebar = ({
                                 const currentUserId = isCompany ? profileId : creatorProfile?.creatorId;
 
                                 if (update.type === "READ_UPDATE") {
+                                    //console.log("DEBUG READ_UPDATE:", update);
                                     if (update.currentUserId === currentUserId) {
+                                        //console.log(`[Conversa ${conv.id}] UnreadCount mudou de ${conv.unreadCount} para 0 (Ação: READ_UPDATE)`);
                                         return { ...conv, unreadCount: 0 };
                                     }
                                     return conv;
                                 }
 
                                 if (update.type === "MESSAGE_CREATE") {
+                                    //console.log("DEBUG MESSAGE_CREATE:", update);
                                     const isFromMe = update.senderId === currentUserId;
+                                    const novoCount = isFromMe ? 0 : conv.unreadCount + 1;
+                                    //console.log(`[Conversa ${conv.id}] UnreadCount mudou de ${conv.unreadCount} para ${novoCount} (Ação: MESSAGE_CREATE de ${update.senderId})`);
                                     return {
                                         ...conv,
                                         lastMessage: update.content,
@@ -208,9 +219,9 @@ export const ConversationSidebar = ({
 
     if (loading) return <div className="p-4 text-zinc-500 italic">Loading Messages...</div>;
 
-    return (
+  return (
         <>
-            <CreateTagModal 
+            <CreateTagModal
                 isOpen={isCreateTagModalOpen}
                 onClose={() => {
                     setIsCreateTagModalOpen(false);
@@ -220,88 +231,100 @@ export const ConversationSidebar = ({
                 isLoading={isTagCreating}
             />
             <div className="w-full h-full bg-zinc-900 border-r border-zinc-800 flex flex-col relative">
-            <div className="p-4 border-b border-zinc-800">
-                <h2 className="text-xl font-bold text-white">Messages</h2>
-            </div>
+                <div className="p-4 border-b border-zinc-800">
+                    <h2 className="text-xl font-bold text-white">Messages</h2>
+                </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
-                {conversations.map((conv) => (
-                    <div
-                        key={conv.id}
-                        onClick={() => onSelectConversation(conv.id)}
-                        className={`w-full p-4 flex items-center gap-3 hover:bg-zinc-800/40 transition-all border-b border-zinc-800/50 cursor-pointer relative group ${
-                            activeConversationId === conv.id ? 'bg-zinc-800' : ''
-                        }`}
-                    >
-                        {/* A "Etiqueta" Lateral */}
-                        {conv.tag && <TagBadge tag={conv.tag} />}
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    {conversations.map((conv) => (
+                        <div
+                            key={conv.id}
+                            onClick={() => onSelectConversation(conv.id)}
+                            className={`w-full p-4 flex items-center gap-3 hover:bg-zinc-800/40 transition-all border-b border-zinc-800/50 cursor-pointer relative group ${
+                                activeConversationId === conv.id ? 'bg-zinc-800' : ''
+                            }`}
+                        >
+                            {/* A "Etiqueta" Lateral */}
+                            {conv.tag && <TagBadge tag={conv.tag} />}
 
-                        <div className="w-12 h-12 rounded-full bg-zinc-700 flex-shrink-0 flex items-center justify-center text-white font-bold border border-zinc-600 relative">
-                            {conv.otherPartyName ? conv.otherPartyName[0].toUpperCase() : '?'}
-                        </div>
+                            <div className="w-12 h-12 rounded-full bg-zinc-700 flex-shrink-0 flex items-center justify-center text-white font-bold border border-zinc-600 relative">
+                                {conv.otherPartyName ? conv.otherPartyName[0].toUpperCase() : '?'}
+                            </div>
 
-                        <div className="flex-1 min-w-0">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="font-semibold text-white truncate text-sm">
-                                    {conv.otherPartyName}
-                                </span>
-                                <div className="flex items-center gap-2">
-                                    {/* Botão de Gestão de Tags (Aparece no Hover ou se menu aberto) */}
-                                    <div className="relative" ref={activeMenuId === conv.id ? menuRef : null}>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setActiveMenuId(activeMenuId === conv.id ? null : conv.id);
-                                            }}
-                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-zinc-700 rounded transition-opacity"
-                                        >
-                                            <TagIcon size={14} className="text-zinc-400" />
-                                        </button>
-
-                                        {/* Dropdown de Tags */}
-                                        {activeMenuId === conv.id && (
-                                            <div className="absolute right-0 mt-2 w-48 bg-zinc-800 border border-zinc-700 rounded-md shadow-xl z-50 py-1 overflow-hidden">
-                                                <p className="px-3 py-1.5 text-[10px] font-bold text-zinc-500 uppercase border-b border-zinc-700">Existing Tags</p>
-                                                <div className="max-h-40 overflow-y-auto">
-                                                    {availableTags.map(tag => (
-                                                        <button
-                                                            key={tag.id}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleAssignExistingTag(conv.id, tag.id);
-                                                            }}
-                                                            className="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
-                                                        >
-                                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.colorHex }} />
-                                                            {tag.tagName}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleCreateAndAssignTag(conv.id);
-                                                    }}
-                                                    className="w-full text-left px-3 py-2 text-xs text-blue-400 hover:bg-blue-500/10 border-t border-zinc-700 flex items-center gap-2"
-                                                >
-                                                    <Plus size={12} />
-                                                    Create New Tag
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <span className="text-[10px] text-zinc-500 whitespace-nowrap">
-                                        {new Date(conv.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            <div className="flex-1 min-w-0">
+                                {/* Linha Superior: Nome, Botão de Tags e Hora */}
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="font-semibold text-white truncate text-sm">
+                                        {conv.otherPartyName}
                                     </span>
+                                    <div className="flex items-center gap-2">
+                                        {/* Botão de Gestão de Tags */}
+                                        <div className="relative" ref={activeMenuId === conv.id ? menuRef : null}>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveMenuId(activeMenuId === conv.id ? null : conv.id);
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-zinc-700 rounded transition-opacity"
+                                            >
+                                                <TagIcon size={14} className="text-zinc-400" />
+                                            </button>
+
+                                            {/* Dropdown de Tags */}
+                                            {activeMenuId === conv.id && (
+                                                <div className="absolute right-0 mt-2 w-48 bg-zinc-800 border border-zinc-700 rounded-md shadow-xl z-50 py-1 overflow-hidden">
+                                                    <p className="px-3 py-1.5 text-[10px] font-bold text-zinc-500 uppercase border-b border-zinc-700">Existing Tags</p>
+                                                    <div className="max-h-40 overflow-y-auto">
+                                                        {availableTags.map(tag => (
+                                                            <button
+                                                                key={tag.id}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleAssignExistingTag(conv.id, tag.id);
+                                                                }}
+                                                                className="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+                                                            >
+                                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.colorHex }} />
+                                                                {tag.tagName}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleCreateAndAssignTag(conv.id);
+                                                        }}
+                                                        className="w-full text-left px-3 py-2 text-xs text-blue-400 hover:bg-blue-500/10 border-t border-zinc-700 flex items-center gap-2"
+                                                    >
+                                                        <Plus size={12} />
+                                                        Create New Tag
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="text-[10px] text-zinc-500 whitespace-nowrap">
+                                            {new Date(conv.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Linha Inferior: Última Mensagem e Contador Notificação */}
+                                <div className="flex justify-between items-center gap-2">
+                                    <p className={`text-xs truncate ${conv.unreadCount > 0 ? 'text-zinc-200 font-medium' : 'text-zinc-400'}`}>
+                                        {conv.lastMessage || <span className="italic text-zinc-600">No messages yet...</span>}
+                                    </p>
+
+                                    {/* Contador Visual (Apenas renderiza se unreadCount > 0) */}
+                                    {conv.unreadCount > 0 && (
+                                        <span className="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center h-4 flex items-center justify-center shrink-0 shadow-sm">
+                                            {conv.unreadCount}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
-                            <p className="text-xs text-zinc-400 truncate">
-                                {conv.lastMessage || <span className="italic text-zinc-600">No messages yet...</span>}
-                            </p>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
             </div>
         </>
     );

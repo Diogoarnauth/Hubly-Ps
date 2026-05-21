@@ -14,6 +14,6 @@ namespace Hubly.api.Services.Problems
         public class UserAlreadyRegisteredAsCreator : CompanyError { }
         public class InvalidWebSiteLink : CompanyError { }
         public class InvalidCountryHeadquarters : CompanyError { }
-
+        
     }
 }

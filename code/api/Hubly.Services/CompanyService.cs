@@ -35,6 +35,9 @@ namespace Hubly.api.Services
 
             var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {
+                if (await context.CompanyRepository.ExistsByCompanyName(company_name))
+                    return new CompanyError.CompanyAlreadyExists(); 
+
                 var foundSectors = await context.CompanyRepository.GetSectorByName(sectors);
 
                 if (foundSectors.Count != sectors.Count) return new CompanyError.InvalidSectorName();
@@ -64,6 +67,7 @@ namespace Hubly.api.Services
 
             return result;
         }
+
         public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, List<string> sectors, string website_link, string country_headquarters)
         {
             if (!_companiesDomain.IsValidWebsite(website_link)) return new CompanyError.InvalidWebSiteLink();

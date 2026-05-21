@@ -4,7 +4,7 @@ namespace Hubly.api.DTOs;
 
 public class CreatorCreateInputModel
 {
-    [Required]
+    [Required (ErrorMessage = "The artistic name is required.")]
     public string ArtisticName { get; set; } = null!;
 
 }

@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Building2, Loader2, Settings, Send } from 'lucide-react';
+import { ArrowLeft, Building2, Loader2, Settings, Send, CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toastError, toastSuccess } from '../ToastImplementations';
@@ -25,7 +25,6 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
   const [mySocialProfiles, setMySocialProfiles] = useState<{ id: number; name: string; platform: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
-
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -144,6 +143,27 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
     }
   };
 
+  // Função para despoletar o envio de email de verificação
+  const handleVerifyAccountEmail = () => {
+    const supportEmail = "hublyproject@gmail.com";
+    const companyName = profile?.company?.companyName || "N/A";
+    const subject = encodeURIComponent(`Hubly: Solicitação de Verificação - ${companyName}`);
+
+    const body = encodeURIComponent(
+      `Hello Hubly Team,\n\n` +
+      `I would like to request the official verification badge for my company on your platform.\n\n` +
+      `Profile Details:\n` +
+      `- Company Name: ${companyName}\n` +
+      `- Account Email: ${profile?.email || 'N/A'}\n` +
+      `- Owner User ID: ${id}\n\n` +
+      `[Please attach an official proof or company activity document to this email so we can validate the business identity].\n\n` +
+      `Best regards,\n` +
+      `${profile?.name || companyName}`
+    );
+
+    window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center text-white">
@@ -154,84 +174,96 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
 
   return (
     <div className="text-white relative pt-[5vh]">
-          {!profile?.isOwner && (
-            <div className="flex justify-end mb-4 gap-2">
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-zinc-800"
-                  disabled={
-                    checkingChat ||
-                    !currentUser ||
-                    (currentUser.role === 'creator' && !mySocialProfiles.length) ||
-                    (currentUser.role === 'company' && !currentCompanyId)
-                  }
-                  onClick={async () => {
-                    if (currentUser?.role === 'creator') {
-                      setShowDropdown((prev) => !prev);
-                      return;
-                    }
+      {!profile?.isOwner && (
+        <div className="flex justify-end mb-4 gap-2">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-zinc-800"
+              disabled={
+                checkingChat ||
+                !currentUser ||
+                (currentUser.role === 'creator' && !mySocialProfiles.length) ||
+                (currentUser.role === 'company' && !currentCompanyId)
+              }
+              onClick={async () => {
+                if (currentUser?.role === 'creator') {
+                  setShowDropdown((prev) => !prev);
+                  return;
+                }
 
-                    if (currentUser?.role === 'company' && currentCompanyId) {
-                      setShowDropdown(false);
-                      await handleConversationFlow(currentCompanyId, 1);
-                    }
-                  }}
-                  title={
-                    checkingChat
-                      ? 'Loading...'
-                      : !currentUser
-                      ? 'Loading...'
-                      : currentUser.role === 'creator'
+                if (currentUser?.role === 'company' && currentCompanyId) {
+                  setShowDropdown(false);
+                  await handleConversationFlow(currentCompanyId, 1);
+                }
+              }}
+              title={
+                checkingChat
+                  ? 'Loading...'
+                  : !currentUser
+                    ? 'Loading...'
+                    : currentUser.role === 'creator'
                       ? mySocialProfiles.length
                         ? 'Start conversation'
                         : 'No profiles loaded'
                       : currentCompanyId
-                      ? 'Start conversation'
-                      : 'Loading...'
-                  }
-                >
-                  <Send className="w-8 h-8 text-white" />
-                </Button>
-                {showDropdown && currentUser?.role === 'creator' && mySocialProfiles.length > 0 && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-[#414141] border border-zinc-600 rounded-lg shadow-lg z-10">
-                    <div className="p-3">
-                      <p className="text-sm text-zinc-300 mb-2">Do you want to start a conversation with any of these social profiles?</p>
-                      <div className="space-y-1">
-                        {mySocialProfiles.map((profile) => (
-                          <button
-                            key={profile.id}
-                            disabled={dropdownLoadingProfileId === profile.id}
-                            className="w-full text-left p-2 rounded hover:bg-zinc-700 text-white text-sm disabled:cursor-not-allowed disabled:opacity-60"
-                            onClick={async () => {
-                              setDropdownLoadingProfileId(profile.id);
-                              await handleConversationFlow(profile.id, 2);
-                            }}
-                          >
-                            <div className="font-medium">{profile.name}</div>
-                            <div className="text-xs text-zinc-400">{profile.platform}</div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                        ? 'Start conversation'
+                        : 'Loading...'
+              }
+            >
+              <Send className="w-8 h-8 text-white" />
+            </Button>
+            {showDropdown && currentUser?.role === 'creator' && mySocialProfiles.length > 0 && (
+              <div className="absolute top-full right-0 mt-2 w-64 bg-[#414141] border border-zinc-600 rounded-lg shadow-lg z-10">
+                <div className="p-3">
+                  <p className="text-sm text-zinc-300 mb-2">Queres iniciar este chat com qual destes teus social profiles?</p>
+                  <div className="space-y-1">
+                    {mySocialProfiles.map((profile) => (
+                      <button
+                        key={profile.id}
+                        disabled={dropdownLoadingProfileId === profile.id}
+                        className="w-full text-left p-2 rounded hover:bg-zinc-700 text-white text-sm disabled:cursor-not-allowed disabled:opacity-60"
+                        onClick={async () => {
+                          setDropdownLoadingProfileId(profile.id);
+                          await handleConversationFlow(profile.id, 2);
+                        }}
+                      >
+                        <div className="font-medium">{profile.name}</div>
+                        <div className="text-xs text-zinc-400">{profile.platform}</div>
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
-            </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {profile?.isOwner && (
+        <div className="flex justify-end items-center mb-4 gap-3">
+          {/* Botão de Verificação: só renderiza se o dono estiver a ver e a empresa ainda NÃO for verificada */}
+          {!profile?.company?.isVerified && (
+            <Button
+              onClick={handleVerifyAccountEmail}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs gap-2 px-4 h-9 rounded-md transition-all active:scale-95 shadow-md border border-blue-400/20"
+            >
+              <CheckCircle size={14} className="animate-pulse" />
+              Get a Verified Account
+            </Button>
           )}
-          {profile?.isOwner && (
-            <div className="flex justify-end mb-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="hover:bg-zinc-800"
-                onClick={() => setIsEditModalOpen(true)}
-              >
-                <Settings className="w-8 h-8 text-white" />
-              </Button>
-            </div>
-          )}
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-zinc-800"
+            onClick={() => setIsEditModalOpen(true)}
+          >
+            <Settings className="w-8 h-8 text-white" />
+          </Button>
+        </div>
+      )}
 
       {/* Botão de Voltar */}
       <div className="flex justify-start mb-4">

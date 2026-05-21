@@ -5,7 +5,7 @@ namespace Hubly.api.Problems;
 public class ProblemResponse
 {
 
-private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/blob/main/docs/errors/";
+    private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/blob/main/docs/errors/";
     private const string MEDIA_TYPE = "application/problem+json";
 
     public string Type { get; }
@@ -17,6 +17,11 @@ private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/blob/m
         Type = $"{BASE_URL}{type}.md";
         Message = message;
         Status = status;
+    }
+
+    public static ProblemResponse ValidationError(string errorMessage)
+    {
+        return new ProblemResponse("validation-error", errorMessage, 400);
     }
 
     public IActionResult ToResponse()//todo penso que seja a fun de criar o json completo(ver depois )
@@ -206,11 +211,11 @@ private const string BASE_URL = "https://github.com/Diogoarnauth/Hubly-Ps/blob/m
         "invalid-country-headquarters",
         "Invalid Country Headquarters",
     500);
- 
-     public static readonly ProblemResponse InvalidPriceRange = new(
-       "invalid-price-range",
-       "Invalid Price Range",
-   401);
+
+    public static readonly ProblemResponse InvalidPriceRange = new(
+      "invalid-price-range",
+      "Invalid Price Range",
+  401);
 
     public static readonly ProblemResponse PlatformNotFound = new(
         "platform-not-found",

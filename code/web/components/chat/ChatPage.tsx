@@ -30,10 +30,10 @@ export const ChatPage = ({ id }: ChatPageProps) => {
 
   useEffect(() => {
     const fetchMe = async () => {
-        const myProfile = await userService.getCurrentUser(); 
-        if (myProfile) {
-          setCurrentUserId(myProfile.id);
-        }
+      const myProfile = await userService.getCurrentUser();
+      if (myProfile) {
+        setCurrentUserId(myProfile.id);
+      }
     };
     fetchMe();
   }, []);
@@ -46,6 +46,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
       const data = await conversationService.getMessages(parseInt(id), pageNum, pageSize);
       if (data && data.items) {
         const newMessages = data.items.toReversed();
+        console.log("🟢 MENSAGENS CARREGADAS:", newMessages);
 
         setMessages((prev) => {
           if (pageNum === 1) return newMessages;
@@ -73,15 +74,28 @@ export const ChatPage = ({ id }: ChatPageProps) => {
 
   // Mark messages as read when messages are loaded
   useEffect(() => {
+    console.log("🟢 Verificando mensagens para marcar como lidas...", { messages, currentUserId });
     if (messages.length > 0 && currentUserId) {
+      console.log("🟢 ENTREI AQUI.");
       const lastMessage = messages[messages.length - 1];
       const lastMessageId = Number(lastMessage.id);
-      if (!Number.isInteger(lastMessageId)) {
-        console.warn("Invalid message id for mark-read:", lastMessage.id);
+
+      if (lastMessage.conversationId && lastMessage.conversationId !== parseInt(id)) {
+        /*console.warn("⚠️ Bloqueado mark-read: Mensagem pertence a outra conversa!", {
+          messageConvId: lastMessage.conversationId,
+          activeChatId: id
+        });*/
         return;
       }
 
+      if (!Number.isInteger(lastMessageId)) {
+        //console.warn("Invalid message id for mark-read:", lastMessage.id);
+        return;
+      }
+
+      console.log("lastMessageId for mark-read:", lastMessageId);
       conversationService.markMessagesAsRead(parseInt(id), lastMessageId);
+
     }
   }, [messages, currentUserId, id]);
 
@@ -138,12 +152,12 @@ export const ChatPage = ({ id }: ChatPageProps) => {
     const now = new Date();
     const msgDate = new Date(timestamp * 1000); // Assuming timestamp is in seconds
     const isToday = msgDate.toDateString() === now.toDateString();
-    
+
     if (isToday) {
       return msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
     } else {
-      return msgDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }) + ' ' + 
-             msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+      return msgDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }) + ' ' +
+        msgDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
     }
   };
 

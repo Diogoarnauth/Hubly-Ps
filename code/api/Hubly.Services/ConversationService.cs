@@ -442,8 +442,10 @@ namespace Hubly.api.Services
                 if (participant == null) return new ConversationError.AccessDenied();
 
                 var message = await context.MessageRepository.GetById(lastMessageId);
+                Console.WriteLine($"Hublyyy mensagem result {message.ConversationId}, do id {lastMessageId} na conversa {conversationId}");
                 if (message == null || message.ConversationId != conversationId)
                 {
+                    Console.WriteLine($"Hublyyy mensagem não encontrada");
                     return new ConversationError.MessageNotFound();
                 }
 

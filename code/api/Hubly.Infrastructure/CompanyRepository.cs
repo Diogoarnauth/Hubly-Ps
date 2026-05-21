@@ -21,8 +21,14 @@ namespace Hubly.api.Infrastructure
         public async Task<bool> RegisterCompany(Company newCompany)
         {
             await _context.Companies.AddAsync(newCompany);
-            // O SaveChangesAsync será gerido pelo TransactionManager no Service
             return true;
+        }
+
+        public async Task<bool> ExistsByCompanyName(string companyName)
+        {
+            if (string.IsNullOrWhiteSpace(companyName)) return false;
+
+            return await _context.Companies.AnyAsync(c => EF.Functions.ILike(c.CompanyName, companyName));
         }
 
         public async Task<bool> ExistsByUserId(int userId)
@@ -158,10 +164,10 @@ namespace Hubly.api.Infrastructure
         }
 
     }
-     public class CompanyRecommendationDto
-        {
-            public int user_id { get; set; }
-            public string company_name { get; set; }
-            public int recommendation_score { get; set; }
-        }
+    public class CompanyRecommendationDto
+    {
+        public int user_id { get; set; }
+        public string company_name { get; set; }
+        public int recommendation_score { get; set; }
+    }
 }

@@ -11,6 +11,7 @@ using Hubly.api.Services;
 using Mapster;
 using Hubly.api.DTOs;
 using Hubly.api.Services.Hubs;
+using Hubly.api.Problems;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddScoped<CompaniesDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 //pipeline configuration
+// Pipeline configuration e Interceção de Erros de DTOs antes do Controller
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<RequireAuthenticationAttribute>();
@@ -46,6 +48,18 @@ builder.Services.AddControllers(options =>
 .AddMvcOptions(options =>
 {
     options.ModelBinderProviders.Insert(0, new AuthenticatedUserModelBinderProvider());
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = actionContext =>
+    {
+        var errorMessage = actionContext.ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .FirstOrDefault() ?? "Validation failed.";
+
+        return ProblemResponse.ValidationError(errorMessage).ToResponse();
+    };
 });
 
 builder.Services.AddEndpointsApiExplorer();
