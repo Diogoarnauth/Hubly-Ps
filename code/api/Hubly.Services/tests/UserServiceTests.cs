@@ -27,11 +27,9 @@ public class UserServiceTests : IClassFixture<UserServiceFixture>
         Assert.True(result.IsT0);
         Assert.Equal(_fixture.TokenValue, result.AsT0);
 
-        // Verifica o novo fluxo: primeiro busca por Email, depois verifica o Hash via BCrypt
         _fixture.UserRepository.Verify(x => x.GetUserByEmail(_fixture.ValidEmail), Times.Once);
         _fixture.PasswordEncoder.Verify(x => x.Verify(_fixture.ValidPassword, _fixture.HashedPassword), Times.Once);
 
-        // Verifica a geração do Token
         _fixture.TokenService.Verify(x => x.GenerateTokenValue(), Times.Once);
         _fixture.TokenService.Verify(x => x.CreateTokenValidationInformation(_fixture.TokenValue), Times.Once);
         _fixture.TokenService.Verify(x => x.CreateToken(_fixture.UserId, _fixture.TokenValidation, It.IsAny<ITransactionContext>()), Times.Once);
@@ -47,11 +45,9 @@ public class UserServiceTests : IClassFixture<UserServiceFixture>
         Assert.True(result.IsT1);
         Assert.IsType<UserError.InvalidCredentials>(result.AsT1);
 
-        // Deve tentar procurar e validar, mas falhar na password
         _fixture.UserRepository.Verify(x => x.GetUserByEmail(_fixture.ValidEmail), Times.Once);
         _fixture.PasswordEncoder.Verify(x => x.Verify(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-        // Nunca deve gerar token se falhar as credenciais
         _fixture.TokenService.Verify(x => x.GenerateTokenValue(), Times.Never);
     }
 
@@ -82,7 +78,7 @@ public class UserServiceTests : IClassFixture<UserServiceFixture>
     }
 
     [Theory]
-    [InlineData("short")] // Falha no tamanho mínimo de 8 caracteres configurado
+    [InlineData("short")]
     public async Task Register_WithInvalidPassword_ShouldReturnFailure(string password)
     {
         var result = await _fixture.UserService.Register(_fixture.ValidUsername, _fixture.ValidEmail, password);
@@ -95,7 +91,7 @@ public class UserServiceTests : IClassFixture<UserServiceFixture>
     }
 
     [Theory]
-    [InlineData("ab")] // Falha no tamanho mínimo de 3 caracteres configurado
+    [InlineData("ab")] 
     public async Task Register_WithInvalidUsername_ShouldReturnFailure(string username)
     {
         var result = await _fixture.UserService.Register(username, _fixture.ValidEmail, _fixture.ValidPassword);

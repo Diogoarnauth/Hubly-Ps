@@ -163,17 +163,14 @@ namespace Hubly.api.Services
 
         public async Task<OneOf<int, ConversationError>> SendMessage(int currentUserId, int conversationId, string content)
         {
-            Console.WriteLine($"Hubly: 0");
             var result = await _transactionManager.Run<OneOf<SendMessageResult, ConversationError>>(async (context) =>
             {
-                Console.WriteLine($"Hubly: 1");
 
                 var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, currentUserId);
                 if (!isParticipant) return new ConversationError.AccessDenied();
 
                 try
                 {
-                    Console.WriteLine($"Hubly: 2");
 
                     var sentAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                     var message = new Message
@@ -195,14 +192,12 @@ namespace Hubly.api.Services
                         await context.ConversationRepository.Update(conversation);
                     }
 
-                    // Fetch participants with Include to load navigation property
                     var conversationWithParticipants = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
                     var participants = conversationWithParticipants?.Participants
                         .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
                         .Where(id => id != 0)
                         .ToList() ?? new List<int>();
 
-                    Console.WriteLine($"Hubly: 3, {participants.Count} participants found in conversation {conversationId}");
 
                     return new SendMessageResult(messageId, participants);
                 }
@@ -428,7 +423,7 @@ namespace Hubly.api.Services
                 return await context.ConversationRepository.GetCompanyConversationsExtended(userId, companyId);
             });
         }
-        
+
         public async Task<OneOf<bool, ConversationError>> MarkMessagesAsRead(int currentUserId, int conversationId, int lastMessageId)
         {
             var result = await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>

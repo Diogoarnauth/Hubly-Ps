@@ -60,8 +60,7 @@ namespace Hubly.api.Services.Fixtures
 
             SetupConfigurationMock();
 
-            TransactionContext.Setup(tc => tc.UserRepository).Returns(UserRepository.Object);
-            TransactionContext.Setup(tc => tc.EmailConfirmationRepository).Returns(new Mock<IEmailConfirmationRepository>().Object);
+            SetupTransactionContext();
 
             TestUser = new User
             {
@@ -109,6 +108,12 @@ namespace Hubly.api.Services.Fixtures
             Configuration.Setup(c => c.GetSection("EmailSettings:ConfirmationCodeLength")).Returns(lengthSection.Object);
         }
 
+        private void SetupTransactionContext()
+        {
+            TransactionContext.Setup(tc => tc.UserRepository).Returns(UserRepository.Object);
+            TransactionContext.Setup(tc => tc.EmailConfirmationRepository).Returns(new Mock<IEmailConfirmationRepository>().Object);
+        }
+
         private void SetupTransactionManager()
         {
             TransactionManager
@@ -154,9 +159,8 @@ namespace Hubly.api.Services.Fixtures
             TransactionManager.Reset();
             TransactionContext.Reset();
 
-            TransactionContext.Setup(tc => tc.UserRepository).Returns(UserRepository.Object);
-            TransactionContext.Setup(tc => tc.EmailConfirmationRepository).Returns(new Mock<IEmailConfirmationRepository>().Object);
-
+            SetupTransactionContext();
+            
             SetupTransactionManager();
             SetupConfigurationMock();
             SetupDefaultMocks();
