@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import usersService from "@/services/api/UsersService";
-import { usePathname } from 'next/navigation';
 
 interface User {
     id: number;
@@ -21,68 +21,42 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const pathname = usePathname();
+    const queryClient = useQueryClient();
 
-    const fetchUser = async () => {
-        try {
+    // O useQuery gere automaticamente o cache. 
+    // Se o user já estiver em cache, não faz novo pedido HTTP.
+    const { data: user, isLoading, refetch } = useQuery({
+        queryKey: ['user'],
+        queryFn: async () => {
             const userData = await usersService.getCurrentUser();
-            console.log("userData", userData)
-            if (userData) {
-                const userToSave: User = {
-                    id: userData.id,
-                    name: userData.name,
-                    email: userData.email,
-                    role: "company"//userData.role
-                };
-                setUser(userToSave);
-                localStorage.setItem('hubly_user', JSON.stringify(userToSave));
-            } else {
-                setUser(null);
-                localStorage.removeItem('hubly_user');
-            }
-        } catch (error) {
-            console.error("Erro ao carregar utilizador:", error);
-            setUser(null);
-            localStorage.removeItem('hubly_user');
-        }
-    };
-
-    useEffect(() => {
-        const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/' || pathname === '/onboarding' || pathname === '/register/confirmEmail';
-
-        if (isAuthPage) {
-            setLoading(false);
-            return;
-        }
-
-        const savedUser = localStorage.getItem('hubly_user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
-            fetchUser().finally(() => setLoading(false));
-        } else {
-            fetchUser().finally(() => setLoading(false));
-        }
-    }, [pathname]);
+            return userData ? {
+                id: userData.id,
+                name: userData.name,
+                email: userData.email,
+                role: userData.role 
+            } : null;
+        },
+        staleTime: 1000 * 60 * 30, // Mantém os dados "frescos" por 30 minutos
+        retry: false, // Não faz retry se o utilizador não estiver logado
+    });
 
     const logout = async () => {
         try {
-            // 1. Chama a API para fazer logout no servidor
             await usersService.logout();
         } catch (error) {
-            console.error("Erro ao fazer logout na API:", error);
+            console.error("Erro ao fazer logout:", error);
         } finally {
-            setUser(null);
-            localStorage.removeItem('hubly_user');
+            // Limpa a cache do React Query após logout
+            queryClient.setQueryData(['user'], null);
+            queryClient.removeQueries({ queryKey: ['user'] });
         }
     };
 
     return (
         <UserContext.Provider value={{
-            user,
-            loading,
-            refreshUser: fetchUser,
+            user: user || null,
+            loading: isLoading,
+            refreshUser: async () => { await refetch(); },
             logout
         }}>
             {children}

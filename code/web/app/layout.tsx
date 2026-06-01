@@ -1,42 +1,22 @@
-import type { Metadata } from "next";
-import { Toaster } from "@/components/ui/sonner"
-import "./globals.css";
-import { ThemeProvider } from "@/providers/ThemeProvider"; 
-import { UserProvider } from "@/providers/UserProvider";
+import { Metadata } from "next";
+import { Providers } from "../providers/Providers";
+import { Toaster } from "@/components/ui/sonner";
 import { AuthRedirectHandler } from "@/components/AuthRedirectHandler";
-import { NavbarWrapper } from "@/components/navbar/NavbarWrapper"; 
+import { NavbarWrapper } from "@/components/navbar/NavbarWrapper";
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Hubly",
-  description: "An Hub where Creators and Company meet",
-};
+export const metadata: Metadata = { title: "Hubly", description: "..." };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <UserProvider>
-            <Toaster />
-            <AuthRedirectHandler />
-            
-            {/* Smart NavBar*/}
-            <NavbarWrapper />
-
-            <div className="relative">
-               {children}
-            </div>
-          </UserProvider>
-        </ThemeProvider>
+        <Providers>
+          <Toaster />
+          <AuthRedirectHandler />
+          <NavbarWrapper />
+          <main className="relative">{children}</main>
+        </Providers>
       </body>
     </html>
   );
