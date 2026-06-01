@@ -17,6 +17,39 @@ Hubly addresses the growing challenge of managing partnership approaches and neg
 ## 🌐 How to access the project
 Currently, the project runs in a local development environment. You can set up and run the entire ecosystem by following the detailed steps that can be found in this file below.
 
+## 📂 1. Project Directory Structure & Organization
+The project repository is centralized and structured according to the following directory layout to streamline the evaluation and review process:
+
+## 📂 1. Project Directory Structure & Organization
+The project repository is centralized and structured according to the following directory layout to streamline the evaluation and review process:
+
+```text
+HUBLY-PS/
+├── code/
+│   ├── api/                     # Backend Source Code (.NET 8.0)
+│   │   ├── Hubly.Api/           # REST API Controllers, Endpoints & Configurations
+│   │   ├── Hubly.Domain/        # Domain Entities, Rules & Core Interfaces
+│   │   ├── Hubly.Infrastructure/# Data Persistence, EF Core & Database Context
+│   │   ├── Hubly.Services/      # Business Logic Implementations & Services
+│   │   ├── Dockerfile           # Backend Container Configuration
+│   │   └── Hubly.slnx           # XML-based Visual Studio Solution File
+│   └── web/                     # Frontend Source Code (Next.js 15)
+│       ├── .next/               # Next.js Build Output Directory
+│       ├── app/                 # Next.js App Router (Pages, Layouts & Routing)
+│       ├── components/          # Reusable UI Components (Shadcn UI, etc.)
+│       ├── lib/                 # Utility Functions and Shared Helpers
+│       ├── providers/           # React Context Providers (QueryClient, Themes)
+│       ├── services/            # Frontend API Client Services & Fetching Logic
+│       ├── Dockerfile           # Frontend Container Configuration
+│       └── package.json         # Frontend Dependencies & Scripts
+├── docker/                      # Specific environment configurations
+├── docs/                        # Diagrams and auxiliary documentation
+├── notes/                       # Development notes and scratchpads
+├── docker-compose.yml           # Production Container Orchestration Blueprint
+├── Hubly-Ps.sln                 # Main Visual Studio Solution File
+├── Requests.http                # Integration test endpoints script
+└── README.md                    # This orientation file
+```
 ## ✨ Features
 
 ### 🔐 User Management & Identity Lifecycle
