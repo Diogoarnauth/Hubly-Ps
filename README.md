@@ -98,7 +98,6 @@ dotnet test
 ### Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/) (for mobile development)
 
 ### ⚡ One-Command Setup
 
