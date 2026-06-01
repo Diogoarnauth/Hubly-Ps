@@ -20,9 +20,6 @@ Currently, the project runs in a local development environment. You can set up a
 ## 📂 1. Project Directory Structure & Organization
 The project repository is centralized and structured according to the following directory layout to streamline the evaluation and review process:
 
-## 📂 1. Project Directory Structure & Organization
-The project repository is centralized and structured according to the following directory layout to streamline the evaluation and review process:
-
 ```text
 HUBLY-PS/
 ├── code/
