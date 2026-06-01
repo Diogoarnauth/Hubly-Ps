@@ -50,6 +50,7 @@ HUBLY-PS/
 ├── Requests.http                # Integration test endpoints script
 └── README.md                    # This orientation file
 ```
+
 ## ✨ Features
 
 ### 🔐 User Management & Identity Lifecycle
@@ -81,6 +82,19 @@ HUBLY-PS/
 - **Atomic Transaction Management**: Core database operations are wrapped within a strict unit-of-work wrapper that fires automatic rollbacks on partial failures, ensuring complete data consistency.
 - **Functional Error Handling**: Robust integration of the `OneOf` library pattern, eliminating raw unhandled exceptions and forcing predictable, strongly-typed API responses.
 
+
+## 🧪 5. Testing the Application
+
+### Running the Backend Test Suite
+To validate isolated business logic and domain constraints, the project includes a rigorous test suite built with **xUnit** and **Moq**. To execute these tests locally outside of the Docker containers, navigate to the test directory and run the .NET CLI test command:
+
+```bash
+# If you are already inside the repository root:
+cd code/api/Hubly.Services/tests
+
+# Run the test execution runner:
+dotnet test
+```
 
 ## 🚀 Quick Start
 
