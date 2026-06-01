@@ -144,7 +144,7 @@ This will build and create these containers:
 - Hubly-Api
 - Hubly-Nginx
 - Hubly-Web
-- 
+
 ### 🛠️ Technology Stack
 
 #### Backend
