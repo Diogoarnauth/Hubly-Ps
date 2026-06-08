@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Star, Plus, Settings, UserCircle, Loader2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, Plus, Settings, UserCircle, Loader2, ExternalLink, CheckCircle, History } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toastSuccess, toastError } from '../ToastImplementations';
@@ -12,6 +12,7 @@ import { FullUserProfileOutputModel } from '@/services/DTO/creator/FullUserProfi
 import GetCreatorOutputModel from '@/services/DTO/creator/GetCreatorOutputModel';
 import { EditCreatorModal } from './EditCreatorModal';
 import CreatorProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
+import ProfileHistoryModal from '@/components/common/ProfileHistoryModal';
 
 export function CreatorProfile({ id }: CreatorProfileProps) {
   const [profile, setProfile] = useState<FullUserProfileOutputModel | null>(null);
@@ -21,6 +22,7 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
   const [userRating, setUserRating] = useState<number>(0);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const router = useRouter();
 
 
@@ -42,6 +44,41 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
       setIsSubmittingRating(false);
     }
   }
+
+  const handleViewHistory = async () => {
+    try {
+      setIsLoadingHistory(true);
+      const historyData = await usersService.getHistory();
+      console.log('History data:', historyData);
+      setHistory(historyData);
+      setIsHistoryModalOpen(true);
+    } catch (error) {
+      console.error('Error loading history:', error);
+      toastError('Error', 'Failed to load history');
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  const handleVerifyAccountEmail = () => {
+    const supportEmail = "hublyproject@gmail.com";
+    const artisticName = creator?.artisticName || profile?.name || "N/A";
+    const subject = encodeURIComponent(`Hubly: Solicitação de Verificação - ${artisticName}`);
+
+    const body = encodeURIComponent(
+      `Hello Hubly Team,\n\n` +
+      `I would like to request the official verification badge for my creator profile on your platform.\n\n` +
+      `Profile Details:\n` +
+      `- Artistic Name: ${artisticName}\n` +
+      `- Account Email: ${profile?.email || 'N/A'}\n` +
+      `- Creator User ID: ${id}\n\n` +
+      `[Please attach an official proof or creator portfolio/credentials to this email so we can validate the identity].\n\n` +
+      `Best regards,\n` +
+      `${profile?.name || artisticName}`
+    );
+
+    window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
+  };
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -102,16 +139,36 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
 
   return (
     <div className="text-white relative pt-[5vh]">
-      <div className="flex justify-end mb-4 gap-2">
+      <div className="flex justify-end items-center mb-4 gap-3">
         {profile?.isOwner && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-zinc-800"
-            onClick={() => setIsEditModalOpen(true)}
-          >
-            <Settings className="w-8 h-8 text-white" />
-          </Button>
+          <>
+            {!creator?.isVerified && (
+              <Button
+                onClick={handleVerifyAccountEmail}
+                className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs gap-2 px-4 h-9 rounded-md transition-all active:scale-95 shadow-md border border-blue-400/20"
+              >
+                <CheckCircle size={14} className="animate-pulse" />
+                Get a Verified Account
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-zinc-800"
+              onClick={() => setIsHistoryModalOpen(true)}
+              title="View History"
+            >
+              <History className="w-8 h-8 text-white" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-zinc-800"
+              onClick={() => setIsEditModalOpen(true)}
+            >
+              <Settings className="w-8 h-8 text-white" />
+            </Button>
+          </>
         )}
       </div>
 
@@ -281,6 +338,8 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
           onSuccess={fetchProfile}
         />
       )}
+
+      <ProfileHistoryModal isOpen={isHistoryModalOpen} onClose={() => setIsHistoryModalOpen(false)} />
     </div>
   );
 }

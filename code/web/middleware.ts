@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-
-const publicRoutes = ['/', '/register', '/register/confirmEmail'];
+import { publicRoutes } from '@/lib/publicRoutes';
 
 export function middleware(request: NextRequest) {
+
+
+  console.log("Middleware executado ");
   const { pathname } = request.nextUrl;
   
   const isPublicRoute = publicRoutes.some(route => pathname === route);
@@ -15,9 +17,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   
-  if ((pathname === '/' || pathname === '/register') && token) {
+  if ((pathname === '/' || pathname === '/register' || pathname === '/register/confirmEmail') && token) {
+
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
+    console.log("Middleware passou ");
+
   
   return NextResponse.next();
 }

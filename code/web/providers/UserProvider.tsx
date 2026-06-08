@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
 import React, { createContext, useContext } from "react";
+import { usePathname } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import usersService from "@/services/api/UsersService";
+import { publicRoutes } from '@/lib/publicRoutes';
 
 interface User {
     id: number;
@@ -21,6 +23,10 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+
+    const pathname = usePathname();
+    const shouldFetchUser = !publicRoutes.includes(pathname);
+
     const queryClient = useQueryClient();
 
     // O useQuery gere automaticamente o cache. 
@@ -36,6 +42,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
                 role: userData.role 
             } : null;
         },
+        enabled: shouldFetchUser,
         staleTime: 1000 * 60 * 30, // Mantém os dados "frescos" por 30 minutos
         retry: false, // Não faz retry se o utilizador não estiver logado
     });

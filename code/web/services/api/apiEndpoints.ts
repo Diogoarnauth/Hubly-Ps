@@ -12,7 +12,8 @@ export const API_ENDPOINTS = {
         logout : `${API_BASE_URL}/users/logout`,
         getFullCreatorProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCreatorProfile`, 
         getFullCompanyProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCompanyProfile`,
-        edit: `${API_BASE_URL}/users/edit`
+        edit: `${API_BASE_URL}/users/edit`,
+        getHistory: `${API_BASE_URL}/users/getHistory`
     },
     
     creator: {

@@ -336,6 +336,9 @@ namespace Hubly.api.Services
 
                if (user == null) return new UserError.UserNotFound();
 
+               var isOwner = targetCompanyId == viewerId;
+
+            if (!isOwner){
                try
                {
                    var historyEntry = new ProfileViewHistory
@@ -351,6 +354,7 @@ namespace Hubly.api.Services
                {
                    Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
                }
+            }
 
                return user;
            });

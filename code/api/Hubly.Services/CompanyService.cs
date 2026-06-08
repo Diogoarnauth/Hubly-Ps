@@ -103,7 +103,10 @@ namespace Hubly.api.Services
             {
                 var company = await context.CompanyRepository.GetByUserId(targetCompanyId);
                 if (company == null) return new CompanyError.CompanyNotFound();
+                var isOwner = targetCompanyId == viewerId;
+                Console.WriteLine($"Company viewed: {company.CompanyName} (ID: {company.Id}) by User ID: {viewerId} - Is Owner: {isOwner}");
 
+                if (!isOwner){
                 try
                 {
                     var historyEntry = new ProfileViewHistory
@@ -119,9 +122,11 @@ namespace Hubly.api.Services
                 {
                     Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
                 }
+                }
 
                 return company;
             });
+        
 
             return result;
         }

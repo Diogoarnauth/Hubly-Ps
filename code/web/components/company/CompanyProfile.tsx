@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Building2, Loader2, Settings, Send, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Building2, Loader2, Settings, Send, CheckCircle, History } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toastError, toastSuccess } from '../ToastImplementations';
@@ -12,6 +12,7 @@ import { SocialProfileOutputModel } from '@/services/DTO/creator/GetCreatorOutpu
 import { EditCompanyModal } from './EditCompanyModal';
 import GetCompanyOutputModel from '@/services/DTO/company/GetCompanyOutputModel';
 import CompanyProfileProps from '@/services/DTO/creator/CreatorChatSelectionPros';
+import ProfileHistoryModal from '@/components/common/ProfileHistoryModal';
 
 export function CompanyProfile({ id }: CompanyProfileProps) {
   const [profile, setProfile] = useState<FullCompanyProfileOutputModel | null>(null);
@@ -24,6 +25,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
   const [dropdownLoadingProfileId, setDropdownLoadingProfileId] = useState<number | null>(null);
   const [mySocialProfiles, setMySocialProfiles] = useState<{ id: number; name: string; platform: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const router = useRouter();
 
   const fetchProfile = useCallback(async () => {
@@ -143,6 +145,8 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
     }
   };
 
+  // history modal is handled by ProfileHistoryModal child
+
   // Função para despoletar o envio de email de verificação
   const handleVerifyAccountEmail = () => {
     const supportEmail = "hublyproject@gmail.com";
@@ -258,6 +262,16 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
             variant="ghost"
             size="icon"
             className="hover:bg-zinc-800"
+            onClick={() => setIsHistoryModalOpen(true)}
+            title="View History"
+          >
+            <History className="w-8 h-8 text-white" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-zinc-800"
             onClick={() => setIsEditModalOpen(true)}
           >
             <Settings className="w-8 h-8 text-white" />
@@ -316,6 +330,8 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
           onSuccess={fetchProfile}
         />
       )}
+
+      <ProfileHistoryModal isOpen={isHistoryModalOpen} onClose={() => setIsHistoryModalOpen(false)} />
     </div>
   );
 }

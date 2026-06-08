@@ -7,6 +7,7 @@ import { FullUserProfileOutputModel } from "../DTO/creator/FullUserProfileOutput
 import { FullCompanyProfileOutputModel } from "../DTO/company/FullCompanyProfileOutputModel";
 import GetCreatorOutputModel from "../DTO/creator/GetCreatorOutputModel";
 import GetCompanyOutputModel from "../DTO/company/GetCompanyOutputModel";
+import { ProfileHistoryOutputModel } from "../DTO/ProfileHistoryOutputModel";
 
 
 export interface UserInfo {
@@ -139,6 +140,16 @@ class UsersService implements IUserService {
             console.error("Erro ao realizar logout no servidor:", error);
             // Retornamos true na mesma ou gerimos o erro?? 
             return false;
+        }
+    }
+
+    async getHistory(): Promise<ProfileHistoryOutputModel[]> {
+        try {
+            const response = await this.apiClient.get<ProfileHistoryOutputModel[]>(API_ENDPOINTS.user.getHistory);
+            return response || [];
+        } catch (error) {
+            console.error("Erro ao obter histórico:", error);
+            return [];
         }
     }
 }
