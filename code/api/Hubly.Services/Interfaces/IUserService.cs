@@ -19,7 +19,7 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<string, UserError>> GenerateConfirmationCode(int userId, ITransactionContext context);
         Task<OneOf<bool, UserError>> VerifyConfirmationCodeAsync(string email, string code);
         Task<OneOf<bool, UserError>> ResendConfirmationCodeAsync(int userId);
-        Task<OneOf<List<ProfileViewHistory>, UserError>> GetHistory(int userId);
+        Task<OneOf<PagedResponse<ProfileViewHistory>, UserError>> GetHistory(int userId, int page = 1, int pageSize = 20);
         Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId);
         Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId);
     }

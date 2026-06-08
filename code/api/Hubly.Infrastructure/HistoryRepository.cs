@@ -66,17 +66,32 @@ namespace Hubly.api.Infrastructure
                 .ToList();
         }
 
-        public async Task<List<ProfileViewHistory>> GetUserHistory(int userId, int limit = 20)
+        public async Task<PagedResponse<ProfileViewHistory>> GetUserHistory(int userId, int page, int pageSize)
         {
-            return await _context.ProfileViewHistory
+            page = page <= 0 ? 1 : page;
+            pageSize = pageSize <= 0 ? 20 : (pageSize > 100 ? 100 : pageSize);
+
+            var query = _context.ProfileViewHistory
                 .Include(h => h.ViewedCompany)
                 .Include(h => h.ViewedSocialProfile)
                     .ThenInclude(sp => sp.Creator)
-                .Where(h => h.ViewerUserId == userId)
+                .Where(h => h.ViewerUserId == userId);
+
+            var totalItems = await query.CountAsync();
+            var items = await query
                 .OrderByDescending(h => h.ViewedAt)
-                .Take(limit)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .AsNoTracking()
                 .ToListAsync();
+
+            return new PagedResponse<ProfileViewHistory>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                Items = items
+            };
         }
 
         public async Task<UserInterestProfile> GetUserInterests(int userId, int limit = 50)

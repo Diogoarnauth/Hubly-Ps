@@ -272,7 +272,7 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
           className="text-zinc-400 hover:text-white hover:bg-zinc-800 gap-2"
           onClick={() => router.push(`../creator/${data?.creatorId}`)}
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Profile
+          <ArrowLeft className="w-4 h-4" /> See Main Creator Profile
         </Button>
       </div>
 

@@ -282,11 +282,11 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<List<ProfileViewHistory>, UserError>> GetHistory(int userId)
+        public async Task<OneOf<PagedResponse<ProfileViewHistory>, UserError>> GetHistory(int userId, int page = 1, int pageSize = 20)
         {
-            return await _transactionManager.Run<OneOf<List<ProfileViewHistory>, UserError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<PagedResponse<ProfileViewHistory>, UserError>>(async (context) =>
             {
-                var history = await context.HistoryRepository.GetUserHistory(userId);
+                var history = await context.HistoryRepository.GetUserHistory(userId, page, pageSize);
 
                 return history;
             });

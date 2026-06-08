@@ -212,28 +212,34 @@ public class UserController : ControllerBase
 
 
     [HttpGet(Uris.Uris.Users.GetHistory)]
-    public async Task<IActionResult> GetHistory([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    public async Task<IActionResult> GetHistory(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var res = await _userService.GetHistory(user.Id);
+        var res = await _userService.GetHistory(user.Id, page, pageSize);
 
         return res.Match<IActionResult>(
             success =>
             {
-                var output = success.Select(h => new ProfileHistoryOutputModel
+                var response = new PagedResponse<ProfileHistoryOutputModel>
                 {
-                    Id = h.Id,
-                    ViewedAt = h.ViewedAt,
+                    Page = success.Page,
+                    PageSize = success.PageSize,
+                    TotalItems = success.TotalItems,
+                    Items = success.Items.Select(h => new ProfileHistoryOutputModel
+                    {
+                        Id = h.Id,
+                        ViewedAt = h.ViewedAt,
+                        TargetId = h.ViewedCompanyId ?? h.ViewedSocialProfileId ?? 0,
+                        TargetType = h.ViewedCompanyId.HasValue ? "Company" : "CreatorSocialProfile",
+                        TargetName = h.ViewedCompanyId.HasValue
+                            ? (h.ViewedCompany?.CompanyName ?? "Empresa Desconhecida")
+                            : (h.ViewedSocialProfile?.PlatformUserName ?? "Criador Desconhecido")
+                    }).ToList()
+                };
 
-                    TargetId = h.ViewedCompanyId ?? h.ViewedSocialProfileId ?? 0,
-
-                    TargetType = h.ViewedCompanyId.HasValue ? "Company" : "CreatorSocialProfile",
-
-                    TargetName = h.ViewedCompanyId.HasValue
-                        ? (h.ViewedCompany?.CompanyName ?? "Empresa Desconhecida")
-                        : (h.ViewedSocialProfile?.Creator?.ArtisticName ?? "Criador Desconhecido")
-                }).ToList();
-
-                return Ok(output);
+                return Ok(response);
             },
             error => ProblemResponse.InternalServerError.ToResponse()
         );

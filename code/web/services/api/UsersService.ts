@@ -1,13 +1,14 @@
 //import GetInviteDto, { GetInvitesResponseDto } from "../DTO/GetInviteDto";
 //import GetUserDto from "../DTO/GetUserDto";
 import IUserService from "../interfaces/IUserService";
-import { ApiClient } from "./apiClient";
+import { ApiClient, isConflictResponse } from "./apiClient";
 import { API_ENDPOINTS } from "./apiEndpoints";
 import { FullUserProfileOutputModel } from "../DTO/creator/FullUserProfileOutputModel";
 import { FullCompanyProfileOutputModel } from "../DTO/company/FullCompanyProfileOutputModel";
 import GetCreatorOutputModel from "../DTO/creator/GetCreatorOutputModel";
 import GetCompanyOutputModel from "../DTO/company/GetCompanyOutputModel";
 import { ProfileHistoryOutputModel } from "../DTO/ProfileHistoryOutputModel";
+import { PagedResponse } from "../DTO/PagedResponse";
 
 
 export interface UserInfo {
@@ -143,13 +144,21 @@ class UsersService implements IUserService {
         }
     }
 
-    async getHistory(): Promise<ProfileHistoryOutputModel[]> {
+    async getHistory(page: number = 1, pageSize: number = 20): Promise<PagedResponse<ProfileHistoryOutputModel> | null> {
         try {
-            const response = await this.apiClient.get<ProfileHistoryOutputModel[]>(API_ENDPOINTS.user.getHistory);
-            return response || [];
+            const response = await this.apiClient.get<PagedResponse<ProfileHistoryOutputModel>>(API_ENDPOINTS.user.getHistory, {
+                page,
+                pageSize
+            });
+
+            if (!response || isConflictResponse(response)) {
+                return null;
+            }
+
+            return response;
         } catch (error) {
             console.error("Erro ao obter histórico:", error);
-            return [];
+            return null;
         }
     }
 }

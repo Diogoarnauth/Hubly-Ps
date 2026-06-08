@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import usersService from '@/services/api/UsersService';
 import { ProfileHistoryOutputModel } from '@/services/DTO/ProfileHistoryOutputModel';
+import { PagedResponse } from '@/services/DTO/PagedResponse';
 import { useRouter } from 'next/navigation';
 
 interface ProfileHistoryModalProps {
@@ -12,21 +13,29 @@ interface ProfileHistoryModalProps {
 }
 
 export default function ProfileHistoryModal({ isOpen, onClose }: ProfileHistoryModalProps) {
-  const [history, setHistory] = useState<ProfileHistoryOutputModel[]>([]);
+  const [historyPage, setHistoryPage] = useState<PagedResponse<ProfileHistoryOutputModel> | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const pageSize = 20;
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setPage(1);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
 
     let mounted = true;
-    const load = async () => {
+    const load = async (requestedPage: number) => {
       try {
         setLoading(true);
-        const data = await usersService.getHistory();
+        const data = await usersService.getHistory(requestedPage, pageSize);
         console.log("Profile history data:", data);
         if (!mounted) return;
-        setHistory(data || []);
+        setHistoryPage(data);
       } catch (err) {
         console.error('Error loading history:', err);
       } finally {
@@ -34,10 +43,10 @@ export default function ProfileHistoryModal({ isOpen, onClose }: ProfileHistoryM
       }
     };
 
-    load();
+    load(page);
 
     return () => { mounted = false; };
-  }, [isOpen]);
+  }, [isOpen, page]);
 
   if (!isOpen) return null;
 
@@ -58,12 +67,12 @@ export default function ProfileHistoryModal({ isOpen, onClose }: ProfileHistoryM
             </div>
           )}
 
-          {!loading && history.length === 0 && (
+          {!loading && (!historyPage || historyPage.items.length === 0) && (
             <p className="text-zinc-500 italic text-center">No history items yet.</p>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {history.map(item => (
+            {(historyPage?.items ?? []).map(item => (
               <div
                 key={item.id}
                 className="bg-[#333] p-4 rounded-lg border border-zinc-700 cursor-pointer hover:bg-[#3a3a3a] transition"
@@ -86,6 +95,28 @@ export default function ProfileHistoryModal({ isOpen, onClose }: ProfileHistoryM
               </div>
             ))}
           </div>
+
+          {!loading && historyPage && historyPage.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page <= 1}
+              >
+                Previous
+              </Button>
+              <p className="text-sm text-zinc-400">
+                Page {page} of {historyPage.totalPages}
+              </p>
+              <Button
+                variant="secondary"
+                onClick={() => setPage(Math.min(historyPage.totalPages, page + 1))}
+                disabled={page >= historyPage.totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
