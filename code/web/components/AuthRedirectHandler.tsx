@@ -1,19 +1,22 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ApiClient } from '@/services/api/apiClient';
 
 export function AuthRedirectHandler() {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleUnauthorized = () => {
-      router.push('/login');
+      if (pathname !== '/') {
+        router.push('/login');
+      }
     };
 
     ApiClient.setUnauthorizedHandler(handleUnauthorized);
-  }, [router]);
+  }, [pathname, router]);
 
   return null;
 }

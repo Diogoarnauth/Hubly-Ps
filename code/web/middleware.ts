@@ -12,16 +12,16 @@ export function middleware(request: NextRequest) {
 
   console.log("Middleware executado para:", pathname);
   
-  if (!isPublicRoute && !token && !(pathname === '/dashboard')) {
+  if (!isPublicRoute && !token && !(pathname === '/')) {
     console.log("entrei aqui")
     return NextResponse.redirect(new URL('/login', request.url));
   }
   
-  if ((pathname === '/' || pathname === '/register' || pathname === '/register/confirmEmail') && token) {
-
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  if ((pathname === '/login' || pathname === '/register' || pathname === '/register/confirmEmail') && token) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
-    console.log("Middleware passou ");
+
+  console.log("Middleware passou ");
 
   
   return NextResponse.next();

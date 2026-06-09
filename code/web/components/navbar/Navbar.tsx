@@ -8,16 +8,21 @@ import { useUser } from "@/providers/UserProvider";
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useUser();
+  const { user, loading } = useUser();
 
   const navItems = [
-    { title: "Home", url: "/dashboard", icon: Home },
+    { title: "Home", url: "/", icon: Home },
     { title: "Search", url: "/search", icon: Search },
     { title: "Messages", icon: MessageSquare },
   ];
 
   const handleMessagesClick = () => {
     const userData = user as any;
+
+    if(!userData) {
+      router.push('/login');
+      return;
+    }
 
     if (userData.role === 'creator') {
       router.push('/chatsCreator');
@@ -73,7 +78,9 @@ export function Navbar() {
 
         {/* LADO DIREITO: Perfil, Logout ou Login */}
         <div className="flex items-center gap-4">
-          {user ? (
+          {loading ? (
+            <div className="h-9 w-24 rounded-md bg-zinc-700 animate-pulse" />
+          ) : user ? (
             <NavUser />
           ) : (
             <button

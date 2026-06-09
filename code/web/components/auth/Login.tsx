@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import authService from '@/services/api/UsersService';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ export function LoginForm() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -29,6 +31,21 @@ export function LoginForm() {
 
             if (result) {
                 toastSuccess('Login successful', 'You are now logged in');
+                // Após login bem-sucedido, popula cache do React Query com os dados do user
+                try {
+                    const current = await authService.getCurrentUser();
+                    if (current) {
+                        queryClient.setQueryData(['user'], {
+                            id: current.id,
+                            name: current.name,
+                            email: current.email,
+                            role: current.role
+                        });
+                    }
+                } catch (e) {
+                    console.error('Failed to populate user cache after login', e);
+                }
+
                 router.push('/onboarding');
             } else {
                 // Aqui é onde o 409 (Invalid Credentials) cai agora
@@ -36,7 +53,8 @@ export function LoginForm() {
                 toastError('Login Failed', 'Invalid credentials');
                 setPassword('');
             }
-        } catch (err) {
+        } catch (error) {
+            console.error('Login error', error);
             // Aqui caem erros de rede ou 500 se o service disparar throw
             setErrorMessage('Something went wrong on our end.');
             toastError('Server Error', 'Please try again later');

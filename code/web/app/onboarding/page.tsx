@@ -18,7 +18,7 @@ export default function OnboardingPage() {
       const hasProfile = await authService.checkHasProfile();
       
       if (hasProfile) {
-        router.push('/dashboard');
+        router.push('/');
       } else {
         setIsChecking(false);
       }

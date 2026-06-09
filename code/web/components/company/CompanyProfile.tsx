@@ -40,12 +40,12 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
       } else {
         toastError('Company not found', 'Invalid id');
         await new Promise(resolve => setTimeout(resolve, 1500));
-        router.push('/dashboard');
+        router.push('/');
       }
     } catch (error) {
       console.error("Error loading profile:", error);
       toastError('Error', 'Failed to load profile');
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [id, router]);
 

@@ -1,10 +1,12 @@
 import { toastError } from "@/components/ToastImplementations";
+import { usePathname } from "next/navigation";
 
 export interface ConflictResponse {
   status: 409;
   message: string;
   location?: string;
 }
+
 
 export function isConflictResponse(obj: any): obj is ConflictResponse {
   return obj && typeof obj === 'object' && obj.status === 409 && typeof obj.message === 'string';
@@ -56,6 +58,7 @@ export class ApiClient {
   }
 
   private async request<T>(url: string, options: RequestInit): Promise<T | ConflictResponse | null> {
+    
     try {
       const response = await fetch(url, {
         ...options,

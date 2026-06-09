@@ -8,7 +8,6 @@ export function NavbarWrapper() {
 
   // Páginas onde a Navbar NÃO deve aparecer
   const blackList = [
-    '/login',
     '/register',
     '/onboarding',  
   ];

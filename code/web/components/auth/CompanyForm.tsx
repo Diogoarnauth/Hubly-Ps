@@ -87,7 +87,7 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
 
       if (result.success) {
         toastSuccess('Success!', 'Company registered successfully.');
-        router.push('/dashboard');
+        router.push('/');
       } else {
         const apiErrorMessage = result.message || 'Failed to register company.';
         setError(apiErrorMessage);

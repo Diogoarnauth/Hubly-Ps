@@ -107,12 +107,12 @@ export function CreatorProfile({ id }: CreatorProfileProps) {
         setLoading(false);
       } else {
         toastError('Error', 'Creator not found');
-        router.push('/dashboard');
+        router.push('/');
       }
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
       toastError('Error', 'Failed to load profile details');
-      router.push('/dashboard');
+      router.push('/');
     } finally {
       setLoading(false);
     }

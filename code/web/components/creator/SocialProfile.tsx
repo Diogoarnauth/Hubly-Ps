@@ -38,7 +38,7 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
       await creatorService.deleteSocialProfile(id); 
       
       toastSuccess('Sucesso', 'Perfil social eliminado com sucesso');
-      router.push('/dashboard'); 
+      router.push('/'); 
     } catch (error) {
       console.error("Error deleting social profile:", error);
       toastError('Erro', 'Não foi possível eliminar o perfil social');
@@ -59,12 +59,12 @@ export function SocialProfile({ profileId }: SocialProfileProps) {
       } else {
         toastError('CreateSocialProfile not found', 'Invalid id');
         await new Promise(resolve => setTimeout(resolve, 1500));
-        router.push('/dashboard');
+        router.push('/');
       }
     } catch (error) {
       console.error("Error loading social profile:", error);
       toastError('Error', 'Failed to load social profile');
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [profileId, router]);
 

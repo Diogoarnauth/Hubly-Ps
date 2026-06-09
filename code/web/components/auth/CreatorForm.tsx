@@ -24,7 +24,7 @@ export function CreatorForm({ onBack }: { onBack: () => void }) {
       const response = await creatorService.registerCreator(artisticName);
       console.log("response", response);
       if (response) {
-        router.push('/dashboard'); 
+        router.push('/'); 
       } else {
         setError('Failed to register as creator.');
       }

@@ -90,7 +90,7 @@ export function ConfirmEmail() {
     
     if (result) {
       sessionStorage.removeItem('hubly_register_email');
-      router.push('/dashboard');
+      router.push('/');
     } else {
       setIsLoading(false);
     }

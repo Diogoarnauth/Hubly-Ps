@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUser } from '@/providers/UserProvider';
-import { Dashboard } from '@/components/dashboard/Dashboard';
+import { Dashboard } from '../components/dashboard/Dashboard';
 import { publicRoutes } from '@/lib/publicRoutes';
 
 export default function DashboardPage() {

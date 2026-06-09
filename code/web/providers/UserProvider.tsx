@@ -4,7 +4,7 @@ import React, { createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import usersService from "@/services/api/UsersService";
-import { publicRoutes } from '@/lib/publicRoutes';
+
 
 interface User {
     id: number;
@@ -25,7 +25,10 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const pathname = usePathname();
-    const shouldFetchUser = !publicRoutes.includes(pathname);
+    
+    // Não fazer fetch de user em rotas de autenticação
+    const excludedUserFetchRoutes = ['/login', '/register', '/register/confirmEmail'];
+    const shouldFetchUser = !excludedUserFetchRoutes.includes(pathname);
 
     const queryClient = useQueryClient();
 
@@ -43,8 +46,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             } : null;
         },
         enabled: shouldFetchUser,
-        staleTime: 1000 * 60 * 30, // Mantém os dados "frescos" por 30 minutos
-        retry: false, // Não faz retry se o utilizador não estiver logado
+        staleTime: 1000 * 60 * 30, 
+        retry: false,
     });
 
     const logout = async () => {
