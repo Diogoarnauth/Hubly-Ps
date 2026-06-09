@@ -44,7 +44,7 @@ export default function DashboardPage() {
     return (
       <div className="flex h-svh w-full items-center justify-center">
         <div className="animate-pulse text-muted-foreground font-medium">
-          Sincronizando Hubly...
+          Sincronization in progress...
         </div>
       </div>
     );

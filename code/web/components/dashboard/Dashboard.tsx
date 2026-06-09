@@ -5,9 +5,14 @@ import { CreatorCarousel } from './CreatorCarousel';
 import { CompanyCarousel } from './CompanyCarousel';
 import { CreatorRecommendationFeed } from './CreatorRecommendationFeed';
 import { CompanyRecommendationFeed } from './CompanyRecommendationFeed';
+import { useUser } from "@/providers/UserProvider";
 import { Sparkles, Trophy, Rocket } from "lucide-react";
 
 export function Dashboard() {
+  const { user } = useUser();
+
+  console.log("Dashboard renderizado com user:", user);
+
   return (
     <div className="flex flex-col gap-20 py-16 px-4 md:px-8 max-w-[1400px] mx-auto">
       
@@ -47,15 +52,17 @@ export function Dashboard() {
             <CreatorCarousel />
           </div>
 
-          <div className="mt-10">
-            <div className="flex flex-col items-center text-center mb-8 space-y-2">
-              <h3 className="text-2xl font-bold tracking-tight md:text-3xl">Recommended Creators</h3>
-              <p className="text-muted-foreground max-w-2xl">
-                Creative matches selected for you based on recent activity and fit.
-              </p>
+          {user && (
+            <div className="mt-10">
+              <div className="flex flex-col items-center text-center mb-8 space-y-2">
+                <h3 className="text-2xl font-bold tracking-tight md:text-3xl">Recommended Creators</h3>
+                <p className="text-muted-foreground max-w-2xl">
+                  Creative matches selected for you based on recent activity and fit.
+                </p>
+              </div>
+              <CreatorRecommendationFeed />
             </div>
-            <CreatorRecommendationFeed />
-          </div>
+          )}
         </section>
 
         <hr className="border-border/50 max-w-4xl mx-auto" />
@@ -79,15 +86,17 @@ export function Dashboard() {
             <CompanyCarousel />
           </div>
 
-          <div className="mt-10">
-            <div className="flex flex-col items-center text-center mb-8 space-y-2">
-              <h3 className="text-2xl font-bold tracking-tight md:text-3xl">Recommended Companies</h3>
-              <p className="text-muted-foreground max-w-2xl">
-                Curated company suggestions based on your creative interests and project goals.
-              </p>
+          {user && (
+            <div className="mt-10">
+              <div className="flex flex-col items-center text-center mb-8 space-y-2">
+                <h3 className="text-2xl font-bold tracking-tight md:text-3xl">Recommended Companies</h3>
+                <p className="text-muted-foreground max-w-2xl">
+                  Curated company suggestions based on your creative interests and project goals.
+                </p>
+              </div>
+              <CompanyRecommendationFeed />
             </div>
-            <CompanyRecommendationFeed />
-          </div>
+          )}
         </section>
       </div>
 

@@ -10,8 +10,7 @@ export function NavbarWrapper() {
   const blackList = [
     '/login',
     '/register',
-    '/onboarding',
-    '/', 
+    '/onboarding',  
   ];
 
   if (blackList.includes(pathname)) {

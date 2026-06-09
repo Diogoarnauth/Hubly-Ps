@@ -19,7 +19,7 @@ export function NavUser() {
 
     const handleLogout = async () => {
         await logout();
-        router.push('/login');
+        router.push('/');
     };
 
     return (

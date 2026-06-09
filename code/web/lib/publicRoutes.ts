@@ -1,3 +1,3 @@
-export const publicRoutes = ['/', '/register', '/register/confirmEmail'];
+export const publicRoutes = ['/', '/login', '/register', '/register/confirmEmail'];
 
 export default publicRoutes;

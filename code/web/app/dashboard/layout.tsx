@@ -10,7 +10,6 @@ export default function DashboardLayout({
     return (
         <DashboardProvider>
             <div className="min-h-screen bg-background">
-                {/* Podes adicionar uma Navbar global aqui depois */}
                 {children}
             </div>
         </DashboardProvider>

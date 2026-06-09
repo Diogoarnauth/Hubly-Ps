@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Search, MessageSquare } from "lucide-react";
+import { Home, Search, MessageSquare, LogIn } from "lucide-react";
 import { NavUser } from "./nav-user";
 import { useUser } from "@/providers/UserProvider";
 
@@ -9,8 +9,6 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
-
-  if (!user) return null;
 
   const navItems = [
     { title: "Home", url: "/dashboard", icon: Home },
@@ -41,38 +39,51 @@ export function Navbar() {
         {/* LADO ESQUERDO: Logo e Links */}
         <div className="flex items-center gap-10">
           <span 
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/')}
             className="text-xl font-black tracking-tighter text-primary cursor-pointer"
           >
             HUBLY
           </span>
           
-          <div className="flex items-center gap-6">
-            {navItems.map((item) => {
-              const isMessages = item.title === "Messages";
-              const isActive = isMessages 
-                ? (pathname.includes("chatsCreator") || pathname.includes("chatsCompany"))
-                : pathname === item.url;
+          {/* Mostrar navItems apenas quando user está autenticado */}
+          { (
+            <div className="flex items-center gap-6">
+              {navItems.map((item) => {
+                const isMessages = item.title === "Messages";
+                const isActive = isMessages 
+                  ? (pathname.includes("chatsCreator") || pathname.includes("chatsCompany"))
+                  : pathname === item.url;
 
-              return (
-                <button
-                  key={item.title}
-                  onClick={() => isMessages ? handleMessagesClick() : router.push(item.url!)}
-                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </button>
-              );
-            })}
-          </div>
+                return (
+                  <button
+                    key={item.title}
+                    onClick={() => isMessages ? handleMessagesClick() : router.push(item.url!)}
+                    className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                      isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.title}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* LADO DIREITO: Perfil e Logout */}
+        {/* LADO DIREITO: Perfil, Logout ou Login */}
         <div className="flex items-center gap-4">
-          <NavUser />
+          {user ? (
+            <NavUser />
+          ) : (
+            <button
+              onClick={() => router.push('/login')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <LogIn className="h-4 w-4" />
+              Login
+            </button>
+          )}
         </div>
       </div>
     </nav>

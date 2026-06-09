@@ -4,17 +4,17 @@ import { publicRoutes } from '@/lib/publicRoutes';
 
 export function middleware(request: NextRequest) {
 
-
-  console.log("Middleware executado ");
   const { pathname } = request.nextUrl;
   
   const isPublicRoute = publicRoutes.some(route => pathname === route);
   
   const token = request.cookies.get('token')?.value;
+
+  console.log("Middleware executado para:", pathname);
   
-  if (!isPublicRoute && !token) {
+  if (!isPublicRoute && !token && !(pathname === '/dashboard')) {
     console.log("entrei aqui")
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
   
   if ((pathname === '/' || pathname === '/register' || pathname === '/register/confirmEmail') && token) {
