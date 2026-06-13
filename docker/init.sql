@@ -163,3 +163,12 @@ CREATE TABLE IF NOT EXISTS dbo.conversation_tag_assignments (
     PRIMARY KEY (user_id, conversation_id), 
     updated_at BIGINT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS dbo.co_workers (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES dbo.users(id) ON DELETE CASCADE,
+    owner_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_not_self_owner CHECK (user_id <> owner_id),
+);
