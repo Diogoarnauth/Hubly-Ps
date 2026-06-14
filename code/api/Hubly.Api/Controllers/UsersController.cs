@@ -263,6 +263,7 @@ public class UserController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
+        
     }
 
     [HttpGet(Uris.Uris.Users.FullCompanyProfile)]

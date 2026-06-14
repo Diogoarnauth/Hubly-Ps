@@ -390,3 +390,31 @@ VALUES
 (NULL, 'Negotiating', '#f1c40f', 1715012345),
 (NULL, 'Accepted', '#2ecc71', 1715012345),
 (NULL, 'Rejected', '#e74c3c', 1715012345);
+
+
+-- =============================================================================
+-- 13.  USERS CO-WORKERS
+-- =============================================================================
+
+INSERT INTO dbo.users (name, email, password_validation, is_email_confirmed, created_at) 
+VALUES 
+    ('Manager Co-worker', 'manager@co-work.com', 'hash_password_456', true, 1714560000), -- ID 42
+    ('Junior Co-worker', 'junior@co-work.com', 'hash_password_456', true, 1714560000);   -- ID 43
+
+-- =============================================================================
+-- 14. CONVITES DE CO-WORKER (CO-WORKER INVITES)
+-- =============================================================================
+
+INSERT INTO dbo.co_worker_invites (owner_id, co_worker_email, status, created_at, expires_at) 
+VALUES 
+    (22, 'manager@co-work.com', 'WAITING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '7 days'),
+    (22, 'junior@co-work.com', 'ACCEPTED', CURRENT_TIMESTAMP - INTERVAL '10 days', CURRENT_TIMESTAMP - INTERVAL '3 days'),
+    (23, 'manager@co-work.com', 'REJECTED', CURRENT_TIMESTAMP - INTERVAL '5 days', CURRENT_TIMESTAMP + INTERVAL '2 days');
+
+-- =============================================================================
+-- 15. ASSOCIAÇÃO EFETIVA (CO-WORKERS)
+-- =============================================================================
+
+INSERT INTO dbo.co_workers (user_id, owner_id, joined_at) 
+VALUES 
+    (43, 22, CURRENT_TIMESTAMP - INTERVAL '3 days');
