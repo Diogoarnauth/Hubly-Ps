@@ -30,6 +30,7 @@ public class CoWorkerController : ControllerBase
             success => NoContent(),
             error => error switch
             {
+                CoWorkerError.UserIsNotACreatorOrCompany => ProblemResponse.UserIsNotACreatorOrCompany.ToResponse(),
                 CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
                 CoWorkerError.CannotInviteSelf => ProblemResponse.CannotInviteSelf.ToResponse(),
                 CoWorkerError.UserCannotBeACoWorker => ProblemResponse.UserCannotBeACoWorker.ToResponse(),
@@ -71,6 +72,7 @@ public class CoWorkerController : ControllerBase
             error => error switch
             {
                 CoWorkerError.InviteNotFound => ProblemResponse.InviteNotFound.ToResponse(),
+                CoWorkerError.Unauthorized => ProblemResponse.Unauthorized.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

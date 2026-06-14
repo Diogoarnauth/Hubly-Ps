@@ -12,14 +12,7 @@ namespace Hubly.api.Services.Problems
         public class CannotInviteSelf : CoWorkerError { }
         public class UserCannotBeACoWorker : CoWorkerError { }
         public class UserAlreadyACoWorker : CoWorkerError { }
-
-
-        public class FailedToGetCompanyInfo : CoWorkerError { } 
-        //public class FailedToEditCreator : CoWorkerError { }   
-        
-        public class UserAlreadyRegisteredAsCreator : CompanyError { }
-        public class InvalidWebSiteLink : CompanyError { }
-        public class InvalidCountryHeadquarters : CompanyError { }
+        public class UserIsNotACreatorOrCompany : CoWorkerError { }
         
     }
 }

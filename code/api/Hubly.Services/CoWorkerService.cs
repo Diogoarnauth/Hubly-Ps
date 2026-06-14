@@ -28,9 +28,9 @@ namespace Hubly.api.Services
                 var ownerUser = await context.UserRepository.GetUserById(ownerId);
                 if (ownerUser == null) return new CoWorkerError.UserNotFound();
                 if (ownerUser.Creator == null && ownerUser.Company == null)
-                    {
-                        return new CoWorkerError.UserCannotBeACoWorker();
-                    }
+                {
+                    return new CoWorkerError.UserIsNotACreatorOrCompany();
+                }
 
 
                 var targetUser = await context.UserRepository.GetUserByEmail(email);

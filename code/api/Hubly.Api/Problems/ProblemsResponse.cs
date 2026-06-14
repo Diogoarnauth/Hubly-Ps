@@ -344,4 +344,9 @@ public class ProblemResponse
         "User Already A CoWorker",
     409);
 
+    public static readonly ProblemResponse UserIsNotACreatorOrCompany = new(
+        "user-is-not-a-creator-or-company",
+        "User Is Not A Creator Or Company",
+    403);
+
 }

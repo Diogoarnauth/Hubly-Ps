@@ -53,7 +53,7 @@ public class CoWorkerRepository : ICoWorkerRepository
         if (invite == null) return;
 
         invite.Status = status;
-        _context.CoWorkerInvites.Update(invite);
+        _context.Entry(invite).Property(i => i.Status).IsModified = true;
     }
 
     public async Task<List<CoWorkerInvite>> GetInvitesByEmail(string email)

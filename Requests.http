@@ -3,16 +3,20 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= gRQXbqF9jqW0I6bc24xig4xqrbYEOE7KTpAEP7KnwNQ=
-//@token= h8d1ugTZJThFdY068jaFMUoop9ZtZZnEsutLREuLFfA=
+//owner
+//@token= 1GkWRQkWCRzLK3a8YbboBCQPk2uTRk6exMaH+Rh+Jbw=
+
+@token= lS5w3GRZwEj+gtHoTzeP3TYN8pc+U3DmAVUkk77sQms=
+
+//@token = pvPp+rtubmOlssM+xtrTd9gOIadZLvVG6J/YLtU3bFs=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
 Content-Type: {{contentType}}
 
 {
-    "name": "olo",
-    "email": "carolbrazete10@gmail.com",
+    "name": "Caro",
+    "email": "dioarnauth1@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -21,7 +25,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete10@gmail.com",
+    "email": "dioarnauth1@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -82,8 +86,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth@gmail.com",
-    "code": "713273" 
+    "email": "dioarnauth1@gmail.com",
+    "code": "932990" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -188,7 +192,7 @@ Content-Type: {{contentType}}
 
 
 ### Get company info
-GET http://{{host}}/api/company/5
+GET http://{{host}}/api/company/44
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -200,16 +204,16 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "email": "carolbrazete10@gmail.com"
+  "email": "dioarnauth@gmail.com"
 }
 
 ### Accept co-worker invite
-POST http://{{host}}/api/co-workers/invites/1/accept
+POST http://{{host}}/api/co-workers/invites/4/accept
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Reject co-worker invite
-POST http://{{host}}/api/co-workers/invites/1/reject
+POST http://{{host}}/api/co-workers/invites/4/reject
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

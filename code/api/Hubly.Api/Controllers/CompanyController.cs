@@ -43,8 +43,13 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Companies.EditCompanyProfile)]
-    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
+    public async Task<IActionResult> EditProfile(
+        [ModelBinder(BinderType = typeof(AuthenticatedUserModelBinder), BindingSource = BindingSource.Custom)] AuthenticatedUser user,
+        [ModelBinder(BinderType = typeof(AuthenticatedUserModelBinder), BindingSource = BindingSource.Custom)] AuthenticatedCoWorker? coWorker,
+        [FromBody] CompanyInputModel input)
     {
+        Console.WriteLine($"User ID: {user}");
+
         var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 
         return res.Match<IActionResult>(
@@ -65,6 +70,7 @@ public class CompanyController : ControllerBase
     [HttpGet(Uris.Uris.Companies.GetById)]
     public async Task<IActionResult> GetById([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
     {
+        Console.WriteLine($"User ID: {user.Id}, Requested Company ID: {id}");
         var res = await _companyService.GetById(id, user.Id);
 
         return res.Match<IActionResult>(
