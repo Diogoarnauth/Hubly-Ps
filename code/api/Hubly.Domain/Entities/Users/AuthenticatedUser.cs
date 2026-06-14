@@ -11,4 +11,8 @@ namespace Hubly.api.Domain.Entities
         public bool IsEmailConfirmed { get; set; }
         
     }
+
+    public class AuthenticatedCoWorker : AuthenticatedUser
+    {
+    }
 }

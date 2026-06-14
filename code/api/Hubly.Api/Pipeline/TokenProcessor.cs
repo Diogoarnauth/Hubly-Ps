@@ -1,3 +1,4 @@
+using Hubly.api.Infrastructure.Interfaces;
 using Hubly.api.Services.Interfaces;
 using Hubly.api.Domain.Entities;
 
@@ -7,14 +8,17 @@ namespace Hubly.api.Pipeline
     {
         private readonly ITokenService _tokenService;
         private readonly IUserService _userService;
+        private readonly ICoWorkerRepository _coWorkerRepository;
 
         public TokenProcessor(
             ITokenService tokenService,
-            IUserService userService
+            IUserService userService,
+            ICoWorkerRepository coWorkerRepository
             )
         {
             _tokenService = tokenService;
             _userService = userService;
+            _coWorkerRepository = coWorkerRepository;
         }
 
         public async Task<AuthenticatedUser?> ProcessAuthorizationHeader(string? authorizationHeader)
@@ -36,6 +40,44 @@ namespace Hubly.api.Pipeline
             }
 
             return await GetUserFromToken(token);
+        }
+
+        public async Task<(AuthenticatedUser owner, AuthenticatedUser? coWorker)?> ResolveOwnerAndCoWorker(AuthenticatedUser currentUser, bool hasAuthenticatedCoWorker)
+        {
+            if (!hasAuthenticatedCoWorker)
+            {
+                return (currentUser, null);
+            }
+
+            var coWorkerRelation = await _coWorkerRepository.GetCoWorker(currentUser.Id);
+            if (coWorkerRelation == null)
+            {
+                return (currentUser, null);
+            }
+
+            var ownerResult = await _userService.GetUserInfo(coWorkerRelation.OwnerId);
+            if (ownerResult.IsT1)
+            {
+                return null;
+            }
+
+            var owner = new AuthenticatedUser
+            {
+                Id = ownerResult.AsT0.Id,
+                Token = currentUser.Token,
+                Username = ownerResult.AsT0.Name,
+                IsEmailConfirmed = ownerResult.AsT0.IsEmailConfirmed
+            };
+
+            var coWorker = new AuthenticatedUser
+            {
+                Id = currentUser.Id,
+                Token = currentUser.Token,
+                Username = currentUser.Username,
+                IsEmailConfirmed = currentUser.IsEmailConfirmed
+            };
+
+            return (owner, coWorker);
         }
 
         private async Task<AuthenticatedUser?> GetUserFromToken(string token)
