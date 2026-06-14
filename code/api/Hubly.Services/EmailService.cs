@@ -95,5 +95,63 @@ namespace Hubly.api.Services
                 }
             }
         }
+
+        public async Task SendCoWorkerInviteEmail(string toEmail, string inviterName, string inviterEmail)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_fromName, _fromEmail));
+            message.To.Add(new MailboxAddress(inviterName, toEmail));
+            message.Subject = "Hubly Co-Worker Invite";
+
+            var htmlBody = $@"
+                <div style='font-family: sans-serif; max-width: 600px; margin: auto;'>
+                    <h1>You have a new co-worker invite</h1>
+                    <p>{inviterName} ({inviterEmail}) has invited you to join them as a co-worker in Hubly.</p>
+                    <p>Open Hubly and respond to the invite from your dashboard.</p>
+                    <hr/>
+                    <p style='font-size: 12px; color: #888;'>If you did not expect this invite, you can ignore this message.</p>
+                </div>";
+
+            var textBody = $"You have a new co-worker invite from {inviterName} ({inviterEmail}).\n\nOpen Hubly and respond to the invite from your dashboard.\n\nIf you did not expect this invite, you can ignore this message.";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = htmlBody,
+                TextBody = textBody
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+            using var client = new SmtpClient();
+            try
+            {
+                SecureSocketOptions options = SecureSocketOptions.Auto;
+                
+                if (_port == 587)
+                    options = SecureSocketOptions.StartTls;
+                else if (_port == 465)
+                    options = SecureSocketOptions.SslOnConnect;
+                else if (!_enableSsl)
+                    options = SecureSocketOptions.None;
+
+                await client.ConnectAsync(_host, _port, options);
+                if (!string.IsNullOrEmpty(_userName))
+                {
+                    await client.AuthenticateAsync(_userName, _password);
+                }
+
+                await client.SendAsync(message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[EMAIL ERROR] Could not send coworker invite email: {ex.Message}");
+            }
+            finally
+            {
+                if (client.IsConnected)
+                {
+                    await client.DisconnectAsync(true);
+                }
+            }
+        }
     }
 }

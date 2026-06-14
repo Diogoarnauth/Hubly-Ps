@@ -121,6 +121,14 @@ public static class Uris
         public const string UntagConversation = $"{Prefix}/conversation/{{conversationId}}/remove-tag";
     }
 
-
+    public static class CoWorkers
+    {
+        public const string SendInvite = $"{Prefix}/co-workers/invite";
+        public const string AcceptInvite = $"{Prefix}/co-workers/invites/{{inviteId}}/accept";
+        public const string RejectInvite = $"{Prefix}/co-workers/invites/{{inviteId}}/reject";
+        public const string GetReceivedInvites = $"{Prefix}/co-workers/invites/received";
+        public const string GetSentInvites = $"{Prefix}/co-workers/invites/sent";
+        
+    }
 
 }

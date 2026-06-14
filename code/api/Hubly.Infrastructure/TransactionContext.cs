@@ -22,12 +22,13 @@ public class TransactionContext : ITransactionContext
         ConversationRepository = new ConversationRepository(context);
         MessageRepository = new MessageRepository(context);
         ConversationTagRepository = new ConversationTagRepository(context);
+        CoWorkerRepository = new CoWorkerRepository(context);
 
     }
 
     public IUserRepository UserRepository { get;}
     public ITokenRepository TokenRepository {get;}
-    public IEmailConfirmationRepository EmailConfirmationRepository {get;}
+    public IEmailConfirmationRepository EmailConfirmationRepository {get; }
     public ICreatorRepository CreatorRepository { get; } 
     public ICompanyRepository CompanyRepository { get; } 
     public IHistoryRepository HistoryRepository { get; } 
@@ -36,5 +37,6 @@ public class TransactionContext : ITransactionContext
     public ISocialPlatformRepository SocialPlatformRepository { get; }
     public ICreatorSocialRepository CreatorSocialRepository { get; }
     public IConversationTagRepository ConversationTagRepository { get; }
+    public ICoWorkerRepository CoWorkerRepository { get; }
 
 }

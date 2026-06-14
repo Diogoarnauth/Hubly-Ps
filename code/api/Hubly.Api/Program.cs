@@ -87,6 +87,7 @@ builder.Services.AddScoped<ISocialPlatformService, SocialPlatformService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IConversationTagService, ConversationTagService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ICoWorkerService, CoWorkerService>();
 builder.Services.AddSignalR(); //todo()
 
 //Encoders
@@ -103,6 +104,8 @@ builder.Services.AddScoped<ISocialPlatformRepository, SocialPlatformRepository>(
 builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<ICoWorkerRepository, CoWorkerRepository>();
+
 
 
 TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>

@@ -20,16 +20,27 @@ namespace Hubly.api.Services
             _emailService = emailService;
         }
 
-        public async Task<OneOf<Success, CoWorkerError>> SendInvite(int ownerId, string email)
+        public async Task<OneOf<bool, CoWorkerError>> SendInvite(int ownerId, string email)
         {
-            return await _transactionManager.Run<OneOf<Success, CoWorkerError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
+                
+                var ownerUser = await context.UserRepository.GetUserById(ownerId);
+                if (ownerUser == null) return new CoWorkerError.UserNotFound();
+                if (ownerUser.Creator == null && ownerUser.Company == null)
+                    {
+                        return new CoWorkerError.UserCannotBeACoWorker();
+                    }
+
+
                 var targetUser = await context.UserRepository.GetUserByEmail(email);
                 if (targetUser == null) return new CoWorkerError.UserNotFound();
 
                 if(targetUser.Id == ownerId) return new CoWorkerError.CannotInviteSelf();
 
                 var fullTargetUser = await context.UserRepository.GetUserById(targetUser.Id);
+                Console.WriteLine($"Target user: {fullTargetUser?.Name}, Creator: {fullTargetUser?.Creator}, Company: {fullTargetUser?.Company}");
+
 
                 if (fullTargetUser == null) return new CoWorkerError.UserNotFound();
                 if (fullTargetUser.Creator != null || fullTargetUser.Company != null)
@@ -37,29 +48,31 @@ namespace Hubly.api.Services
                         return new CoWorkerError.UserCannotBeACoWorker();
                     }
 
-                var existingCoWorker = await context.CoWorkerRepository.GetCoWorker(fullTargetUser.Id); //
+
+                var existingCoWorker = await context.CoWorkerRepository.GetCoWorker(fullTargetUser.Id); 
                 if(existingCoWorker != null) return new CoWorkerError.UserAlreadyACoWorker();
 
-                // Verifica se já existe um convite pendente
-                if (await context.CoWorkerRepository.InviteExists(ownerId, email)) //
+
+                if (await context.CoWorkerRepository.InviteExists(ownerId, email))
                 {
                     return new CoWorkerError.AlreadyInvited();
                 }
 
-                await context.CoWorkerRepository.CreateInvite(ownerId, email); //
 
-                // Opcional: _emailService.SendCoWorkerInviteEmail(email);
+                await context.CoWorkerRepository.CreateInvite(ownerId, email);
+            
+                await _emailService.SendCoWorkerInviteEmail(email, ownerUser.Name, ownerUser.Email);
                 
-                return new Success();
+                return true;
             });
         }
 
 
-        public async Task<OneOf<Success, CoWorkerError>> AcceptInvite(int userId, int inviteId) //verificar validade do invite TIMESTAMP
+        public async Task<OneOf<bool, CoWorkerError>> AcceptInvite(int userId, int inviteId) 
         {
-            return await _transactionManager.Run<OneOf<Success, CoWorkerError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
-                var invite = await context.CoWorkerInviteRepository.GetInviteById(inviteId);
+                var invite = await context.CoWorkerRepository.GetInviteById(inviteId);
                 
                 if (invite == null || invite.CoWorkerEmail != (await context.UserRepository.GetUserById(userId))?.Email)
                 {
@@ -68,23 +81,22 @@ namespace Hubly.api.Services
 
                 if (invite.Status != "WAITING") return new CoWorkerError.Unauthorized();
 
-                // Cria a associação efetiva
+                if (invite.ExpiresAt <= DateTime.UtcNow) return new CoWorkerError.InviteExpired();
+
                 await context.CoWorkerRepository.CreateCoWorker(userId, invite.OwnerId);
                 
-                // Atualiza o convite
-                await context.CoWorkerInviteRepository.UpdateStatus(inviteId, "ACCEPTED");
+                await context.CoWorkerRepository.UpdateStatus(inviteId, "ACCEPTED");
 
-                return new Success();
+                return true;
             });
         }
 
-        public async Task<OneOf<Success, CoWorkerError>> RejectInvite(int userId, int inviteId) //verificar validade do invite TIMESTAMP
+        public async Task<OneOf<bool, CoWorkerError>> RejectInvite(int userId, int inviteId) //verificar validade do invite TIMESTAMP
         {
-            return await _transactionManager.Run<OneOf<Success, CoWorkerError>>(async (context) =>
+            return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
-                var invite = await context.CoWorkerInviteRepository.GetInviteById(inviteId);
+                var invite = await context.CoWorkerRepository.GetInviteById(inviteId);
                 
-                // Apenas quem recebeu o convite pode rejeitar
                 if (invite == null || invite.CoWorkerEmail != (await context.UserRepository.GetUserById(userId))?.Email)
                 {
                     return new CoWorkerError.InviteNotFound();
@@ -92,26 +104,30 @@ namespace Hubly.api.Services
 
                 if (invite.Status != "WAITING") return new CoWorkerError.Unauthorized();
 
-
-                await context.CoWorkerInviteRepository.UpdateStatus(inviteId, "REJECTED");
-                return new Success();
+                await context.CoWorkerRepository.UpdateStatus(inviteId, "REJECTED");
+                return true;
             });
         }
 
-        public async Task<OneOf<List<CoWorkerInvite>, Error>> GetReceivedInvites(int userId)
+        public async Task<OneOf<List<CoWorkerInvite>, CoWorkerError>> GetReceivedInvites(int userId)
         {
-            return await _transactionManager.Run<OneOf<List<CoWorkerInvite>, Error>>(async (context) =>
+            return await _transactionManager.Run<OneOf<List<CoWorkerInvite>, CoWorkerError>>(async (context) =>
             {
                 var user = await context.UserRepository.GetUserById(userId);
-                return await context.CoWorkerInviteRepository.GetInvitesByEmail(user.Email);
+                if (user == null) return new CoWorkerError.UserNotFound();
+
+                return await context.CoWorkerRepository.GetInvitesByEmail(user.Email);
             });
         }
 
-        public async Task<OneOf<List<CoWorkerInvite>, Error>> GetSentInvites(int userId)
+        public async Task<OneOf<List<CoWorkerInvite>, CoWorkerError>> GetSentInvites(int userId)
         {
-            return await _transactionManager.Run<OneOf<List<CoWorkerInvite>, Error>>(async (context) =>
+            return await _transactionManager.Run<OneOf<List<CoWorkerInvite>, CoWorkerError>>(async (context) =>
             {
-                return await context.CoWorkerInviteRepository.GetInvitesByOwner(userId);
+                var user = await context.UserRepository.GetUserById(userId);
+                if (user == null) return new CoWorkerError.UserNotFound();
+
+                return await context.CoWorkerRepository.GetInvitesByOwner(userId);
             });
         }
     }

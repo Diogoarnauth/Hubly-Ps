@@ -23,6 +23,8 @@ public class HublyDbContext : DbContext
     public DbSet<ConversationTag> ConversationTags { get; set; }
     public DbSet<ConversationTagAssignment> ConversationTagAssignments { get; set; }
     public DbSet<MessageReadStatus> MessageReadStatuses { get; set; }
+    public DbSet<CoWorker> CoWorkers { get; set; }
+    public DbSet<CoWorkerInvite> CoWorkerInvites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -289,6 +291,49 @@ public class HublyDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<CoWorker>(entity =>
+        {
+            entity.ToTable("co_workers", "dbo");
+            entity.HasKey(cw => cw.Id);
+            entity.Property(cw => cw.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(cw => cw.UserId).HasColumnName("user_id");
+            entity.Property(cw => cw.OwnerId).HasColumnName("owner_id");
+            entity.Property(cw => cw.JoinedAt).HasColumnName("joined_at");
+
+            entity.HasOne(cw => cw.User)
+                .WithMany()
+                .HasForeignKey(cw => cw.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cw => cw.Owner)
+                .WithMany()
+                .HasForeignKey(cw => cw.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(cw => cw.UserId).IsUnique();
+        });
+
+        modelBuilder.Entity<CoWorkerInvite>(entity =>
+        {
+            entity.ToTable("co_worker_invites", "dbo");
+            entity.HasKey(ci => ci.Id);
+            entity.Property(ci => ci.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(ci => ci.OwnerId).HasColumnName("owner_id");
+            entity.Property(ci => ci.CoWorkerEmail).HasColumnName("co_worker_email").IsRequired().HasMaxLength(150);
+            entity.Property(ci => ci.Status).HasColumnName("status").IsRequired().HasMaxLength(20).HasDefaultValue("WAITING");
+            entity.Property(ci => ci.CreatedAt).HasColumnName("created_at");
+            entity.Property(ci => ci.ExpiresAt).HasColumnName("expires_at");
+
+            entity.HasOne(ci => ci.Owner)
+                .WithMany()
+                .HasForeignKey(ci => ci.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ci => new { ci.OwnerId, ci.CoWorkerEmail, ci.Status }).IsUnique();
         });
 
         modelBuilder.Entity<ConversationTag>(entity =>

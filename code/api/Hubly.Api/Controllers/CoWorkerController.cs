@@ -31,6 +31,9 @@ public class CoWorkerController : ControllerBase
             error => error switch
             {
                 CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                CoWorkerError.CannotInviteSelf => ProblemResponse.CannotInviteSelf.ToResponse(),
+                CoWorkerError.UserCannotBeACoWorker => ProblemResponse.UserCannotBeACoWorker.ToResponse(),
+                CoWorkerError.UserAlreadyACoWorker => ProblemResponse.UserAlreadyACoWorker.ToResponse(),
                 CoWorkerError.AlreadyInvited => ProblemResponse.AlreadyInvited.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
@@ -49,6 +52,7 @@ public class CoWorkerController : ControllerBase
             error => error switch
             {
                 CoWorkerError.InviteNotFound => ProblemResponse.InviteNotFound.ToResponse(),
+                CoWorkerError.InviteExpired => ProblemResponse.InviteExpired.ToResponse(),
                 CoWorkerError.Unauthorized => ProblemResponse.Unauthorized.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
@@ -80,7 +84,11 @@ public class CoWorkerController : ControllerBase
 
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<List<CoWorkerInviteOutputModel>>()),
-            error => ProblemResponse.InternalServerError.ToResponse()
+            error => error switch
+            {
+                CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
         );
     }
 
@@ -92,7 +100,11 @@ public class CoWorkerController : ControllerBase
 
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<List<CoWorkerInviteOutputModel>>()),
-            error => ProblemResponse.InternalServerError.ToResponse()
+            error => error switch
+            {
+                CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
         );
     }
 }

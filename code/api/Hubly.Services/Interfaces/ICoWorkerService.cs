@@ -7,10 +7,10 @@ namespace Hubly.api.Services.Interfaces
 {
     public interface ICoWorkerService
     {
-        Task<OneOf<Success, CoWorkerError>> SendInvite(int ownerId, string email);
-        Task<OneOf<Success, CoWorkerError>> AcceptInvite(int userId, int inviteId);
-        Task<OneOf<Success, CoWorkerError>> RejectInvite(int userId, int inviteId);
-        Task<OneOf<List<CoWorkerInvite>, Error>> GetReceivedInvites(int userId);
-        Task<OneOf<List<CoWorkerInvite>, Error>> GetSentInvites(int userId);
+        Task<OneOf<bool, CoWorkerError>> SendInvite(int ownerId, string email);
+        Task<OneOf<bool, CoWorkerError>> AcceptInvite(int userId, int inviteId);
+        Task<OneOf<bool, CoWorkerError>> RejectInvite(int userId, int inviteId);
+        Task<OneOf<List<CoWorkerInvite>, CoWorkerError>> GetReceivedInvites(int userId);
+        Task<OneOf<List<CoWorkerInvite>, CoWorkerError>> GetSentInvites(int userId);
     }
 }

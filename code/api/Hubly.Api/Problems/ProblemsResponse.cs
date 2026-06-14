@@ -308,4 +308,40 @@ public class ProblemResponse
         "unauthorized-access",
         "Unauthorized Access",
     403);
+
+    public static readonly ProblemResponse AlreadyInvited = new(
+        "already-invited",
+        "User Already Invited",
+    409);
+
+    public static readonly ProblemResponse InviteNotFound = new(
+        "invite-not-found",
+        "Invite Not Found",
+    404);
+
+    public static readonly ProblemResponse InviteExpired = new(
+        "invite-expired",
+        "Invite Expired",
+    410);
+
+    public static readonly ProblemResponse Unauthorized = new(
+        "unauthorized",
+        "Unauthorized",
+    403);
+
+    public static readonly ProblemResponse CannotInviteSelf = new(
+        "cannot-invite-self",
+        "Cannot Invite Self",
+    403);
+
+    public static readonly ProblemResponse UserCannotBeACoWorker = new(
+        "user-cannot-be-a-coworker",
+        "User Cannot Be A CoWorker",
+    403);
+
+    public static readonly ProblemResponse UserAlreadyACoWorker = new(
+        "user-already-a-coworker",
+        "User Already A CoWorker",
+    409);
+
 }
