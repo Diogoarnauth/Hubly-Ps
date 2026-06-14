@@ -69,7 +69,7 @@ namespace Hubly.api.Pipeline
                 IsEmailConfirmed = ownerResult.AsT0.IsEmailConfirmed
             };
 
-            var coWorker = new AuthenticatedUser
+            var coWorker = new AuthenticatedCoWorker
             {
                 Id = currentUser.Id,
                 Token = currentUser.Token,

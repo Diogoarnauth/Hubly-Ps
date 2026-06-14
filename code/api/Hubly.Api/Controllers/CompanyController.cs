@@ -44,11 +44,12 @@ public class CompanyController : ControllerBase
 
     [HttpPost(Uris.Uris.Companies.EditCompanyProfile)]
     public async Task<IActionResult> EditProfile(
-        [ModelBinder(BinderType = typeof(AuthenticatedUserModelBinder), BindingSource = BindingSource.Custom)] AuthenticatedUser user,
-        [ModelBinder(BinderType = typeof(AuthenticatedUserModelBinder), BindingSource = BindingSource.Custom)] AuthenticatedCoWorker? coWorker,
-        [FromBody] CompanyInputModel input)
+    [FromServices] AuthenticatedUser user, 
+    [FromServices] AuthenticatedCoWorker? coWorker, 
+    [FromBody] CompanyInputModel input)
+
     {
-        Console.WriteLine($"User ID: {user}");
+        Console.WriteLine($"User ID: {user}, CoWorker ID: {coWorker?.Id}");
 
         var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 

@@ -4,11 +4,11 @@
 @host = {{hostname}}:{{port}}
 @contentType = application/json
 //owner
-//@token= 1GkWRQkWCRzLK3a8YbboBCQPk2uTRk6exMaH+Rh+Jbw=
+//@token= NkbNzZ24JNCGUwFX4VM41kejpKUhGqf+YLVTMW8THcc=
 
-@token= lS5w3GRZwEj+gtHoTzeP3TYN8pc+U3DmAVUkk77sQms=
+//@token= 4zaSFU3xY24LTPIkaYtBKA5tcqGv85EOPOZQDmSH+O8=
 
-//@token = pvPp+rtubmOlssM+xtrTd9gOIadZLvVG6J/YLtU3bFs=
+@token = 2ubu8ijAXbwQpnAfCablvJ6UdZV223695GxrK6E8XUE=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -16,7 +16,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Caro",
-    "email": "dioarnauth1@gmail.com",
+    "email": "dioarnauth10@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -25,7 +25,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth1@gmail.com",
+    "email": "dioarnauth10@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -86,8 +86,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth1@gmail.com",
-    "code": "932990" 
+    "email": "dioarnauth10@gmail.com",
+    "code": "200152" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -187,7 +187,7 @@ Content-Type: {{contentType}}
   "Description": "Adoro o que faço",
   "Sectors": ["Automotive & Mobility"],
   "WebsiteLink": "http://www.bananinha.ed",
-  "CountryHeadquarters": "Spain"
+  "CountryHeadquarters": "Portugal"
 }
 
 
@@ -204,7 +204,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "email": "dioarnauth@gmail.com"
+  "email": "dioarnauth10@gmail.com"
 }
 
 ### Accept co-worker invite
@@ -213,7 +213,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 ### Reject co-worker invite
-POST http://{{host}}/api/co-workers/invites/4/reject
+POST http://{{host}}/api/co-workers/invites/5/reject
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

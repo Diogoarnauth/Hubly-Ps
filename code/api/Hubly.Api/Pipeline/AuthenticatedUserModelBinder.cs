@@ -16,16 +16,34 @@ namespace Hubly.api.Pipeline
         {
             ArgumentNullException.ThrowIfNull(bindingContext);
 
-            HttpContext httpContext = bindingContext.HttpContext;
+            var httpContext = bindingContext.HttpContext;
             var value = httpContext.Items[_itemKey];
 
             if (value != null)
             {
-                bindingContext.Result = ModelBindingResult.Success(value);
+                if (bindingContext.ModelType.IsInstanceOfType(value))
+                {
+                    bindingContext.Result = ModelBindingResult.Success(value);
+                }
+                else if (bindingContext.ModelType == typeof(AuthenticatedCoWorker) && value is AuthenticatedUser user)
+                {
+                    var coWorker = new AuthenticatedCoWorker
+                    {
+                        Id = user.Id,
+                        Token = user.Token,
+                        Username = user.Username,
+                        IsEmailConfirmed = user.IsEmailConfirmed
+                    };
+                    bindingContext.Result = ModelBindingResult.Success(coWorker);
+                }
+                else
+                {
+                    bindingContext.Result = ModelBindingResult.Failed();
+                }
             }
             else
             {
-                bindingContext.Result = ModelBindingResult.Failed();
+                bindingContext.Result = ModelBindingResult.Success(null); 
             }
 
             return Task.CompletedTask;
