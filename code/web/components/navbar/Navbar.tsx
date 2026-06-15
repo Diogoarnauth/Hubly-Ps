@@ -24,15 +24,36 @@ export function Navbar() {
       return;
     }
 
+    // 1. Fluxo Direto: Creator
     if (userData.role === 'creator') {
       router.push('/chatsCreator');
-    } else if (userData.role === 'company') {
+      return;
+    } 
+    
+    // 2. Fluxo Direto: Company
+    if (userData.role === 'company') {
       const idParaNavegar = userData.companyId || userData.id;
-      
       if (idParaNavegar) {
         router.push(`/chatsCompany/${idParaNavegar}`);
+      }
+      return;
+    } 
+
+    // 3. Fluxo Dinâmico: CoWorker (Verifica a role do Owner)
+    if (userData.role === 'coworker') {
+      const owner = userData.ownerInfo;
+      
+      if (!owner) {
+        console.error("Hubly: Owner info missing for coworker.");
+        return;
+      }
+
+      if (owner.role === 'creator') {
+        router.push('/chatsCreator');
+      } else if (owner.role === 'company') {
+        router.push(`/chatsCompany/${owner.id}`);
       } else {
-        console.error("Hubly: User data is missing companyId for company role or id for creator role.");
+        console.error(`Hubly: Unknown owner role (${owner.role}) for coworker.`);
       }
     }
   };
@@ -50,30 +71,27 @@ export function Navbar() {
             HUBLY
           </span>
           
-          {/* Mostrar navItems apenas quando user está autenticado */}
-          { (
-            <div className="flex items-center gap-6">
-              {navItems.map((item) => {
-                const isMessages = item.title === "Messages";
-                const isActive = isMessages 
-                  ? (pathname.includes("chatsCreator") || pathname.includes("chatsCompany"))
-                  : pathname === item.url;
+          <div className="flex items-center gap-6">
+            {navItems.map((item) => {
+              const isMessages = item.title === "Messages";
+              const isActive = isMessages 
+                ? (pathname.includes("chatsCreator") || pathname.includes("chatsCompany"))
+                : pathname === item.url;
 
-                return (
-                  <button
-                    key={item.title}
-                    onClick={() => isMessages ? handleMessagesClick() : router.push(item.url!)}
-                    className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                      isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.title}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+              return (
+                <button
+                  key={item.title}
+                  onClick={() => isMessages ? handleMessagesClick() : router.push(item.url!)}
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.title}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* LADO DIREITO: Perfil, Logout ou Login */}

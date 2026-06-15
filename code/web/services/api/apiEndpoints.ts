@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
    
     user: {
         login: `${API_BASE_URL}/users/token`,
+        getById: (id: number) => `${API_BASE_URL}/users/${id}`,
         register: `${API_BASE_URL}/users`,
         verifyEmail: `${API_BASE_URL}/users/verifyEmail`,
         resendEmailConfirmation: `${API_BASE_URL}/users/resendEmailConfirmation`,
@@ -71,5 +72,9 @@ export const API_ENDPOINTS = {
         deleteTag : `${API_BASE_URL}/conversation/tags/{tagId}`,
         tagConversation : `${API_BASE_URL}/conversation/{conversationId}/assign-tag`,
         untagConversation : `${API_BASE_URL}/conversation/{conversationId}/remove-tag`
+    },
+
+    coWorker: {
+        getMyInfo: `${API_BASE_URL}/co-workers/myInfo`
     }
 }

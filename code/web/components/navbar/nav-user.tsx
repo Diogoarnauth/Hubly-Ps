@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LogOut, User as UserIcon, Settings, Plus, ArrowLeft, Check, X } from "lucide-react";
+import { LogOut, User as UserIcon, Plus, Check, X } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import { useUser } from "@/providers/UserProvider";
@@ -11,11 +11,24 @@ import { Button } from "@/components/ui/button";
 export function NavUser() {
     const { user, logout } = useUser();
     const router = useRouter();
-
-    // Estado para alternar entre o Menu e a Validação de Logout
     const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
 
     if (!user) return null;
+
+    const isCoWorker = user.role === 'coworker';
+    const owner = user.ownerInfo;
+
+    // Dados visuais do Avatar e Dropdown
+    const displayName = isCoWorker && owner ? owner.name : user.name;
+    const displayEmail = isCoWorker && owner ? owner.email : user.email;
+    
+    // 🔥 CÁLCULO DINÂMICO DA ROTA DO PERFIL:
+    let profileRedirectUrl = `/${user.role}/${user.id}`; // Fallback padrão caso não seja coworker
+    
+    if (isCoWorker && owner) {
+        // Se o dono for creator vai para /creator/id, se for company vai para /company/id
+        profileRedirectUrl = `/${owner.role}/${owner.id}`;
+    }
 
     const handleLogout = async () => {
         await logout();
@@ -27,7 +40,7 @@ export function NavUser() {
             <DropdownMenuTrigger className="focus:outline-none">
                 <Avatar className="h-9 w-9 border-2 border-transparent hover:border-primary transition-all">
                     <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                        {user.name.substring(0, 2).toUpperCase()}
+                        {displayName.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
             </DropdownMenuTrigger>
@@ -38,16 +51,22 @@ export function NavUser() {
                     <>
                         <DropdownMenuLabel className="font-normal p-2">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium">{user.name}</p>
-                                <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                                <p className="text-sm font-medium">{displayName}</p>
+                                <p className="text-xs text-muted-foreground capitalize">
+                                    {isCoWorker ? `coworker (${owner?.role || 'workspace'})` : user.role}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground/70 truncate">{displayEmail}</p>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem onClick={() => router.push(`/${user.role}/${user.id}`)}>
+                            
+                            {/* Redireciona dinamicamente para o perfil do Owner ou do User comum */}
+                            <DropdownMenuItem onClick={() => router.push(profileRedirectUrl)}>
                                 <UserIcon className="mr-2 h-4 w-4" />
                                 <span>My Profile</span>
                             </DropdownMenuItem>
+
                             {user.role === 'creator' && (
                                 <DropdownMenuItem onClick={() => router.push('/create-social-profile')}>
                                     <Plus className="mr-2 h-4 w-4" />
@@ -59,8 +78,8 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={(e) => {
-                                e.preventDefault(); // Não fecha o dropdown
-                                setIsConfirmingLogout(true); // Muda para a "mini página" de validação
+                                e.preventDefault();
+                                setIsConfirmingLogout(true);
                             }}
                             className="text-destructive focus:bg-destructive/10"
                         >
@@ -78,7 +97,6 @@ export function NavUser() {
                             </p>
                         </div>
 
-                        {/* Usamos grid para garantir que os botões ocupam exatamente 50% cada um sem fugir */}
                         <div className="grid grid-cols-2 gap-2">
                             <Button
                                 variant="outline"

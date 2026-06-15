@@ -109,4 +109,20 @@ public class CoWorkerController : ControllerBase
             }
         );
     }
+
+
+    
+    [HttpGet(Uris.Uris.CoWorkers.GetMyCoWorkerInfo)]
+    public async Task<IActionResult> GetMyCoWorkerInfo( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    {
+        var response = await _coWorkerService.GetMyCoWorkerInfo(user.Id);
+        return response.Match<IActionResult>(
+            success => Ok(success.Adapt<GetMyCoWorkerOutputModel>()),
+            error => error switch
+            {
+                CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 }

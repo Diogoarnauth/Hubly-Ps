@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 
-type Role = 'creator' | 'company' | null;
+type Role = 'creator' | 'company' | 'coworker' | null;
 
 interface OnboardingContextType {
     role: Role;

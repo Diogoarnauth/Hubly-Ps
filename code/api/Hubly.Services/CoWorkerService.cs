@@ -24,7 +24,7 @@ namespace Hubly.api.Services
         {
             return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
-                
+
                 var ownerUser = await context.UserRepository.GetUserById(ownerId);
                 if (ownerUser == null) return new CoWorkerError.UserNotFound();
                 if (ownerUser.Creator == null && ownerUser.Company == null)
@@ -36,7 +36,7 @@ namespace Hubly.api.Services
                 var targetUser = await context.UserRepository.GetUserByEmail(email);
                 if (targetUser == null) return new CoWorkerError.UserNotFound();
 
-                if(targetUser.Id == ownerId) return new CoWorkerError.CannotInviteSelf();
+                if (targetUser.Id == ownerId) return new CoWorkerError.CannotInviteSelf();
 
                 var fullTargetUser = await context.UserRepository.GetUserById(targetUser.Id);
                 Console.WriteLine($"Target user: {fullTargetUser?.Name}, Creator: {fullTargetUser?.Creator}, Company: {fullTargetUser?.Company}");
@@ -44,13 +44,13 @@ namespace Hubly.api.Services
 
                 if (fullTargetUser == null) return new CoWorkerError.UserNotFound();
                 if (fullTargetUser.Creator != null || fullTargetUser.Company != null)
-                    {
-                        return new CoWorkerError.UserCannotBeACoWorker();
-                    }
+                {
+                    return new CoWorkerError.UserCannotBeACoWorker();
+                }
 
 
-                var existingCoWorker = await context.CoWorkerRepository.GetCoWorker(fullTargetUser.Id); 
-                if(existingCoWorker != null) return new CoWorkerError.UserAlreadyACoWorker();
+                var existingCoWorker = await context.CoWorkerRepository.GetCoWorker(fullTargetUser.Id);
+                if (existingCoWorker != null) return new CoWorkerError.UserAlreadyACoWorker();
 
 
                 if (await context.CoWorkerRepository.InviteExists(ownerId, email))
@@ -60,20 +60,20 @@ namespace Hubly.api.Services
 
 
                 await context.CoWorkerRepository.CreateInvite(ownerId, email);
-            
+
                 await _emailService.SendCoWorkerInviteEmail(email, ownerUser.Name, ownerUser.Email);
-                
+
                 return true;
             });
         }
 
 
-        public async Task<OneOf<bool, CoWorkerError>> AcceptInvite(int userId, int inviteId) 
+        public async Task<OneOf<bool, CoWorkerError>> AcceptInvite(int userId, int inviteId)
         {
             return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
                 var invite = await context.CoWorkerRepository.GetInviteById(inviteId);
-                
+
                 if (invite == null || invite.CoWorkerEmail != (await context.UserRepository.GetUserById(userId))?.Email)
                 {
                     return new CoWorkerError.InviteNotFound();
@@ -84,7 +84,7 @@ namespace Hubly.api.Services
                 if (invite.ExpiresAt <= DateTime.UtcNow) return new CoWorkerError.InviteExpired();
 
                 await context.CoWorkerRepository.CreateCoWorker(userId, invite.OwnerId);
-                
+
                 await context.CoWorkerRepository.UpdateStatus(inviteId, "ACCEPTED");
 
                 return true;
@@ -96,7 +96,7 @@ namespace Hubly.api.Services
             return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
                 var invite = await context.CoWorkerRepository.GetInviteById(inviteId);
-                
+
                 if (invite == null || invite.CoWorkerEmail != (await context.UserRepository.GetUserById(userId))?.Email)
                 {
                     return new CoWorkerError.InviteNotFound();
@@ -128,6 +128,21 @@ namespace Hubly.api.Services
                 if (user == null) return new CoWorkerError.UserNotFound();
 
                 return await context.CoWorkerRepository.GetInvitesByOwner(userId);
+            });
+        }
+
+        public async Task<OneOf<CoWorker, CoWorkerError>> GetMyCoWorkerInfo(int userId)
+        {
+            return await _transactionManager.Run<OneOf<CoWorker, CoWorkerError>>(async (context) =>
+            {
+            var coWorker = await context.CoWorkerRepository.GetCoWorker(userId);
+
+            if (coWorker == null)
+            {
+                return new CoWorkerError.UserNotFound();
+            }
+
+            return coWorker;
             });
         }
     }

@@ -12,5 +12,7 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<bool, CoWorkerError>> RejectInvite(int userId, int inviteId);
         Task<OneOf<List<CoWorkerInvite>, CoWorkerError>> GetReceivedInvites(int userId);
         Task<OneOf<List<CoWorkerInvite>, CoWorkerError>> GetSentInvites(int userId);
+        Task<OneOf<CoWorker, CoWorkerError>> GetMyCoWorkerInfo(int userId);
+
     }
 }

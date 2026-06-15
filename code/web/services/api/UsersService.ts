@@ -161,6 +161,30 @@ class UsersService implements IUserService {
             return null;
         }
     }
+
+    async getUser(id: number): Promise<UserInfo | null> {
+        try {
+            // Nota: Certifica-te de que tens API_ENDPOINTS.user.getById mapeado no teu ficheiro de rotas
+            // Exemplo esperado em apiEndpoints: getById: (id: number) => `/users/${id}`
+            const url = API_ENDPOINTS.user.getById ? API_ENDPOINTS.user.getById(id) : `/users/${id}`;
+            const response = await this.apiClient.get<UserInfo>(url);
+            console.log("responseeee bolachinha", response)
+            
+            if (!response) return null;
+
+            return {
+                id: response.id,
+                name: response.name,
+                email: response.email,
+                role: response.role
+            };
+        } catch (error) {
+            console.error(`Erro ao obter utilizador com id ${id}:`, error);
+            throw error; 
+        }
+    }
+
+    
 }
 
 export default new UsersService();

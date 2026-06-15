@@ -128,6 +128,7 @@ public static class Uris
         public const string RejectInvite = $"{Prefix}/co-workers/invites/{{inviteId}}/reject";
         public const string GetReceivedInvites = $"{Prefix}/co-workers/invites/received";
         public const string GetSentInvites = $"{Prefix}/co-workers/invites/sent";
+        public const string GetMyCoWorkerInfo = $"{Prefix}/co-workers/myInfo";
         
     }
 
