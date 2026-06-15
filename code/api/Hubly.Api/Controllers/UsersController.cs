@@ -131,7 +131,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.CheckCreatorOrCompany)]
-    public async Task<IActionResult> CheckCreatorOrCompany([FromServices] AuthenticatedUser user)
+    public async Task<IActionResult> CheckCreatorOrCompany(
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker)
     {
         var response = await _userService.CheckCreatorOrCompany(user.Id);
 
@@ -213,7 +215,8 @@ public class UserController : ControllerBase
 
     [HttpGet(Uris.Uris.Users.GetHistory)]
     public async Task<IActionResult> GetHistory(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
@@ -246,7 +249,10 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.FullCreatorProfile)]
-    public async Task<IActionResult> GetFullCreatorProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
+    public async Task<IActionResult> GetFullCreatorProfile(
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,
+        [FromRoute] int id)
     {
         var result = await _userService.GetFullCreatorProfile(id, user.Id);
 
@@ -267,7 +273,10 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.FullCompanyProfile)]
-    public async Task<IActionResult> GetFullCompanyProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
+    public async Task<IActionResult> GetFullCompanyProfile(
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,
+        [FromRoute] int id)
     {
         var result = await _userService.GetFullCompanyProfile(id, user.Id);
 

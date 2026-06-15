@@ -46,18 +46,23 @@ namespace Hubly.api.Pipeline
         {
             if (!hasAuthenticatedCoWorker)
             {
+                Console.WriteLine($"PRIMEIRO IF");
                 return (currentUser, null);
             }
 
             var coWorkerRelation = await _coWorkerRepository.GetCoWorker(currentUser.Id);
+            Console.WriteLine($"Co-worker relation for user ID {currentUser.Id}: {(coWorkerRelation != null ? "Found" : "Not Found")}");
             if (coWorkerRelation == null)
             {
+                Console.WriteLine($"CO-WORKER NÃO ENCONTRADO");
                 return (currentUser, null);
             }
 
             var ownerResult = await _userService.GetUserInfo(coWorkerRelation.OwnerId);
+            Console.WriteLine($"Owner info result for owner ID {coWorkerRelation.OwnerId}: {(ownerResult.IsT0 ? "Success" : "Failure")}");
             if (ownerResult.IsT1)
             {
+                Console.WriteLine($"Failed to get owner info for owner ID {coWorkerRelation.OwnerId}");
                 return null;
             }
 

@@ -42,7 +42,10 @@ public class CreatorController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Creators.EditCreatorProfile)]
-    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CreatorCreateInputModel input)
+    public async Task<IActionResult> EditProfile(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker,
+        [FromBody] CreatorCreateInputModel input)
     {
         var res = await _creatorService.Edit(user.Id, input.ArtisticName);
 
@@ -59,7 +62,10 @@ public class CreatorController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Creators.ChangeAvailabilityStatus)]
-    public async Task<IActionResult> ChangeAvailabilityStatus([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] StatusChangeInputModel input)
+    public async Task<IActionResult> ChangeAvailabilityStatus(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker,         
+        [FromBody] StatusChangeInputModel input)
     {
         var res = await _creatorService.UpdateStatus(user.Id, input.AvailabilityStatus);
 
@@ -98,7 +104,10 @@ public class CreatorController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Creators.GetById)]
-    public async Task<IActionResult> GetById(AuthenticatedUser user, [FromRoute] int id)
+    public async Task<IActionResult> GetById(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int id)
     {
         var res = await _creatorService.GetById(id, user.Id);
 
@@ -116,8 +125,9 @@ public class CreatorController : ControllerBase
 
     [HttpGet(Uris.Uris.Creators.GetSocialProfileById)]
     public async Task<IActionResult> GetSocialProfileById(
-    [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-    [FromRoute] int profileId)
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int profileId)
     {
         var res = await _creatorService.GetSocialProfileById(profileId, user.Id);
 
@@ -140,7 +150,10 @@ public class CreatorController : ControllerBase
 
 
     [HttpPost(Uris.Uris.Creators.AddSocialProfile)]
-    public async Task<IActionResult> AddSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] SocialProfileInputModel input)
+    public async Task<IActionResult> AddSocialProfile(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromBody] SocialProfileInputModel input)
     {
         var res = await _creatorService.AddSocialProfile(user.Id, input.Platform_user_name, input.Link, input.Description, input.Followers_count, input.PriceMin, input.PriceMax, input.PlatformId, input.Sectors);
 
@@ -164,7 +177,11 @@ public class CreatorController : ControllerBase
 
 
     [HttpPost(Uris.Uris.Creators.EditCreatorSocialProfile)]
-    public async Task<IActionResult> EditCreatorSocialProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int socialProfileId, [FromBody] EditPlatformsInputModel input)
+    public async Task<IActionResult> EditCreatorSocialProfile(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker,  
+        [FromRoute] int socialProfileId, 
+        [FromBody] EditPlatformsInputModel input)
     {
         var res = await _creatorService.EditCreatorSocialProfile(user.Id, socialProfileId, input.PlatformUserName, input.Link, input.Description, input.FollowersCount, input.PriceMin, input.PriceMax, input.Sectors);
 
@@ -189,8 +206,9 @@ public class CreatorController : ControllerBase
 
     [HttpDelete(Uris.Uris.Creators.RemoveSocialProfile)]
     public async Task<IActionResult> RemoveSocialProfile(
-            [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-            [FromRoute] int profileId)
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker,             
+        [FromRoute] int profileId)
     {
         var res = await _creatorService.RemoveSocialProfile(user.Id, profileId);
 
@@ -219,8 +237,9 @@ public class CreatorController : ControllerBase
 
     [HttpGet(Uris.Uris.Creators.GetMyRating)]
     public async Task<IActionResult> GetMyRating(
-        [FromRoute] int id,
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int id)
     {
         var res = await _creatorService.GetUserRatingForCreator(user.Id, id);
 
@@ -298,7 +317,10 @@ public class CreatorController : ControllerBase
 
 
 [HttpGet(Uris.Uris.Creators.GetRecommendations)]
-public async Task<IActionResult> GetRecommendations([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+public async Task<IActionResult> GetRecommendations(
+    [FromServices] AuthenticatedUser user, 
+    [FromServices] AuthenticatedCoWorker? coWorker   
+    )
 {
     var res = await _creatorService.GetRecommendedCreators(user.Id);
 

@@ -4,11 +4,12 @@
 @host = {{hostname}}:{{port}}
 @contentType = application/json
 //owner
-//@token= NkbNzZ24JNCGUwFX4VM41kejpKUhGqf+YLVTMW8THcc=
+//@token= MMs18k1ul/bNzZtvSsgP9VK+4e13ETps5/zicfeMfhE=
 
-//@token= 4zaSFU3xY24LTPIkaYtBKA5tcqGv85EOPOZQDmSH+O8=
+@token= 8iNXyTkyzC4L9ACHwQhGESgvyPCxruGSWvYlVYnk0rU=
 
-@token = 2ubu8ijAXbwQpnAfCablvJ6UdZV223695GxrK6E8XUE=
+//solto
+//@token = XNkqZAsPHCR9GDJxP9QzcPK+Usvp9OiQlAQsrF7N+FE=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -16,7 +17,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Caro",
-    "email": "dioarnauth10@gmail.com",
+    "email": "dioarnauth1@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -25,7 +26,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth10@gmail.com",
+    "email": "dioarnauth1@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -86,8 +87,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth10@gmail.com",
-    "code": "200152" 
+    "email": "dioarnauth1@gmail.com",
+    "code": "192527" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -109,7 +110,7 @@ Content-Type: {{contentType}}
 }
 
 ### Get creator info
-GET http://{{host}}/api/creator/42
+GET http://{{host}}/api/creator/7
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -164,7 +165,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "AvailabilityStatus": "UNAVAILABLE"
+  "AvailabilityStatus": "AVAILABLE"
 }
 
 ### Edit Creator
@@ -180,7 +181,7 @@ Content-Type: {{contentType}}
 POST http://{{host}}/api/company/edit
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
-
+ 
 {
   "CompanySize": 200000,
   "CompanyName": "Hublizinho",
@@ -192,7 +193,7 @@ Content-Type: {{contentType}}
 
 
 ### Get company info
-GET http://{{host}}/api/company/44
+GET http://{{host}}/api/company/23
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -204,7 +205,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "email": "dioarnauth10@gmail.com"
+  "email": "dioarnauth1@gmail.com"
 }
 
 ### Accept co-worker invite
@@ -295,7 +296,7 @@ Content-Type: {{contentType}}
 
 
 ### Edit CreateSocialProfile erro 500 quando tentamos edi
-POST http://{{host}}/api/creator/socialProfile/edit/1
+POST http://{{host}}/api/creator/socialProfile/edit/22
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 

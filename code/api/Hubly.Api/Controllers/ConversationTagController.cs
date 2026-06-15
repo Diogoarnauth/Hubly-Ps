@@ -20,7 +20,8 @@ public class ConversationTagController : ControllerBase
 
     [HttpPost(Uris.Uris.ConversationTags.CreateTag)]
     public async Task<IActionResult> CreateTag(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,         
         [FromBody] CreateConversationTagInputModel input)
     {
         var res = await _conversationTagService.CreateTag(user.Id, input.TagName, input.ColorHex);
@@ -40,7 +41,8 @@ public class ConversationTagController : ControllerBase
 
     [HttpGet(Uris.Uris.ConversationTags.GetUserTags)]
     public async Task<IActionResult> GetUserTags(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker)
     {
         var res = await _conversationTagService.GetUserTags(user.Id);
 
@@ -56,7 +58,8 @@ public class ConversationTagController : ControllerBase
 
     [HttpPut(Uris.Uris.ConversationTags.UpdateTag)]
     public async Task<IActionResult> UpdateTag(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,
         int tagId,
         [FromBody] UpdateConversationTagInputModel input)
     {
@@ -78,7 +81,8 @@ public class ConversationTagController : ControllerBase
 
     [HttpDelete(Uris.Uris.ConversationTags.DeleteTag)]
     public async Task<IActionResult> DeleteTag(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
         int tagId)
     {
         var res = await _conversationTagService.DeleteTag(user.Id, tagId);
@@ -96,7 +100,8 @@ public class ConversationTagController : ControllerBase
 
     [HttpPost(Uris.Uris.ConversationTags.TagConversation)]
     public async Task<IActionResult> TagConversation(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
         int conversationId,
         [FromBody] TagConversationInputModel input)
     {
@@ -116,7 +121,8 @@ public class ConversationTagController : ControllerBase
 
     [HttpPost(Uris.Uris.ConversationTags.UntagConversation)]
     public async Task<IActionResult> UntagConversation(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,
         int conversationId)
     {
         var res = await _conversationTagService.UntagConversation(user.Id, conversationId);

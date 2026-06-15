@@ -23,7 +23,8 @@ public class ConversationController : ControllerBase
 
     [HttpPost(Uris.Uris.Conversations.Create)]
     public async Task<IActionResult> Create(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
         [FromBody] CreateConversationInputModel input)
     {
         int? senderCompanyId = input.Sender.Type == ParticipantType.Company ? input.Sender.ProfileId : null;
@@ -48,7 +49,8 @@ public class ConversationController : ControllerBase
 
     [HttpPost(Uris.Uris.Conversations.CheckExists)]
     public async Task<IActionResult> CheckExists(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,
         [FromBody] CreateConversationInputModel input)
     {
         int? senderCompanyId = input.Sender.Type == ParticipantType.Company ? input.Sender.ProfileId : null;
@@ -71,7 +73,11 @@ public class ConversationController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Conversations.SendMessage)]
-    public async Task<IActionResult> SendMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int conversationId, [FromBody] SendMessageInputModel input)
+    public async Task<IActionResult> SendMessage(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int conversationId, 
+        [FromBody] SendMessageInputModel input)
     {
         var res = await _conversationService.SendMessage(user.Id, conversationId, input.Content);
 
@@ -86,7 +92,11 @@ public class ConversationController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Conversations.EditMessage)]
-    public async Task<IActionResult> EditMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int messageId, [FromBody] SendMessageInputModel input)
+    public async Task<IActionResult> EditMessage(
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int messageId, 
+        [FromBody] SendMessageInputModel input)
     {
         var res = await _conversationService.EditMessage(user.Id, messageId, input.Content);
 
@@ -103,7 +113,10 @@ public class ConversationController : ControllerBase
     }
 
     [HttpDelete(Uris.Uris.Conversations.DeleteMessage)]
-    public async Task<IActionResult> DeleteMessage([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int messageId)
+    public async Task<IActionResult> DeleteMessage(
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,         
+        [FromRoute] int messageId)
     {
         var res = await _conversationService.DeleteMessage(user.Id, messageId);
 
@@ -121,7 +134,8 @@ public class ConversationController : ControllerBase
 
     [HttpGet(Uris.Uris.Conversations.GetMessages)]
     public async Task<IActionResult> GetMessages(
-     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+     [FromServices] AuthenticatedUser user,
+     [FromServices] AuthenticatedCoWorker? coWorker, 
      [FromRoute] int conversationId,
      [FromQuery] int page = 1,
      [FromQuery] int pageSize = 25)
@@ -150,8 +164,9 @@ public class ConversationController : ControllerBase
 
     [HttpGet(Uris.Uris.Conversations.GetMyConversationsCreator)]
     public async Task<IActionResult> GetMyConversationsCreator(
-       [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-       [FromRoute] int socialProfileId)
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int socialProfileId)
     {
         var result = await _conversationService.GetCreatorConversationsByProfile(user.Id, socialProfileId);
 
@@ -175,12 +190,13 @@ public class ConversationController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
-    }
+    } 
 
     [HttpGet(Uris.Uris.Conversations.GetCompanyConversations)]
     public async Task<IActionResult> GetCompanyConversations(
-     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
-     [FromRoute] int companyId)
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,     
+        [FromRoute] int companyId)
     {
         var result = await _conversationService.GetCompanyConversations(user.Id, companyId);
 
@@ -207,7 +223,8 @@ public class ConversationController : ControllerBase
 
     [HttpPost(Uris.Uris.Conversations.MarkMessagesAsRead)]
     public async Task<IActionResult> MarkMessagesAsRead(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker,
         [FromRoute] int conversationId,
         [FromRoute] int lastMessageId)
     {
@@ -227,7 +244,8 @@ public class ConversationController : ControllerBase
 
     [HttpGet(Uris.Uris.Conversations.GetUnreadMessageCount)]
     public async Task<IActionResult> GetUnreadMessageCount(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker, 
         [FromRoute] int conversationId)
     {
         var res = await _conversationService.GetUnreadMessageCount(user.Id, conversationId);

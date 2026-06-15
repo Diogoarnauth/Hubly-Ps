@@ -59,7 +59,7 @@ namespace Hubly.api.Pipeline
                 { StatusCode = 403 };
                 return;
             }
-
+            Console.WriteLine($"Authenticated user ID: {currentUser.Id}, Username: {currentUser.Username}, hasAuthCoWorker: {hasAuthCoWorker}");
             var resolved = await _tokenProcessor.ResolveOwnerAndCoWorker(currentUser, hasAuthCoWorker);
             if (resolved == null)
             {

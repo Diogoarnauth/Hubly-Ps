@@ -49,7 +49,7 @@ public class CompanyController : ControllerBase
     [FromBody] CompanyInputModel input)
 
     {
-        Console.WriteLine($"User ID: {user}, CoWorker ID: {coWorker?.Id}");
+        Console.WriteLine($"User ID: {user?.Id}, CoWorker ID: {coWorker?.Id}");
 
         var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 
@@ -69,7 +69,10 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Companies.GetById)]
-    public async Task<IActionResult> GetById([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
+    public async Task<IActionResult> GetById( 
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int id)
     {
         Console.WriteLine($"User ID: {user.Id}, Requested Company ID: {id}");
         var res = await _companyService.GetById(id, user.Id);
@@ -149,8 +152,12 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Companies.GetRecommendations)]
-    public async Task<IActionResult> GetRecommendations([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    public async Task<IActionResult> GetRecommendations(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker
+        )
     {
+        Console.WriteLine($"User ID: {user.Id}, CoWorker ID: {coWorker?.Id}");
         var res = await _companyService.GetRecommendedCompanies(user.Id);
 
         return res.Match<IActionResult>(
@@ -163,6 +170,4 @@ public class CompanyController : ControllerBase
     }
 
 }
-
-//verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
 
