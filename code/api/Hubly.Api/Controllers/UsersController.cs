@@ -117,10 +117,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.GetMyInfo)]
-    public async Task<IActionResult> GetMyInfo(
-        [FromServices] AuthenticatedUser user, 
-        [FromServices] AuthenticatedCoWorker? coWorker
-    )
+    public async Task<IActionResult> GetMyInfo(AuthenticatedUser user)
     {
         var response = await _userService.GetUserInfo(user.Id);
         return response.Match<IActionResult>(
@@ -134,8 +131,11 @@ public class UserController : ControllerBase
     }
 
     
-    [HttpGet(Uris.Uris.Users.GetMyInfo)]
-    public async Task<IActionResult> GetMyOnwerInfo(AuthenticatedUser user)
+    [HttpGet(Uris.Uris.Users.GetMyOnwerInfo)]
+    public async Task<IActionResult> GetMyOnwerInfo(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker
+    )
     {
         var response = await _userService.GetUserInfo(user.Id);
         return response.Match<IActionResult>(

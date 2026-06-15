@@ -56,7 +56,7 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
   useEffect(() => {
     const loadCurrentUser = async () => {
       try {
-        const myInfo = await usersService.getCurrentUser();
+        const myInfo = await usersService.getCurrentOwnerUser();
         if (!myInfo) return;
 
         setCurrentUser(myInfo);

@@ -18,15 +18,12 @@ export function NavUser() {
     const isCoWorker = user.role === 'coworker';
     const owner = user.ownerInfo;
 
-    // Dados visuais do Avatar e Dropdown
     const displayName = isCoWorker && owner ? owner.name : user.name;
     const displayEmail = isCoWorker && owner ? owner.email : user.email;
     
-    // 🔥 CÁLCULO DINÂMICO DA ROTA DO PERFIL:
-    let profileRedirectUrl = `/${user.role}/${user.id}`; // Fallback padrão caso não seja coworker
-    
+    let profileRedirectUrl = `/${user.role}/${user.id}`; 
+
     if (isCoWorker && owner) {
-        // Se o dono for creator vai para /creator/id, se for company vai para /company/id
         profileRedirectUrl = `/${owner.role}/${owner.id}`;
     }
 
@@ -67,7 +64,7 @@ export function NavUser() {
                                 <span>My Profile</span>
                             </DropdownMenuItem>
 
-                            {user.role === 'creator' && (
+                            {(user.role === 'creator' || user.ownerInfo?.role === 'creator') && (
                                 <DropdownMenuItem onClick={() => router.push('/create-social-profile')}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     <span>Social Profile</span>

@@ -133,6 +133,23 @@ class UsersService implements IUserService {
         return null;
     }
 
+    async getCurrentOwnerUser(): Promise<UserInfo | null> {
+        const response = await this.apiClient.get<UserInfo>(API_ENDPOINTS.user.getMyOnwerInfo);
+        console.log("responseeee", response)
+
+        if (!response) return null;
+
+        return {
+            id: response.id,
+            name: response.name,
+            email: response.email,
+            role: response.role
+        };
+    } catch(error) {
+        console.error("Erro ao obter info do utilizador:", error);
+        return null;
+    }
+
     async logout(): Promise<boolean> {//melhorar errors disto
         try {
             await this.apiClient.post(API_ENDPOINTS.user.logout, {});

@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
         resendEmailConfirmation: `${API_BASE_URL}/users/resendEmailConfirmation`,
         checkProfile: `${API_BASE_URL}/users/profile/CheckCreatorOrCompany`,
         getMyInfo : `${API_BASE_URL}/users/profile/me`,
+        getMyOnwerInfo : `${API_BASE_URL}/users/profile/owner`,
         logout : `${API_BASE_URL}/users/logout`,
         getFullCreatorProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCreatorProfile`, 
         getFullCompanyProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCompanyProfile`,
