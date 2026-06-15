@@ -117,7 +117,25 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.GetMyInfo)]
-    public async Task<IActionResult> GetMyInfo(AuthenticatedUser user)
+    public async Task<IActionResult> GetMyInfo(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker
+    )
+    {
+        var response = await _userService.GetUserInfo(user.Id);
+        return response.Match<IActionResult>(
+            success => Ok(MapToUserInfo(success)),
+            error => error switch
+            {
+                UserError.FailedToGetUserInfo => ProblemResponse.FailedToGetUserInfo.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    
+    [HttpGet(Uris.Uris.Users.GetMyInfo)]
+    public async Task<IActionResult> GetMyOnwerInfo(AuthenticatedUser user)
     {
         var response = await _userService.GetUserInfo(user.Id);
         return response.Match<IActionResult>(
