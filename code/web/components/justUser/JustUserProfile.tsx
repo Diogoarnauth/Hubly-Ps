@@ -1,43 +1,46 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ArrowLeft, User as UserIcon, Settings, History, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import usersService, { UserInfo } from '@/services/api/UsersService'; // Ajusta o caminho se necessário
+import usersService, { UserInfo } from '@/services/api/UsersService'; 
 import ProfileHistoryModal from '@/components/common/ProfileHistoryModal';
-import { toastError } from '../ToastImplementations'; // Ajusta o caminho do teu toast se quiseres avisar de erros
+import { toastError } from '../ToastImplementations'; 
+import { EditUserModal } from './EditJustUserModal'; 
 
 export function JustUserProfile() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    async function loadUserData() {
-      try {
-        setLoading(true);
-        const myInfo = await usersService.getCurrentUser();
-        
-        if (myInfo) {
-          setUser(myInfo);
-        } else {
-          toastError('Error', 'Failed to session data');
-          router.push('/login');
-        }
-      } catch (error) {
-        console.error("Error loading user info via service:", error);
-        toastError('Error', 'An error occurred while fetching your profile');
-        router.push('/');
-      } finally {
-        setLoading(false);
+  const loadUserData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const myInfo = await usersService.getCurrentUser();
+      
+      if (myInfo) {
+        setUser(myInfo);
+      } else {
+        toastError('Error', 'Failed to load session data');
+        router.push('/login');
       }
+    } catch (error) {
+      console.error("Error loading user info via service:", error);
+      toastError('Error', 'An error occurred while fetching your profile');
+      router.push('/');
+    } finally {
+      setLoading(false);
     }
-
-    loadUserData();
   }, [router]);
+
+  // 🔥 2. O useEffect limita-se a chamar a função quando o componente monta
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
 
   if (loading) {
     return (
@@ -67,9 +70,7 @@ export function JustUserProfile() {
           size="icon"
           className="hover:bg-zinc-800"
           title="Account Settings"
-          onClick={() => {
-            // Modal de definições futuro
-          }}
+          onClick={() => setIsEditModalOpen(true)}
         >
           <Settings className="w-8 h-8 text-white" />
         </Button>
@@ -119,12 +120,24 @@ export function JustUserProfile() {
             {/* Caixa de aviso amigável a explicar o estado da conta */}
             <div className="mt-8 p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50 text-sm text-zinc-300">
               <p>
-                💡 <strong>Awaiting action:</strong> You currently have a basic account. To access all features of Hubly, you can create your professional profile, (either creator or company profile) or wait for a team invitation (Coworker).
+                💡 <strong>Awaiting action:</strong> You currently have a basic account. To access all features of Hubly, you can create your professional profile (either creator or company profile) or wait for a team invitation (Coworker).
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* */}
+      {isEditModalOpen && (
+        <EditUserModal
+          currentUsername={user?.name || ''}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={async () => {
+            setIsEditModalOpen(false); 
+            await loadUserData();
+          }}
+        />
+      )}
 
       {/* Modal do Histórico */}
       <ProfileHistoryModal isOpen={isHistoryModalOpen} onClose={() => setIsHistoryModalOpen(false)} />
