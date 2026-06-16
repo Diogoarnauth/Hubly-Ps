@@ -95,8 +95,8 @@ public class CoWorkerController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.CoWorkers.GetSentInvites)]
-    public async Task<IActionResult> GetSentInvites(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    public async Task<IActionResult> GetSentInvites([FromServices] AuthenticatedUser user, 
+    [FromServices] AuthenticatedCoWorker? coWorker)
     {
         var res = await _coWorkerService.GetSentInvites(user.Id);
 
@@ -125,4 +125,5 @@ public class CoWorkerController : ControllerBase
             }
         );
     }
+
 }
