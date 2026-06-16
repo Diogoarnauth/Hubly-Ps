@@ -12,7 +12,7 @@
 //solto2
 //@token = lev4R9pECvSrViUUbBk6O0ptAdFHzMx30yMpQ7B0ztU=
 //solto3
-@token = kqvvK1AFQ7C+JNL7rotivKjcA4AbYgnRr87vfjP1S6c=
+@token = 6OZjRxH9IM3VOlXn87z0+YcrU7RmhBdiSdC3y1xu4WU=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -29,7 +29,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth1110@gmail.com",
+    "email": "dioarnauth1@gmail.com",
     "password": "Carol2010!"
 }
 

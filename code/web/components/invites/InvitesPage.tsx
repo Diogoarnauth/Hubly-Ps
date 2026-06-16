@@ -8,7 +8,7 @@ import coWorkerService, { CoWorkerInviteOutputModel } from '@/services/api/CoWor
 import { useUser } from '@/providers/UserProvider'; 
 
 export default function TeamManagementPage() {
-  const { user } = useUser();
+  const { user, refreshUser } = useUser();
   const isOwner = user?.role === 'creator' || user?.role === 'company'; 
   const isCoWorker = user?.role === 'coworker';
 
@@ -49,8 +49,13 @@ export default function TeamManagementPage() {
   async function handleAccept(inviteId: number) {
     setActionLoadingId(inviteId);
     const success = await coWorkerService.acceptInvite(inviteId);
+    
     if (success) {
       setReceivedInvites(prev => prev.filter(inv => inv.id !== inviteId));
+      
+      await refreshUser(); 
+      
+      alert("Invitation accepted! Your status has been updated.");
     } else {
       alert("Failed to accept the invite.");
     }
@@ -86,6 +91,10 @@ export default function TeamManagementPage() {
   }
 
   if (pageLoading) {
+
+    console.log("user para ver os nomes", user?.email)
+        console.log("user para ver os nomes", user?.ownerInfo?.email)
+
     return (
       <div className="flex min-h-[400px] items-center justify-center text-white">
         <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
@@ -106,7 +115,7 @@ export default function TeamManagementPage() {
             <div className="text-center">
               <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">Workspace Owner</p>
               <p className="text-sm font-semibold truncate max-w-[160px]">
-                {isOwner ? (user?.email || 'You') : 'Workspace Owner'}
+                {isOwner ? (user?.email || 'You') : (user?.ownerInfo?.email || 'Owner')}
               </p>
             </div>
           </div>

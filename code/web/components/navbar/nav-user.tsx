@@ -64,7 +64,8 @@ export function NavUser() {
                                 <span>My Profile</span>
                             </DropdownMenuItem>
 
-                            {(user.role === 'creator' || user.ownerInfo?.role === 'creator') && (
+                            {(user.role === 'creator' || user
+                            .ownerInfo?.role === 'creator') && (
                                 <DropdownMenuItem onClick={() => router.push('/create-social-profile')}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     <span>Social Profile</span>

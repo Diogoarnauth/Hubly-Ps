@@ -48,6 +48,12 @@ namespace Hubly.api.Services
                 if (await context.CreatorRepository.ExistsByUserId(userId))
                     return new CompanyError.UserAlreadyRegisteredAsCreator();
 
+                var coworker = await context.CoWorkerRepository.GetCoWorker(userId) != null;
+
+                if (coworker) return new CompanyError.UserAlreadyRegisteredAsCoWorker();
+
+
+
                 var newCompany = new Company
                 {
                     Id = userId,

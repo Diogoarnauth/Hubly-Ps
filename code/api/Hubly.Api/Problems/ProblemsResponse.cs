@@ -349,4 +349,10 @@ public class ProblemResponse
         "User Is Not A Creator Or Company",
     403);
 
+    public static readonly ProblemResponse UserAlreadyRegisteredAsCoWorker = new(
+        "user-already-registered-as-coworker",
+        "User Already Registered As CoWorker",
+        409
+    );
+
 }

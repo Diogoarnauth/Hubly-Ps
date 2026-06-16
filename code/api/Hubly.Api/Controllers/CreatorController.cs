@@ -35,6 +35,7 @@ public class CreatorController : ControllerBase
                 CreatorError.InvalidArtisticName => ProblemResponse.InvalidArtisticName.ToResponse(),
                 CreatorError.CreatorAlreadyExists => ProblemResponse.CreatorAlreadyExists.ToResponse(),
                 CreatorError.UserAlreadyRegisteredAsCompany => ProblemResponse.UserAlreadyRegisteredAsCompany.ToResponse(),
+                CreatorError.UserAlreadyRegisteredAsCoWorker => ProblemResponse.UserAlreadyRegisteredAsCoWorker.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

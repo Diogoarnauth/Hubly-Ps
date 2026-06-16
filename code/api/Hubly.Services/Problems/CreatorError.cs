@@ -29,5 +29,6 @@ namespace Hubly.api.Services.Problems
         public class ProfileDoesntBellongToYou : CreatorError { }
         public class InvalidSectorName : CreatorError { }
         public class SectorsNotFound : CreatorError { }
+        public class UserAlreadyRegisteredAsCoWorker : CreatorError { }
     }
 }

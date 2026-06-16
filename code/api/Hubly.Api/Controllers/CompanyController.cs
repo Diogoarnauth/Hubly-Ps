@@ -36,6 +36,7 @@ public class CompanyController : ControllerBase
                 CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),
                 CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CompanyError.InvalidCountryHeadquarters => ProblemResponse.InvalidCountryHeadquarters.ToResponse(),
+                CompanyError.UserAlreadyRegisteredAsCoWorker => ProblemResponse.UserAlreadyRegisteredAsCoWorker.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

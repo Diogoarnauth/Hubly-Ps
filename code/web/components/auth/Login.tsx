@@ -32,19 +32,8 @@ export function LoginForm() {
             if (result) {
                 toastSuccess('Login successful', 'You are now logged in');
                 // Após login bem-sucedido, popula cache do React Query com os dados do user
-                try {
-                    const current = await authService.getCurrentUser();
-                    if (current) {
-                        queryClient.setQueryData(['user'], {
-                            id: current.id,
-                            name: current.name,
-                            email: current.email,
-                            role: current.role
-                        });
-                    }
-                } catch (e) {
-                    console.error('Failed to populate user cache after login', e);
-                }
+                
+                   await queryClient.invalidateQueries({ queryKey: ['user'] });
 
                 router.push('/onboarding');
             } else {

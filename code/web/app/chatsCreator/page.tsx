@@ -4,6 +4,7 @@ import { CreatorChatSelection } from '@/components/chatCreator/CreatorChatSelect
 
 export default function ChatMessagesPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
+  console.log("Resolved params:", resolvedParams);
   
   return (
     <div className="min-h-screen bg-black p-6 md:p-10 flex justify-center items-start">
