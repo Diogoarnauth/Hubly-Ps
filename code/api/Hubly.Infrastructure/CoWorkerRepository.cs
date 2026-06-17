@@ -81,4 +81,36 @@ public class CoWorkerRepository : ICoWorkerRepository
 
         await _context.CoWorkers.AddAsync(coWorker);
     }
+
+    public async Task DeleteCoWorker(int userId)
+    {
+        var coWorker = await _context.CoWorkers.FirstOrDefaultAsync(cw => cw.UserId == userId);
+        if (coWorker != null)
+        {
+            _context.CoWorkers.Remove(coWorker);
+        }
+    }
+    public async Task<CoWorker?> GetCoWorkerByOwnerAndUser(int ownerId, int coWorkerUserId)
+    {
+        return await _context.CoWorkers
+            .FirstOrDefaultAsync(cw => cw.OwnerId == ownerId && cw.UserId == coWorkerUserId);
+    }
+
+
+    public async Task DeleteCoWorkerByIds(int ownerId, int coWorkerUserId)
+    {
+        var coWorker = await GetCoWorkerByOwnerAndUser(ownerId, coWorkerUserId);
+        if (coWorker != null)
+        {
+            _context.CoWorkers.Remove(coWorker);
+        }
+    }
+
+ public async Task<List<CoWorker>> GetTeamByOwnerId(int ownerId)
+{
+    return await _context.CoWorkers
+        .Include(cw => cw.User) 
+        .Where(cw => cw.OwnerId == ownerId)
+        .ToListAsync();
+}
 }

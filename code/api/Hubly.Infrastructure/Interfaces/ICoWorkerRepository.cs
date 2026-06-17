@@ -12,4 +12,9 @@ public interface ICoWorkerRepository
     Task<List<CoWorkerInvite>> GetInvitesByEmail(string email);
     Task<List<CoWorkerInvite>> GetInvitesByOwner(int ownerId);
     Task CreateCoWorker(int userId, int ownerId);
+    Task DeleteCoWorker(int userId);
+
+    Task<CoWorker?> GetCoWorkerByOwnerAndUser(int ownerId, int coWorkerUserId);
+    Task DeleteCoWorkerByIds(int ownerId, int coWorkerUserId);
+    Task<List<CoWorker>> GetTeamByOwnerId(int ownerId);
 }

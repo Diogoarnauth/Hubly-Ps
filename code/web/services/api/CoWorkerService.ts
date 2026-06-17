@@ -24,6 +24,15 @@ export interface GetMyCoWorkerInfoResponse {
     joinedAt: string;
 }
 
+
+export interface GetMyCoWorkerWithEmailInfoResponse {
+    id: number;
+    userId: number;
+    ownerId: number;
+    joinedAt: string;
+    coWorkerEmail: string;
+}
+
 class CoWorkerService implements ICoWorkerService {
     private apiClient = new ApiClient();
 
@@ -98,6 +107,42 @@ class CoWorkerService implements ICoWorkerService {
             return Array.isArray(response) ? response : [];
         } catch (error) {
             console.error("Erro ao buscar convites enviados:", error);
+            return [];
+        }
+    }
+
+    async cancelCoworking(): Promise<boolean> {
+        try {
+            await this.apiClient.delete(API_ENDPOINTS.coWorker.CancelCoworking);
+            return true;
+        } catch (error) {
+            console.error("Erro ao cancelar coworking (auto-desassociação):", error);
+            return false;
+        }
+    }
+
+    /**
+     * Owner remove um CoWorker específico da sua equipa
+     * @param coWorkerUserId O ID do utilizador que está a ser removido
+     */
+    async ownerCancelCoworking(coWorkerUserId: number): Promise<boolean> {
+        try {
+            await this.apiClient.delete(API_ENDPOINTS.coWorker.OwnerCancelCoworking(coWorkerUserId));
+            return true;
+        } catch (error) {
+            console.error(`Erro ao remover CoWorker ${coWorkerUserId}:`, error);
+            return false;
+        }
+    }
+
+    async getMyTeam(): Promise<GetMyCoWorkerWithEmailInfoResponse[]> {
+        try {
+            const response = await this.apiClient.get<GetMyCoWorkerWithEmailInfoResponse[]>(
+                API_ENDPOINTS.coWorker.GetMyTeam
+            );
+            return Array.isArray(response) ? response : [];
+        } catch (error) {
+            console.error("Erro ao buscar equipa (team):", error);
             return [];
         }
     }

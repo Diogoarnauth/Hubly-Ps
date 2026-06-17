@@ -4,15 +4,15 @@
 @host = {{hostname}}:{{port}}
 @contentType = application/json
 //owner
-//@token= GR4XZxRr902LacF7b97aac7xQM9Wo1qKNjSMCrOJo3U=
-//@token= Vc5Pj3ZJ1Olb4Wautzdyofqv4X3VwgfdSzeRGtK0CgA=
+//@token= 0scG0xXNkx5X0uK+H3cUC5QY/SLQW0livRqPXInYs8o=
+@token= BNAspnsiv/EB0R5WaqEzjG0JcTfJr2JcsUpqzFee9IA=
 
 //solto
 //@token = j1PyxhI+JeVpWEt3qJF3Nov93T5D8Dr5eX9/k9h3GBE=
 //solto2
 //@token = lev4R9pECvSrViUUbBk6O0ptAdFHzMx30yMpQ7B0ztU=
 //solto3
-@token = 6OZjRxH9IM3VOlXn87z0+YcrU7RmhBdiSdC3y1xu4WU=
+//@token = pvvGju67JL4LEIvvW6euCFzKIAPfXjcjEpU149Sgb/8=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -433,5 +433,20 @@ Content-Type: {{contentType}}
 
 ### Get My CoWorker Info
 GET http://{{host}}/api/co-workers/myInfo/
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Cancel Coworking (Co-worker a sair da equipa)
+DELETE http://{{host}}/api/co-workers/remove
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Owner Cancel Coworking (Owner a remover um Co-worker específico)
+DELETE http://{{host}}/api/co-workers/remove/40
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get My Team (Para o Owner ver a sua equipa)
+GET http://{{host}}/api/co-workers/myTeam
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

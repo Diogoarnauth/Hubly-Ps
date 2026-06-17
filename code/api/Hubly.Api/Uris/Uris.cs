@@ -131,7 +131,9 @@ public static class Uris
         public const string GetReceivedInvites = $"{Prefix}/co-workers/invites/received";
         public const string GetSentInvites = $"{Prefix}/co-workers/invites/sent";
         public const string GetMyCoWorkerInfo = $"{Prefix}/co-workers/myInfo";
-        
+        public const string CancelCoworking = $"{Prefix}/co-workers/remove";
+        public const string OwnerCancelCoworking = $"{Prefix}/co-workers/remove/{{coWorkerUserId:int}}";
+        public const string GetMyTeam = $"{Prefix}/co-workers/myTeam";
     }
 
 }

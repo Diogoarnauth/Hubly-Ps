@@ -354,5 +354,10 @@ public class ProblemResponse
         "User Already Registered As CoWorker",
         409
     );
+    public static readonly ProblemResponse CoWorkerRelationshipNotFound = new(
+        "coworker-relationship-not-found",
+        "CoWorker Relationship Not Found",
+        404
+    );
 
 }

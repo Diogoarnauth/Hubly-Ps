@@ -4,26 +4,46 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Check, X, Mail, Calendar, Send, UserCheck, Clock, Users, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import coWorkerService, { CoWorkerInviteOutputModel } from '@/services/api/CoWorkerService';
-import { useUser } from '@/providers/UserProvider'; 
+import { useUser } from '@/providers/UserProvider';
+import coWorkerService, { CoWorkerInviteOutputModel, GetMyCoWorkerInfoResponse, GetMyCoWorkerWithEmailInfoResponse } from '@/services/api/CoWorkerService';
 
 export default function TeamManagementPage() {
   const { user, refreshUser } = useUser();
-  const isOwner = user?.role === 'creator' || user?.role === 'company'; 
+  const isOwner = user?.role === 'creator' || user?.role === 'company';
   const isCoWorker = user?.role === 'coworker';
+  const [teamMembers, setTeamMembers] = useState<GetMyCoWorkerWithEmailInfoResponse[]>([]);
+
 
   const [receivedInvites, setReceivedInvites] = useState<CoWorkerInviteOutputModel[]>([]);
   const [sentInvites, setSentInvites] = useState<CoWorkerInviteOutputModel[]>([]);
-  
+
   const [pageLoading, setPageLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
   const [sendLoading, setSendLoading] = useState(false);
-  
+
   const [emailInput, setEmailInput] = useState('');
 
   const activeCoWorkers = sentInvites.filter(
     inv => inv.status.toLowerCase() === 'accepted'
   );
+
+  async function handleRemoveCoWorker(coWorkerUserId: number) {
+    if (!confirm("Are you sure you want to remove this connection?")) return;
+
+    let success = false;
+    if (isOwner) {
+      success = await coWorkerService.ownerCancelCoworking(coWorkerUserId);
+    } else {
+      success = await coWorkerService.cancelCoworking();
+    }
+
+    if (success) {
+      await refreshUser();
+      loadPageData();
+    } else {
+      alert("Failed to remove connection.");
+    }
+  }
 
   const loadPageData = useCallback(async () => {
     try {
@@ -31,6 +51,8 @@ export default function TeamManagementPage() {
       if (isOwner || isCoWorker) {
         const sent = await coWorkerService.getSentInvites();
         setSentInvites(sent);
+        const team = await coWorkerService.getMyTeam();
+        setTeamMembers(team);
       } else if (user?.role === 'justUser') {
         const received = await coWorkerService.getReceivedInvites();
         setReceivedInvites(received.filter(inv => inv.status === 'WAITING'));
@@ -49,12 +71,12 @@ export default function TeamManagementPage() {
   async function handleAccept(inviteId: number) {
     setActionLoadingId(inviteId);
     const success = await coWorkerService.acceptInvite(inviteId);
-    
+
     if (success) {
       setReceivedInvites(prev => prev.filter(inv => inv.id !== inviteId));
-      
-      await refreshUser(); 
-      
+
+      await refreshUser();
+
       alert("Invitation accepted! Your status has been updated.");
     } else {
       alert("Failed to accept the invite.");
@@ -93,7 +115,7 @@ export default function TeamManagementPage() {
   if (pageLoading) {
 
     console.log("user para ver os nomes", user?.email)
-        console.log("user para ver os nomes", user?.ownerInfo?.email)
+    console.log("user para ver os nomes", user?.ownerInfo?.email)
 
     return (
       <div className="flex min-h-[400px] items-center justify-center text-white">
@@ -107,8 +129,9 @@ export default function TeamManagementPage() {
       <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
         <Users className="w-5 h-5 text-[#A78BFA]" /> Team Hierarchy Graph
       </h2>
-      
+
       <div className="flex flex-col items-center justify-center py-6 w-full overflow-x-auto">
+        {/* Cabeçalho do Owner */}
         <div className="flex flex-col items-center relative z-10">
           <div className="bg-zinc-900 border-2 border-[#A78BFA] px-6 py-3 rounded-2xl flex items-center gap-3 shadow-xl min-w-[200px] justify-center">
             <Shield className="w-5 h-5 text-[#A78BFA] shrink-0" />
@@ -119,31 +142,40 @@ export default function TeamManagementPage() {
               </p>
             </div>
           </div>
-          
-          {activeCoWorkers.length > 0 && (
-            <div className="w-[2px] h-8 bg-zinc-700"></div>
-          )}
+
+          {teamMembers.length > 0 && <div className="w-[2px] h-8 bg-zinc-700"></div>}
         </div>
 
-        {activeCoWorkers.length === 0 ? (
+        {teamMembers.length === 0 ? (
           <p className="text-zinc-500 text-xs italic mt-2">No active co-workers connected yet.</p>
         ) : (
           <div className="w-full max-w-2xl">
-            {activeCoWorkers.length > 1 && (
+            {teamMembers.length > 1 && (
               <div className="relative w-full flex justify-center">
                 <div className="absolute h-[2px] bg-zinc-700 top-0" style={{
-                  width: `calc(100% - (${100 / activeCoWorkers.length}%)`
+                  width: `calc(100% - (${100 / teamMembers.length}%)`
                 }}></div>
               </div>
             )}
 
             <div className="flex justify-center items-start gap-4 w-full pt-0">
-              {activeCoWorkers.map((worker) => {
-                const isMe = worker.coWorkerEmail === user?.email;
+              {teamMembers.map((worker) => {
+                const isMe = worker.userId === user?.id;
+                const canRemove = isOwner || isMe;
+
                 return (
-                  <div key={worker.id} className="flex flex-col items-center flex-1 min-w-[160px] max-w-[240px] relative">
+                  <div key={worker.id} className="flex flex-col items-center flex-1 min-w-[160px] max-w-[240px] relative mt-6">
                     <div className="w-[2px] h-6 bg-zinc-700 mb-0"></div>
-                    
+
+                    {canRemove && (
+                      <button
+                        onClick={() => handleRemoveCoWorker(worker.userId)}
+                        className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-900/80 hover:bg-red-600 rounded-full p-1 transition z-20 border border-red-700 shadow-md"
+                      >
+                        <X className="w-3 h-3 text-white" />
+                      </button>
+                    )}
+
                     <div className={`bg-[#1F1F1F] border px-4 py-3 rounded-xl flex items-center gap-3 w-full shadow-lg hover:border-zinc-700 transition ${isMe ? 'border-emerald-500/50' : 'border-zinc-800'}`}>
                       <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
                         <UserCheck className={`w-4 h-4 ${isMe ? 'text-emerald-400 animate-pulse' : 'text-[#A78BFA]'}`} />
@@ -152,8 +184,8 @@ export default function TeamManagementPage() {
                         <p className="text-xs text-emerald-400 font-semibold tracking-wide uppercase">
                           {isMe ? 'Co-Worker (You)' : 'Co-Worker'}
                         </p>
-                        <p className="text-xs text-zinc-300 truncate font-medium" title={worker.coWorkerEmail}>
-                          {worker.coWorkerEmail}
+                        <p className="text-xs text-zinc-300 truncate font-medium">
+                          Email: {worker.coWorkerEmail}
                         </p>
                       </div>
                     </div>
@@ -194,7 +226,7 @@ export default function TeamManagementPage() {
               <Send className="w-5 h-5 text-[#A78BFA]" /> Invite a Co-Worker
             </h2>
             <form onSubmit={handleSendInvite} className="flex flex-col sm:flex-row gap-3">
-              <input 
+              <input
                 type="email"
                 placeholder="Enter co-worker's email address..."
                 className="flex-1 bg-[#1A1A1A] border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#A78BFA]"
@@ -203,7 +235,7 @@ export default function TeamManagementPage() {
                 disabled={sendLoading}
                 required
               />
-              <Button 
+              <Button
                 type="submit"
                 disabled={sendLoading}
                 className="bg-[#A78BFA] hover:bg-[#8B5CF6] text-white px-6 h-12 rounded-xl gap-2 font-medium"
@@ -234,14 +266,13 @@ export default function TeamManagementPage() {
                           <p className="text-xs text-zinc-500">Sent on: {new Date(invite.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      
-                      <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                        invite.status.toLowerCase() === 'accepted' 
-                          ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                          : invite.status.toLowerCase() === 'rejected'
+
+                      <span className={`text-xs px-3 py-1 rounded-full font-medium ${invite.status.toLowerCase() === 'accepted'
+                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                        : invite.status.toLowerCase() === 'rejected'
                           ? 'bg-red-950 text-red-400 border border-red-900'
                           : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
-                      }`}>
+                        }`}>
                         {invite.status.toUpperCase()}
                       </span>
                     </CardContent>
@@ -273,8 +304,8 @@ export default function TeamManagementPage() {
               const isProcessing = actionLoadingId === invite.id;
 
               return (
-                <Card 
-                  key={invite.id} 
+                <Card
+                  key={invite.id}
                   className="bg-[#2A2A2A] border-zinc-800 text-white rounded-[20px] overflow-hidden"
                 >
                   <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

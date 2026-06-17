@@ -81,6 +81,9 @@ export const API_ENDPOINTS = {
         acceptInvite: (inviteId: number) => `${API_BASE_URL}/co-workers/invites/${inviteId}/accept`,
         rejectInvite: (inviteId: number) => `${API_BASE_URL}/co-workers/invites/${inviteId}/reject`,
         getReceivedInvites: `${API_BASE_URL}/co-workers/invites/received`,
-        getSentInvites: `${API_BASE_URL}/co-workers/invites/sent`
+        getSentInvites: `${API_BASE_URL}/co-workers/invites/sent`,
+        CancelCoworking: `${API_BASE_URL}/co-workers/remove`,
+        OwnerCancelCoworking: (coWorkerUserId: number) => `${API_BASE_URL}/co-workers/remove/${coWorkerUserId}`,
+        GetMyTeam: `${API_BASE_URL}/co-workers/myTeam`
     }
 }

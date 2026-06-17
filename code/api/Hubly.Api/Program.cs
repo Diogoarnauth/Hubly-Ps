@@ -121,6 +121,9 @@ TypeAdapterConfig<Company, CompanyOutputModel>
 TypeAdapterConfig<Company, CompanyOutputModel>
     .NewConfig()
     .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
+TypeAdapterConfig<CoWorker, GetMyCoWorkerWithEmailOutputModel>
+    .NewConfig()
+    .Map(dest => dest.CoWorkerEmail, src => src.User.Email);
 
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 

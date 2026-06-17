@@ -21,7 +21,7 @@ public class CoWorkerController : ControllerBase
 
     [HttpPost(Uris.Uris.CoWorkers.SendInvite)]
     public async Task<IActionResult> SendInvite(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, 
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
         [FromBody] SendInviteInputModel input)
     {
         var res = await _coWorkerService.SendInvite(user.Id, input.Email);
@@ -43,7 +43,7 @@ public class CoWorkerController : ControllerBase
 
     [HttpPost(Uris.Uris.CoWorkers.AcceptInvite)]
     public async Task<IActionResult> AcceptInvite(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, 
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
         [FromRoute] int inviteId)
     {
         var res = await _coWorkerService.AcceptInvite(user.Id, inviteId);
@@ -62,7 +62,7 @@ public class CoWorkerController : ControllerBase
 
     [HttpPost(Uris.Uris.CoWorkers.RejectInvite)]
     public async Task<IActionResult> RejectInvite(
-        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, 
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
         [FromRoute] int inviteId)
     {
         var res = await _coWorkerService.RejectInvite(user.Id, inviteId);
@@ -95,7 +95,7 @@ public class CoWorkerController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.CoWorkers.GetSentInvites)]
-    public async Task<IActionResult> GetSentInvites([FromServices] AuthenticatedUser user, 
+    public async Task<IActionResult> GetSentInvites([FromServices] AuthenticatedUser user,
     [FromServices] AuthenticatedCoWorker? coWorker)
     {
         var res = await _coWorkerService.GetSentInvites(user.Id);
@@ -111,9 +111,9 @@ public class CoWorkerController : ControllerBase
     }
 
 
-    
+
     [HttpGet(Uris.Uris.CoWorkers.GetMyCoWorkerInfo)]
-    public async Task<IActionResult> GetMyCoWorkerInfo( [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    public async Task<IActionResult> GetMyCoWorkerInfo([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
     {
         var response = await _coWorkerService.GetMyCoWorkerInfo(user.Id);
         return response.Match<IActionResult>(
@@ -126,4 +126,56 @@ public class CoWorkerController : ControllerBase
         );
     }
 
+    [HttpDelete(Uris.Uris.CoWorkers.CancelCoworking)]
+    public async Task<IActionResult> CancelCoworking(
+        [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    {
+
+        var res = await _coWorkerService.CancelCoworking(user.Id);
+
+        return res.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                CoWorkerError.CoWorkerRelationshipNotFound => ProblemResponse.CoWorkerRelationshipNotFound.ToResponse(),
+                CoWorkerError.Unauthorized => ProblemResponse.Unauthorized.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpDelete(Uris.Uris.CoWorkers.OwnerCancelCoworking)]
+    public async Task<IActionResult> CancelCoworking(
+      [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int coWorkerUserId)
+    {
+
+        var res = await _coWorkerService.OwnerCancelCoworking(user.Id, coWorkerUserId);
+
+        return res.Match<IActionResult>(
+            success => NoContent(),
+            error => error switch
+            {
+                CoWorkerError.CoWorkerRelationshipNotFound => ProblemResponse.CoWorkerRelationshipNotFound.ToResponse(),
+                CoWorkerError.Unauthorized => ProblemResponse.Unauthorized.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+    [HttpGet(Uris.Uris.CoWorkers.GetMyTeam)]
+    public async Task<IActionResult> GetMyTeam(
+        [FromServices] AuthenticatedUser user,
+        [FromServices] AuthenticatedCoWorker? coWorker)
+    {
+        var res = await _coWorkerService.GetMyTeam(user.Id);
+
+        return res.Match<IActionResult>(
+            success => Ok(success.Adapt<List<GetMyCoWorkerWithEmailOutputModel>>()), 
+            error => error switch
+            {
+                CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
 }

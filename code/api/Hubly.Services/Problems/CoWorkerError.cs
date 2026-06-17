@@ -13,6 +13,7 @@ namespace Hubly.api.Services.Problems
         public class UserCannotBeACoWorker : CoWorkerError { }
         public class UserAlreadyACoWorker : CoWorkerError { }
         public class UserIsNotACreatorOrCompany : CoWorkerError { }
+        public class CoWorkerRelationshipNotFound : CoWorkerError { }
         
     }
 }

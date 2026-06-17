@@ -135,14 +135,65 @@ namespace Hubly.api.Services
         {
             return await _transactionManager.Run<OneOf<CoWorker, CoWorkerError>>(async (context) =>
             {
-            var coWorker = await context.CoWorkerRepository.GetCoWorker(userId);
+                var coWorker = await context.CoWorkerRepository.GetCoWorker(userId);
 
-            if (coWorker == null)
+                if (coWorker == null)
+                {
+                    return new CoWorkerError.UserNotFound();
+                }
+
+                return coWorker;
+            });
+        }
+
+
+        public async Task<OneOf<bool, CoWorkerError>> CancelCoworking(int userId)
+        {
+            return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
             {
-                return new CoWorkerError.UserNotFound();
-            }
+                var coWorker = await context.CoWorkerRepository.GetCoWorker(userId);
 
-            return coWorker;
+                if (coWorker == null)
+                {
+                    return new CoWorkerError.CoWorkerRelationshipNotFound();
+                }
+
+                await context.CoWorkerRepository.DeleteCoWorker(userId);
+
+                return true;
+            });
+        }
+
+        public async Task<OneOf<bool, CoWorkerError>> OwnerCancelCoworking(int ownerId, int coWorkerUserId)
+        {
+            return await _transactionManager.Run<OneOf<bool, CoWorkerError>>(async (context) =>
+            {
+                Console.WriteLine($"Owner ID: {ownerId}, CoWorker User ID: {coWorkerUserId}");
+                var coWorker = await context.CoWorkerRepository.GetCoWorkerByOwnerAndUser(ownerId, coWorkerUserId);
+                Console.WriteLine($"CoWorker relationship: {coWorker?.UserId} - {coWorker?.OwnerId}");
+
+                if (coWorker == null)
+                {
+                    return new CoWorkerError.CoWorkerRelationshipNotFound();
+                }
+
+                await context.CoWorkerRepository.DeleteCoWorkerByIds(ownerId, coWorkerUserId);
+
+                return true;
+            });
+        }
+
+        public async Task<OneOf<List<CoWorker>, CoWorkerError>> GetMyTeam(int ownerId)
+        {
+            return await _transactionManager.Run<OneOf<List<CoWorker>, CoWorkerError>>(async (context) =>
+            {
+                var ownerUser = await context.UserRepository.GetUserById(ownerId);
+                if (ownerUser == null) return new CoWorkerError.UserNotFound();
+
+                if (ownerUser.Creator == null && ownerUser.Company == null)
+                    return new CoWorkerError.UserIsNotACreatorOrCompany();
+
+                return await context.CoWorkerRepository.GetTeamByOwnerId(ownerId);
             });
         }
     }
