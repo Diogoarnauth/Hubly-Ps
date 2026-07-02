@@ -21,7 +21,8 @@ public class CompanyController : ControllerBase
         _companyService = companyService;
     }
 
-    [HttpPost(Uris.Uris.Companies.Create)]
+    [HttpPost(Uris.Uris.Companies.Create)] //LOG
+    [AuditLogFilter("CreateCompany")] 
     public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
     {
         var res = await _companyService.Register(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
@@ -43,7 +44,9 @@ public class CompanyController : ControllerBase
 
     }
 
-    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)]
+    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)] //LOG
+    [AuditLogFilter("EditCompany")] 
+
     public async Task<IActionResult> EditProfile(
     [FromServices] AuthenticatedUser user, 
     [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -70,6 +73,7 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Companies.GetById)]
+
     public async Task<IActionResult> GetById( 
         [FromServices] AuthenticatedUser user, 
         [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -89,7 +93,9 @@ public class CompanyController : ControllerBase
     }
 
 
-    [HttpGet(Uris.Uris.Companies.Search)]
+    [HttpGet(Uris.Uris.Companies.Search)] //LOG
+    [AuditLogFilter("SearchCompany")] 
+
     public async Task<IActionResult> Search(
     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
     [FromQuery] CompanySearchInputModel input)

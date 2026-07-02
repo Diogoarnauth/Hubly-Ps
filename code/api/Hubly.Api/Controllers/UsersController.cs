@@ -6,6 +6,7 @@ using Hubly.api.Problems;
 using Hubly.api.Pipeline;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Hubly.api.Services;
 
 namespace Hubly.api.Controllers;
 
@@ -16,11 +17,12 @@ public class UserController : ControllerBase
 
     private readonly UsersDomain _usersDomain;
     private readonly IUserService _userService;
-
-    public UserController(UsersDomain usersDomain, IUserService userService)
+    private readonly IAuditService _auditService;
+    public UserController(UsersDomain usersDomain, IUserService userService, IAuditService auditService)
     {
         _usersDomain = usersDomain;
         _userService = userService;
+        _auditService = auditService;
     }
 
     [HttpPost(Uris.Uris.Users.Create)]
@@ -130,10 +132,10 @@ public class UserController : ControllerBase
         );
     }
 
-    
+
     [HttpGet(Uris.Uris.Users.GetMyOnwerInfo)]
     public async Task<IActionResult> GetMyOnwerInfo(
-        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker
     )
     {
@@ -165,7 +167,8 @@ public class UserController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Users.EditUser)]
+    [HttpPost(Uris.Uris.Users.EditUser)] //LOG
+    [AuditLogFilter("EditUser")]
     public async Task<IActionResult> EditUser([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
     {
         var response = await _userService.EditUser(user.Id, request.NewUsername);
@@ -179,7 +182,8 @@ public class UserController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Users.ChangePassword)]
+    [HttpPost(Uris.Uris.Users.ChangePassword)] //LOG
+    [AuditLogFilter("ChangePassword")]
     public async Task<IActionResult> ChangePassword([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] ChangePasswordInputModel request)
     {
         var response = await _userService.ChangePassword(user.Id, request.OldPassword, request.NewPassword);
@@ -196,7 +200,8 @@ public class UserController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Users.VerifyEmail)]
+    [HttpPost(Uris.Uris.Users.VerifyEmail)] //LOG
+    [AuditLogFilter("VerifyEmail")]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
     {
         var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);
@@ -211,9 +216,10 @@ public class UserController : ControllerBase
             }
         );
     }
-    
-    
-    [HttpPost(Uris.Uris.Users.ResendEmailConfirmation)]
+
+
+    [HttpPost(Uris.Uris.Users.ResendEmailConfirmation)] //LOG
+    [AuditLogFilter("ResendEmailConfirmation")]
     public async Task<IActionResult> ResendEmailConfirmation([FromBody] ResendEmailConfirmationInputModel request)
     {
         var response = await _userService.ResendEmailConfirmation(request.Email);
@@ -234,7 +240,7 @@ public class UserController : ControllerBase
     [HttpGet(Uris.Uris.Users.GetHistory)]
     public async Task<IActionResult> GetHistory(
         [FromServices] AuthenticatedUser user,
-        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromServices] AuthenticatedCoWorker? coWorker,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
@@ -266,7 +272,8 @@ public class UserController : ControllerBase
         );
     }
 
-    [HttpGet(Uris.Uris.Users.FullCreatorProfile)]
+    [HttpGet(Uris.Uris.Users.FullCreatorProfile)] //LOG
+    [AuditLogFilter("GetFullCreatorProfile")]
     public async Task<IActionResult> GetFullCreatorProfile(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,
@@ -287,10 +294,11 @@ public class UserController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
-        
+
     }
 
-    [HttpGet(Uris.Uris.Users.FullCompanyProfile)]
+    [HttpGet(Uris.Uris.Users.FullCompanyProfile)] //LOG
+    [AuditLogFilter("GetFullCompanyProfile")]
     public async Task<IActionResult> GetFullCompanyProfile(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,
@@ -308,6 +316,36 @@ public class UserController : ControllerBase
             error => error switch
             {
                 UserError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                _ => ProblemResponse.InternalServerError.ToResponse()
+            }
+        );
+    }
+
+
+    [HttpGet(Uris.Uris.Users.GetAuditLogs)] 
+    public async Task<IActionResult> GetAuditLogs(
+    [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, 
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20)
+    {
+        var res = await _auditService.GetAuditLogs(
+           user.Id,
+            page,
+            pageSize
+        );
+
+        return res.Match<IActionResult>(
+            success => Ok(new
+            {
+                Items = success.Items.Adapt<List<AuditLogOutputModel>>(),
+                TotalItems = success.TotalItems,
+                Page = success.Page,
+                PageSize = success.PageSize
+            }),
+            error => error switch
+            {
+                //MUDAR AINDA
+                UserError.FailedToGetLogs => ProblemResponse.FailedToGetLogs.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

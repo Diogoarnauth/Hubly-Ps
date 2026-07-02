@@ -21,7 +21,9 @@ public class ConversationController : ControllerBase
         _conversationService = conversationService;
     }
 
-    [HttpPost(Uris.Uris.Conversations.Create)]
+    [HttpPost(Uris.Uris.Conversations.Create)] //LOG
+    [AuditLogFilter("CreateConversation")] 
+
     public async Task<IActionResult> Create(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -72,7 +74,9 @@ public class ConversationController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Conversations.SendMessage)]
+    [HttpPost(Uris.Uris.Conversations.SendMessage)] //LOG
+    [AuditLogFilter("SendMessage")] 
+
     public async Task<IActionResult> SendMessage(
         [FromServices] AuthenticatedUser user, 
         [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -91,7 +95,8 @@ public class ConversationController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Conversations.EditMessage)]
+    [HttpPost(Uris.Uris.Conversations.EditMessage)] //LOG
+    [AuditLogFilter("EditMessage")] 
     public async Task<IActionResult> EditMessage(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -112,7 +117,9 @@ public class ConversationController : ControllerBase
         );
     }
 
-    [HttpDelete(Uris.Uris.Conversations.DeleteMessage)]
+    [HttpDelete(Uris.Uris.Conversations.DeleteMessage)] //LOG
+    [AuditLogFilter("DeleteMessage")] 
+
     public async Task<IActionResult> DeleteMessage(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,         
@@ -221,7 +228,9 @@ public class ConversationController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Conversations.MarkMessagesAsRead)]
+    [HttpPost(Uris.Uris.Conversations.MarkMessagesAsRead)] //LOG
+    [AuditLogFilter("MessagesRead")] 
+
     public async Task<IActionResult> MarkMessagesAsRead(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,

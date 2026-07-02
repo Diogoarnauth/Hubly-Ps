@@ -18,7 +18,9 @@ public class ConversationTagController : ControllerBase
         _conversationTagService = conversationTagService;
     }
 
-    [HttpPost(Uris.Uris.ConversationTags.CreateTag)]
+    [HttpPost(Uris.Uris.ConversationTags.CreateTag)] //LOG
+    [AuditLogFilter("CreateTag")]
+
     public async Task<IActionResult> CreateTag(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,         
@@ -56,7 +58,8 @@ public class ConversationTagController : ControllerBase
         );
     }
 
-    [HttpPut(Uris.Uris.ConversationTags.UpdateTag)]
+    [HttpPut(Uris.Uris.ConversationTags.UpdateTag)] //LOG
+    [AuditLogFilter("UpdateTag")]
     public async Task<IActionResult> UpdateTag(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,
@@ -79,7 +82,8 @@ public class ConversationTagController : ControllerBase
         );
     }
 
-    [HttpDelete(Uris.Uris.ConversationTags.DeleteTag)]
+    [HttpDelete(Uris.Uris.ConversationTags.DeleteTag)] //LOG
+    [AuditLogFilter("DeleteTag")]
     public async Task<IActionResult> DeleteTag(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -98,7 +102,8 @@ public class ConversationTagController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.ConversationTags.TagConversation)]
+    [HttpPost(Uris.Uris.ConversationTags.TagConversation)] //LOG
+    [AuditLogFilter("TagConversation")]
     public async Task<IActionResult> TagConversation(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker, 
@@ -119,7 +124,9 @@ public class ConversationTagController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.ConversationTags.UntagConversation)]
+    [HttpPost(Uris.Uris.ConversationTags.UntagConversation)] //LOG
+    [AuditLogFilter("UntagConversation")]
+
     public async Task<IActionResult> UntagConversation(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,

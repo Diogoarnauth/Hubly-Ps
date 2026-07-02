@@ -31,6 +31,7 @@ export default function TeamManagementPage() {
     if (!confirm("Are you sure you want to remove this connection?")) return;
 
     let success = false;
+
     if (isOwner) {
       success = await coWorkerService.ownerCancelCoworking(coWorkerUserId);
     } else {

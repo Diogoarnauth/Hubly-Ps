@@ -25,6 +25,7 @@ public static class Uris
         public const string GetHistory = $"{Prefix}/users/getHistory";
         public const string FullCreatorProfile = $"{Prefix}/users/{{id:int}}/fullCreatorProfile";
         public const string FullCompanyProfile = $"{Prefix}/users/{{id:int}}/fullCompanyProfile";
+        public const string GetAuditLogs = $"{Prefix}/users/auditLogs";
 
 
 

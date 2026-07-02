@@ -160,6 +160,8 @@ namespace Hubly.api.Services
 
                 await context.CoWorkerRepository.DeleteCoWorker(userId);
 
+                await context.CoWorkerRepository.DeleteAcceptedInvite(coWorker.OwnerId, coWorker.User.Email);
+
                 return true;
             });
         }

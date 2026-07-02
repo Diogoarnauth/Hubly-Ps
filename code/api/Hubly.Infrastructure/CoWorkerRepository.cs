@@ -90,6 +90,18 @@ public class CoWorkerRepository : ICoWorkerRepository
             _context.CoWorkers.Remove(coWorker);
         }
     }
+    public async Task DeleteAcceptedInvite(int ownerId, string email)
+    {
+        var invite = await _context.CoWorkerInvites
+            .FirstOrDefaultAsync(i => i.OwnerId == ownerId
+                                   && i.CoWorkerEmail == email
+                                   && i.Status == "ACCEPTED");
+
+        if (invite != null)
+        {
+            _context.CoWorkerInvites.Remove(invite);
+        }
+    }
     public async Task<CoWorker?> GetCoWorkerByOwnerAndUser(int ownerId, int coWorkerUserId)
     {
         return await _context.CoWorkers
@@ -106,11 +118,11 @@ public class CoWorkerRepository : ICoWorkerRepository
         }
     }
 
- public async Task<List<CoWorker>> GetTeamByOwnerId(int ownerId)
-{
-    return await _context.CoWorkers
-        .Include(cw => cw.User) 
-        .Where(cw => cw.OwnerId == ownerId)
-        .ToListAsync();
-}
+    public async Task<List<CoWorker>> GetTeamByOwnerId(int ownerId)
+    {
+        return await _context.CoWorkers
+            .Include(cw => cw.User)
+            .Where(cw => cw.OwnerId == ownerId)
+            .ToListAsync();
+    }
 }

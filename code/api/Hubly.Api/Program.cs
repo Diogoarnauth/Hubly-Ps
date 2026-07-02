@@ -32,6 +32,8 @@ var companyDomainConfig = new CompaniesDomainConfig
 builder.Services.AddSingleton(userDomainConfig);
 builder.Services.AddSingleton(creatorDomainConfig);
 builder.Services.AddSingleton(companyDomainConfig);
+builder.Services.AddSingleton<Hubly.api.Infrastructure.Audit.AuditQueue>();
+builder.Services.AddHostedService<Hubly.api.BackgroundServices.AuditBackgroundProcessor>();
 
 
 builder.Services.AddScoped<UsersDomain>();
@@ -88,6 +90,7 @@ builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IConversationTagService, ConversationTagService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICoWorkerService, CoWorkerService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddSignalR(); //todo()
 
 //Encoders
@@ -105,6 +108,7 @@ builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 builder.Services.AddScoped<ICoWorkerRepository, CoWorkerRepository>();
+
 
 
 

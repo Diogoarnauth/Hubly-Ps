@@ -22,5 +22,6 @@ namespace Hubly.api.Services.Interfaces
         Task<OneOf<PagedResponse<ProfileViewHistory>, UserError>> GetHistory(int userId, int page = 1, int pageSize = 20);
         Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId);
         Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId);
+
     }
 }
