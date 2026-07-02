@@ -92,9 +92,20 @@ export class ApiClient {
       if (response.status === 204) {
         return true as T;
       }
+      
+      const text = await response.text();
+      if (!text) {
+        return true as T;
+      }
 
-      const data = await response.json();
-      return data as T;
+      try {
+        const data = JSON.parse(text);
+        return data as T;
+      } catch {
+        // If parsing fails, return the raw text (caller can handle it) to
+        // avoid bubbling a JSON parse exception to the UI.
+        return text as unknown as T;
+      }
     } catch (error) {
       toastError(
         'Request Failed',

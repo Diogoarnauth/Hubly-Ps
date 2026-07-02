@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Plus, Tag as TagIcon } from 'lucide-react';
+import { Plus, Tag as TagIcon, Trash2 } from 'lucide-react';
 import conversationService from '@/services/api/ConversationService';
 import conversationTagService from '@/services/api/ConversationTagService';
 import creatorService from '@/services/api/CreatorService';
@@ -9,6 +9,8 @@ import { GetSocialProfileOutputModel } from '@/services/DTO/creator/GetSocialPro
 import SidebarProps from '@/services/DTO/conversation/SidebarPropsInputModel';
 import { useSignalR } from '@/providers/SignalRContext';
 import { CreateTagModal } from './CreateTagModal';
+
+const DEFAULT_UNDELETABLE_TAGS = new Set(['Accepted', 'Contacted', 'Negotiating', 'Rejected']);
 
 
 
@@ -47,6 +49,7 @@ export const ConversationSidebar = ({
     const [isCreateTagModalOpen, setIsCreateTagModalOpen] = useState(false);
     const [isTagCreating, setIsTagCreating] = useState(false);
     const [pendingConversationId, setPendingConversationId] = useState<string | number | null>(null);
+    const [editingTag, setEditingTag] = useState<any | null>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -72,11 +75,37 @@ export const ConversationSidebar = ({
     };
 
     const handleCreateAndAssignTag = async (conversationId: string | number) => {
+        setEditingTag(null);
         setPendingConversationId(conversationId);
         setIsCreateTagModalOpen(true);
     };
 
+    const handleEditTag = async (tag: any) => {
+        setEditingTag(tag);
+        setPendingConversationId(null);
+        setIsCreateTagModalOpen(true);
+    };
+
     const handleCreateTagConfirm = async (tagName: string, colorHex: string) => {
+        if (editingTag) {
+            try {
+                setIsTagCreating(true);
+                const updated = await conversationTagService.updateTag(editingTag.id, { tagName, colorHex });
+                if (updated.success) {
+                    await loadTags();
+                    await loadConversations();
+                    setActiveMenuId(null);
+                }
+            } catch (error) {
+                console.error("Hubly: Error updating tag", error);
+            } finally {
+                setIsTagCreating(false);
+                setIsCreateTagModalOpen(false);
+                setEditingTag(null);
+            }
+            return;
+        }
+
         if (!pendingConversationId) return;
 
         const tagData = {
@@ -101,6 +130,18 @@ export const ConversationSidebar = ({
             setIsTagCreating(false);
             setIsCreateTagModalOpen(false);
             setPendingConversationId(null);
+        }
+    };
+
+    const handleDeleteTag = async (tagId: number) => {
+        const confirmed = window.confirm('Tem a certeza que quer apagar esta tag?');
+        if (!confirmed) return;
+
+        const success = await conversationTagService.deleteTag(tagId);
+        if (success) {
+            await loadTags();
+            await loadConversations();
+            setActiveMenuId(null);
         }
     };
 
@@ -226,9 +267,14 @@ export const ConversationSidebar = ({
                 onClose={() => {
                     setIsCreateTagModalOpen(false);
                     setPendingConversationId(null);
+                    setEditingTag(null);
                 }}
                 onConfirm={handleCreateTagConfirm}
                 isLoading={isTagCreating}
+                title={editingTag ? 'Edit Tag' : 'Create New Tag'}
+                confirmLabel={editingTag ? 'Save' : 'Create'}
+                initialTagName={editingTag?.tagName ?? ''}
+                initialColorHex={editingTag?.colorHex ?? '#3b82f6'}
             />
             <div className="w-full h-full bg-zinc-900 border-r border-zinc-800 flex flex-col relative">
                 <div className="p-4 border-b border-zinc-800">
@@ -276,17 +322,46 @@ export const ConversationSidebar = ({
                                                     <p className="px-3 py-1.5 text-[10px] font-bold text-zinc-500 uppercase border-b border-zinc-700">Existing Tags</p>
                                                     <div className="max-h-40 overflow-y-auto">
                                                         {availableTags.map(tag => (
-                                                            <button
-                                                                key={tag.id}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleAssignExistingTag(conv.id, tag.id);
-                                                                }}
-                                                                className="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
-                                                            >
-                                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.colorHex }} />
-                                                                {tag.tagName}
-                                                            </button>
+                                                            <div key={tag.id} className="flex items-center justify-between gap-2 px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700">
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleAssignExistingTag(conv.id, tag.id);
+                                                                    }}
+                                                                    className="flex-1 text-left"
+                                                                >
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.colorHex }} />
+                                                                        <span>{tag.tagName}</span>
+                                                                    </div>
+                                                                </button>
+                                                                {!DEFAULT_UNDELETABLE_TAGS.has(tag.tagName) && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleEditTag(tag);
+                                                                            }}
+                                                                            className="p-1 text-zinc-400 hover:text-blue-300 rounded transition-colors"
+                                                                            title="Edit tag"
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
+                                                                                <path d="M21.7 7.3a1 1 0 0 0 0-1.4l-3.6-3.6a1 1 0 0 0-1.4 0L12.3 7.7a1 1 0 0 0-.3.7v2.5a1 1 0 0 0 1 1h2.5c.2 0 .5-.1.7-.3l4.8-4.8ZM7 18.9V16a1 1 0 0 0-1-1H3.1a1 1 0 1 0 0 2H5v1.9a1 1 0 0 0 .3.7l4.1 4.1a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L7.7 18.9a1 1 0 0 0-.7-.3Z"/>
+                                                                            </svg>
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleDeleteTag(tag.id);
+                                                                            }}
+                                                                            className="p-1 text-zinc-400 hover:text-red-400 rounded transition-colors"
+                                                                            title="Delete tag"
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         ))}
                                                     </div>
                                                     <button
