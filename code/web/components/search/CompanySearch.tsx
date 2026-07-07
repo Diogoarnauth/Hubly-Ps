@@ -42,20 +42,26 @@ export function CompanySearch({ onBack }: { onBack: () => void }) {
 
     // Carregar dados iniciais (Setores e Países vindos do Domínio/API)
     useEffect(() => {
-        // Busca setores
-        sectorService.getAllSectors().then(setSectors).catch(console.error);
+        const loadMetadata = async () => {
+            try {
+                const [sectorData, countries] = await Promise.all([
+                    sectorService.getAllSectors(),
+                    companyService.getCountries()
+                ]);
 
-        // Busca a lista oficial de países do teu CompaniesDomain via Service
-        companyService.getCountries()
-            .then(data => {
-                // Filtramos entradas genéricas se necessário e ordenamos
-                const cleanList = data
+                setSectors(sectorData);
+
+                const cleanList = countries
                     .filter(c => c !== 'world' && c !== 'Europe')
                     .sort((a, b) => a.localeCompare(b));
                 setAllCountries(cleanList);
-                console.log("cleanList", cleanList)
-            })
-            .catch(console.error);
+                console.log("cleanList", cleanList);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        loadMetadata();
     }, []);
 
     // Monitoriza a mudança de página para disparar a pesquisa automaticamente

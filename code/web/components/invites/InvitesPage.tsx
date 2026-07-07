@@ -49,9 +49,11 @@ export default function TeamManagementPage() {
     try {
       setPageLoading(true);
       if (isOwner || isCoWorker) {
-        const sent = await coWorkerService.getSentInvites();
+        const [sent, team] = await Promise.all([
+          coWorkerService.getSentInvites(),
+          coWorkerService.getMyTeam()
+        ]);
         setSentInvites(sent);
-        const team = await coWorkerService.getMyTeam();
         setTeamMembers(team);
       } else if (user?.role === 'justUser') {
         const received = await coWorkerService.getReceivedInvites();

@@ -117,21 +117,20 @@ class UsersService implements IUserService {
 
 
     async getCurrentUser(): Promise<UserInfo | null> {
-        const response = await this.apiClient.get<UserInfo>(API_ENDPOINTS.user.getMyInfo);
-        console.log("responseeee", response)
-
-        if (!response) return null;
-
-        return {
-            id: response.id,
-            name: response.name,
-            email: response.email,
-            role: response.role
-        };
-    } catch(error) {
-        console.error("Erro ao obter info do utilizador:", error);
-        return null;
-    }
+    const response = await this.apiClient.get<UserInfo>(
+        API_ENDPOINTS.user.getMyInfo, 
+        undefined, 
+        { skipUnauthorizedHandler: true, suppressError: true }
+    );
+    console.log("responseeee", response);
+    if (!response) return null;
+    return {
+        id: response.id,
+        name: response.name,
+        email: response.email,
+        role: response.role
+    };
+}
 
     async getCurrentOwnerUser(): Promise<UserInfo | null> {
         const response = await this.apiClient.get<UserInfo>(API_ENDPOINTS.user.getMyOnwerInfo);
