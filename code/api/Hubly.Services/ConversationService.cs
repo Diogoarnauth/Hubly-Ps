@@ -229,7 +229,7 @@ namespace Hubly.api.Services
 
                     await _auditQueue.EnqueueAsync(new AuditEntry(
                                           "SendMessage",
-                                          new { Message = message.Content, UserName = myUser.Email, ReceiverName = receiverName },
+                                          new { Message = message.Content, UserEmail = myUser.Email, ReceiverName = receiverName },
                                           currentUserId,
                                           coWorkerId
                                       ));

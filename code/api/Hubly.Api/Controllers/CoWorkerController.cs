@@ -175,6 +175,7 @@ public class CoWorkerController : ControllerBase
             error => error switch
             {
                 CoWorkerError.UserNotFound => ProblemResponse.UserNotFound.ToResponse(),
+                CoWorkerError.UserIsNotACreatorOrCompany => ProblemResponse.UserIsNotACreatorOrCompany.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );

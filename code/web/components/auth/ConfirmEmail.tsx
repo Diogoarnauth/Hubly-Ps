@@ -81,6 +81,7 @@ export function ConfirmEmail() {
     setIsLoading(true);
     
     if (!userEmail) {
+      console.log("userEmail is null or undefined:", userEmail);
       toastError('Erro de Sessão', 'O email do utilizador não foi encontrado. Recomece o registo.');
       setIsLoading(false);
       return;
@@ -90,7 +91,7 @@ export function ConfirmEmail() {
     
     if (result) {
       sessionStorage.removeItem('hubly_register_email');
-      router.push('/');
+      router.push('/login');
     } else {
       setIsLoading(false);
     }
