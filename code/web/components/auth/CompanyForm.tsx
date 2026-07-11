@@ -11,11 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from "@/components/ui/checkbox"; 
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { toastSuccess, toastError } from '../ToastImplementations';
 import { Loader2 } from 'lucide-react';
 
 export function CompanyForm({ onBack }: { onBack: () => void }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -86,6 +88,8 @@ export function CompanyForm({ onBack }: { onBack: () => void }) {
       const result = await companyService.registerCompany(formData);
 
       if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ['user'] });
+        await queryClient.refetchQueries({ queryKey: ['user'], type: 'active' });
         toastSuccess('Success!', 'Company registered successfully.');
         router.push('/');
       } else {
