@@ -3,11 +3,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Check, X, Mail, Calendar, Send, UserCheck, Clock, Users, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser } from '@/providers/UserProvider';
 import coWorkerService, { CoWorkerInviteOutputModel, GetMyCoWorkerInfoResponse, GetMyCoWorkerWithEmailInfoResponse } from '@/services/api/CoWorkerService';
 
-export default function TeamManagementPage() {
+export function InvitePage() {
   const { user, refreshUser } = useUser();
   const isOwner = user?.role === 'creator' || user?.role === 'company';
   const isCoWorker = user?.role === 'coworker';
@@ -203,20 +203,21 @@ export default function TeamManagementPage() {
   );
 
   return (
-    <div className="text-white max-w-4xl mx-auto pt-[5vh] px-4 pb-12">
-      {/* Cabeçalho Dinâmico */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          {isOwner || isCoWorker ? "Team Management" : "Co-Worker Invites"}
-        </h1>
-        <p className="text-sm text-zinc-400 mt-2">
-          {isOwner && "Invite new members to your workspace and track existing team invitations."}
-          {isCoWorker && "View the workspace structure and your fellow team members."}
-          {user?.role === 'justUser' && "Manage team invitations sent to your account. Accepting an invite connects you to a workspace."}
-        </p>
-      </div>
+    <div className="text-white max-w-4xl mx-auto px-4 py-8">
+      <Card className="border-zinc-800 bg-zinc-950/80 shadow-2xl">
+        <CardHeader className="border-b border-zinc-800">
+          <CardTitle className="text-2xl text-white">
+            {isOwner || isCoWorker ? 'Team Management' : 'Co-Worker Invites'}
+          </CardTitle>
+          <CardDescription className="text-zinc-400">
+            {isOwner && 'Invite new members to your workspace and track existing team invitations.'}
+            {isCoWorker && 'View the workspace structure and your fellow team members.'}
+            {user?.role === 'justUser' && 'Manage team invitations sent to your account. Accepting an invite connects you to a workspace.'}
+          </CardDescription>
+        </CardHeader>
 
-      <div className="w-full opacity-30 h-[1px] bg-zinc-500 mb-8"></div>
+        <CardContent className="p-6">
+          <div className="w-full opacity-30 h-[1px] bg-zinc-500 mb-8"></div>
 
       {/* RENDERIZAÇÃO CONSOANTE A ROLE */}
       {isOwner && (
@@ -355,6 +356,8 @@ export default function TeamManagementPage() {
           )}
         </div>
       )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

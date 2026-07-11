@@ -1,6 +1,3 @@
-'use client';
-
-import React from 'react'; 
 import { JustUserProfile } from '@/components/justUser/JustUserProfile';
 
 export default function JustUserProfilePage() {

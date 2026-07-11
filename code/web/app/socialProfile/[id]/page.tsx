@@ -1,10 +1,7 @@
-'use client';
-import React, { use } from 'react'; 
 import { SocialProfile } from '@/components/creator/SocialProfile';
 
-export default function CompanyProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const id = resolvedParams.id;
+export default async function CompanyProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   if (!id || isNaN(Number(id)) || id === 'create') {
     return null; 
@@ -19,3 +16,5 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
     </div>
   );
 }
+
+
