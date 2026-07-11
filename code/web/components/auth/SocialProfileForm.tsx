@@ -2,19 +2,23 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import sectorService, { Sector } from '@/services/api/SectorService';
+import sectorService from '@/services/api/SectorService';
 import creatorService from '@/services/api/CreatorService'; 
-import platformService, { Platform } from '@/services/api/PlatformService'; 
+import platformService, { SocialPlatform } from '@/services/api/PlatformService'; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea"; // Importação adicionada aqui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Checkbox } from "@/components/ui/checkbox";
 import { toastSuccess, toastError } from '../ToastImplementations';
-import { Loader2, SearchIcon, Check } from 'lucide-react';
+import { Loader2, SearchIcon, Check, ChevronLeft } from 'lucide-react';
 import { cn } from "@/lib/utils";
+
+type SectorOption = {
+  id: number;
+  name: string;
+};
 
 export function SocialProfileForm() {
   const router = useRouter();
@@ -22,8 +26,8 @@ export function SocialProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const [availableSectors, setAvailableSectors] = useState<Sector[]>([]);
-  const [availablePlatforms, setAvailablePlatforms] = useState<Platform[]>([]);
+  const [availableSectors, setAvailableSectors] = useState<SectorOption[]>([]);
+  const [availablePlatforms, setAvailablePlatforms] = useState<SocialPlatform[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [sectorSearch, setSectorSearch] = useState('');
 
@@ -45,9 +49,14 @@ export function SocialProfileForm() {
           sectorService.getAllSectors(),
           platformService.getAllPlatforms()
         ]);
-        setAvailableSectors(sectorsData);
+
+        const normalizedSectors = (sectorsData as Array<{ Id?: number; Name?: string; id?: string | number; name?: string }>).map((sector) => ({
+          id: Number(sector.Id ?? sector.id ?? 0),
+          name: sector.Name ?? sector.name ?? '',
+        }));
+
+        setAvailableSectors(normalizedSectors);
         setAvailablePlatforms(platformsData);
-        console.log("platformsData", platformsData)
       } catch (err) {
         console.error("Error loading form data:", err);
       } finally {
@@ -97,17 +106,38 @@ export function SocialProfileForm() {
   }
 
   return (
-    <Card className="border-border bg-card/50 w-full max-w-md mx-auto shadow-xl">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl italic font-bold text-primary">New Social Profile</CardTitle>
-          <span className="text-xs text-muted-foreground font-mono">Step {step}/6</span>
-        </div>
-        <CardDescription>Fill in the details for your new platform.</CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="space-y-6">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => router.back()}
+        className="text-muted-foreground hover:text-white"
+      >
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
+
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight italic">
+          Add <span className="text-primary">Social Profile</span>
+        </h1>
+        <p className="text-muted-foreground">
+          Connect a new social network to your Hubly account.
+        </p>
+      </div>
+
+      <Card className="border-border bg-card/50 w-full max-w-md mx-auto shadow-xl">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl italic font-bold text-primary">New Social Profile</CardTitle>
+            <span className="text-xs text-muted-foreground font-mono">Step {step}/6</span>
+          </div>
+          <CardDescription>Fill in the details for your new platform.</CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* PASSO 1: Seleção de Plataforma */}
           {step === 1 && (
@@ -299,7 +329,8 @@ export function SocialProfileForm() {
             </Alert>
           )}
         </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
