@@ -8,12 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function CreatorForm({ onBack }: { onBack: () => void }) {
   const [artisticName, setArtisticName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -24,6 +26,8 @@ export function CreatorForm({ onBack }: { onBack: () => void }) {
       const response = await creatorService.registerCreator(artisticName);
       console.log("response", response);
       if (response) {
+        await queryClient.invalidateQueries({ queryKey: ['user'] });
+        await queryClient.refetchQueries({ queryKey: ['user'], type: 'active' });
         router.push('/'); 
       } else {
         setError('Failed to register as creator.');

@@ -40,7 +40,9 @@ class CoWorkerService implements ICoWorkerService {
         try {
             // Chamada ao backend
             const response = await this.apiClient.get<GetMyCoWorkerInfoResponse>(
-                API_ENDPOINTS.coWorker.getMyInfo
+                API_ENDPOINTS.coWorker.getMyInfo,
+                undefined,
+                {suppressError : true}
             );
             return response;
         } catch (error) {

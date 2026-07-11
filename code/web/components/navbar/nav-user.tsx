@@ -9,10 +9,12 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export function NavUser() {
-    const { user, logout } = useUser();
+    const { user, logout, loading} = useUser();
     const router = useRouter();
     const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
 
+    if (loading) return <div className="h-9 w-9 animate-pulse bg-gray-200 rounded-full" />;
+    
     if (!user) return null;
 
     const isCoWorker = user.role === 'coworker';

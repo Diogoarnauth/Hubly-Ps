@@ -19,15 +19,22 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     async function verifyUserStatus() {
-      const hasProfile = await authService.checkHasProfile();
-      if (hasProfile) {
-        router.push('/');
-      } else {
+      try {
+        const hasProfile = await authService.checkHasProfile();
+        if (hasProfile) {
+          await queryClient.invalidateQueries({ queryKey: ['user'] });
+          await queryClient.refetchQueries({ queryKey: ['user'], type: 'active' });
+          router.push('/');
+        } else {
+          setIsChecking(false);
+        }
+      } catch (error) {
+        console.error('Error verifying user status:', error);
         setIsChecking(false);
       }
     }
     verifyUserStatus();
-  }, [router]);
+  }, [queryClient, router]);
 
   // Efeito para o registo automático de Coworker
   useEffect(() => {

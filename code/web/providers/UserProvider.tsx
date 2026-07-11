@@ -55,40 +55,22 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
            
             if (finalUser.role === null) {
-                // 1. Tenta procurar info de CoWorker
                 const coWorkerInfo = await CoWorkerService.getMyCoWorkerInfo();
-                console.log("coWorkerInfo recebido:", coWorkerInfo);
 
-                // Validamos se a resposta existe e se NÃO é uma resposta de erro (ex: status 404)
-                if (coWorkerInfo && coWorkerInfo.ownerId && coWorkerInfo.status !== 404) {
+                if (coWorkerInfo && coWorkerInfo.ownerId) {
 
-                    // 2. CASO SUCESSO (Status 200): Vamos buscar os dados do Owner
                     const ownerData = await usersService.getUser(coWorkerInfo.ownerId);
-                    console.log("ownerDataaaaaaaaaaaaaa", ownerData);
-
                     finalUser.role = 'coworker';
-                    finalUser.ownerInfo = ownerData; // Guarda as infos do Owner aqui
+                    finalUser.ownerInfo = ownerData; 
 
                 } else {
-                    console.log("CoWorker não encontrado ou erro detetado. Atribuindo 'justUser'...");
-
-                    // Verifica se veio o status 404 ou a propriedade de erro do teu JSON
-                    const isNotFoundError = !coWorkerInfo || coWorkerInfo.status === 404 || coWorkerInfo.status === "404";
-                    console.log("coWorkerInfo.status:", coWorkerInfo, "isNotFoundError:", isNotFoundError);
-
-                    if (isNotFoundError) {
-                        finalUser.role = 'justUser';
-                    } else {
-                        // Se for outro status de erro que não o 404 (ex: 500), podes decidir o que fazer.
-                        // Por segurança, atribuímos 'justUser' ou mantemos null.
-                        finalUser.role = 'justUser';
-                    }
+                    finalUser.role = 'justUser';
                 }
             }
             return finalUser;
         },
         enabled: shouldFetchUser,
-        staleTime: 1000 * 60 * 30,
+        staleTime: 0,
         retry: false,
     });
 

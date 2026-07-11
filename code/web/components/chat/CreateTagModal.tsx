@@ -7,11 +7,31 @@ interface CreateTagModalProps {
     onClose: () => void;
     onConfirm: (tagName: string, colorHex: string) => void;
     isLoading?: boolean;
+    title?: string;
+    confirmLabel?: string;
+    initialTagName?: string;
+    initialColorHex?: string;
 }
 
-export const CreateTagModal = ({ isOpen, onClose, onConfirm, isLoading = false }: CreateTagModalProps) => {
-    const [tagName, setTagName] = useState('');
-    const [colorHex, setColorHex] = useState('#3b82f6');
+export const CreateTagModal = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    isLoading = false,
+    title = 'Create New Tag',
+    confirmLabel = 'Create',
+    initialTagName = '',
+    initialColorHex = '#3b82f6'
+}: CreateTagModalProps) => {
+    const [tagName, setTagName] = useState(initialTagName);
+    const [colorHex, setColorHex] = useState(initialColorHex);
+
+    React.useEffect(() => {
+        if (isOpen) {
+            setTagName(initialTagName);
+            setColorHex(initialColorHex);
+        }
+    }, [isOpen, initialTagName, initialColorHex]);
 
     const handleConfirm = () => {
         if (!tagName.trim()) {
@@ -35,7 +55,7 @@ export const CreateTagModal = ({ isOpen, onClose, onConfirm, isLoading = false }
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl w-96 p-6">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white">Create New Tag</h2>
+                    <h2 className="text-lg font-bold text-white">{title}</h2>
                     <button
                         onClick={handleCancel}
                         className="p-1 hover:bg-zinc-700 rounded transition-colors"

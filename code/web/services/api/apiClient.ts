@@ -8,6 +8,7 @@ export interface ConflictResponse {
 }
 
 
+
 export function isConflictResponse(obj: any): obj is ConflictResponse {
   return obj && typeof obj === 'object' && obj.status === 409 && typeof obj.message === 'string';
 }
@@ -58,7 +59,7 @@ export class ApiClient {
   }
 
   private async request<T>(url: string, options: RequestInit): Promise<T | ConflictResponse | null> {
-    
+
     try {
       const response = await fetch(url, {
         ...options,
@@ -69,7 +70,7 @@ export class ApiClient {
       if (response.status === 409) {
         const errorData = await response.json().catch(() => ({ message: 'Failed to parse conflict response' }));
         const locationHeader = response.headers.get('Location');
-        return { 
+        return {
           status: 409,
           message: errorData.message || 'Conflict',
           ...(locationHeader && { location: locationHeader })
@@ -78,14 +79,13 @@ export class ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
-        if (response.status === 401 && ApiClient.unauthorizedHandler && errorData.message === "Authentication required" ) {
-          console.log("entrei aquiiiiiii")
+        if (response.status === 401 && ApiClient.unauthorizedHandler && !options.skipUnauthorizedHandler) {
+          console.log("Token inválido ou inexistente detetado. Disparando logout...");
           ApiClient.unauthorizedHandler();
         }
-        toastError(
-          `Error ${response.status}`,
-          errorData.message || 'An error occurred during the request'
-        );
+        if (!options.suppressError) {
+          toastError(`Error ${response.status}`, errorData.message || 'Ocorreu um erro');
+        }
         return null;
       }
 
@@ -93,8 +93,19 @@ export class ApiClient {
         return true as T;
       }
 
-      const data = await response.json();
-      return data as T;
+      const text = await response.text();
+      if (!text) {
+        return true as T;
+      }
+
+      try {
+        const data = JSON.parse(text);
+        return data as T;
+      } catch {
+        // If parsing fails, return the raw text (caller can handle it) to
+        // avoid bubbling a JSON parse exception to the UI.
+        return text as unknown as T;
+      }
     } catch (error) {
       toastError(
         'Request Failed',
@@ -108,10 +119,15 @@ export class ApiClient {
   /**
    * GET atualizado para aceitar parâmetros de busca opcionais.
    */
-  async get<T>(url: string, params?: Record<string, any>): Promise<T | ConflictResponse | null> {
+  async get<T>(
+    url: string,
+    params?: Record<string, any>,
+    options?: { suppressError?: boolean, skipUnauthorizedHandler?: boolean }
+  ): Promise<T | ConflictResponse | null> {
     const finalUrl = this.buildUrl(url, params);
     return this.request<T>(finalUrl, {
-      method: 'GET'
+      method: 'GET',
+      ...options // Passa as opções para o request
     });
   }
 

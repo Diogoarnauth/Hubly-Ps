@@ -31,10 +31,8 @@ export function LoginForm() {
 
             if (result) {
                 toastSuccess('Login successful', 'You are now logged in');
-                // Após login bem-sucedido, popula cache do React Query com os dados do user
-
-                await queryClient.invalidateQueries({ queryKey: ['user'] });
-
+                
+                await queryClient.refetchQueries({ queryKey: ['user'], type: 'active' });   
                 router.push('/onboarding');
             } else {
                 // Aqui é onde o 409 (Invalid Credentials) cai agora
