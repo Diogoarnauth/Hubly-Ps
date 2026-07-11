@@ -58,6 +58,7 @@ namespace Hubly.api.Infrastructure
         {
             return await _context.Conversations
                 .Include(c => c.Participants)
+                .ThenInclude(p => p.User)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 

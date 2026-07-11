@@ -3,6 +3,8 @@ using Hubly.api.Services.Problems;
 using Hubly.api.Infrastructure.Interfaces;
 using Hubly.api.Domain.Entities;
 using OneOf;
+using Hubly.api.Infrastructure.Audit;
+
 
 namespace Hubly.api.Services;
 
@@ -10,12 +12,16 @@ public class ConversationTagService : IConversationTagService
 {
     private readonly ITransactionManager _transactionManager;
 
-    public ConversationTagService(ITransactionManager transactionManager)
+    private readonly AuditQueue _auditQueue;
+
+    public ConversationTagService(ITransactionManager transactionManager,AuditQueue auditQueue)
     {
         _transactionManager = transactionManager;
+        _auditQueue = auditQueue;
+
     }
 
-    public async Task<OneOf<int, ConversationTagError>> CreateTag(int userId, string tagName, string colorHex)
+   public async Task<OneOf<int, ConversationTagError>> CreateTag(int userId, int? coWorkerId, string tagName, string colorHex)
     {
         return await _transactionManager.Run<OneOf<int, ConversationTagError>>(async (context) =>
         {
@@ -46,11 +52,23 @@ public class ConversationTagService : IConversationTagService
             };
 
             var tagId = await context.ConversationTagRepository.CreateTag(tag);
+
+
+             var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                                    "CreateTag",
+                                    new {  TagReference = tagName, UserEmail = myUser.Email},
+                                    userId,
+                                    coWorkerId
+                                ));
+
+
             return tagId;
         });
     }
 
-    public async Task<OneOf<bool, ConversationTagError>> UpdateTag(int userId, int tagId, string tagName, string colorHex)
+      public async Task<OneOf<bool, ConversationTagError>> UpdateTag(int userId, int? coWorkerId, int tagId, string tagName, string colorHex)
     {
         return await _transactionManager.Run<OneOf<bool, ConversationTagError>>(async (context) =>
         {
@@ -58,22 +76,18 @@ public class ConversationTagService : IConversationTagService
             if (tag == null)
                 return new ConversationTagError.TagNotFound();
 
-            // Verificar autorização
             if (tag.UserId != userId)
                 return new ConversationTagError.UnauthorizedAccess();
 
-            // Validações
             if (string.IsNullOrWhiteSpace(tagName) || tagName.Length > 50)
                 return new ConversationTagError.InvalidTagName();
 
             if (!IsValidHexColor(colorHex))
                 return new ConversationTagError.InvalidColorHex();
 
-            // Verificar duplicidade de nome (excluindo a tag atual)
             var tagNameExists = await context.ConversationTagRepository.TagNameExistsForUser(userId, tagName);
             if (tagNameExists)
             {
-                // Verificar se é a mesma tag que estamos atualizando
                 var existingTag = await context.ConversationTagRepository.GetById(tagId);
                 if (existingTag == null || existingTag.TagName.ToLower() != tagName.ToLower())
                     return new ConversationTagError.TagNameAlreadyExists();
@@ -83,11 +97,22 @@ public class ConversationTagService : IConversationTagService
             tag.ColorHex = colorHex;
 
             await context.ConversationTagRepository.UpdateTag(tag);
+
+             var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                                    "UpdateTag",
+                                    new {TagReference = tagName, UserEmail = myUser.Email},
+                                    userId,
+                                    coWorkerId
+                                ));
+
             return true;
         });
     }
 
-    public async Task<OneOf<bool, ConversationTagError>> DeleteTag(int userId, int tagId)
+
+   public async Task<OneOf<bool, ConversationTagError>> DeleteTag(int userId, int? coWorkerId, int tagId)
     {
         return await _transactionManager.Run<OneOf<bool, ConversationTagError>>(async (context) =>
         {
@@ -95,11 +120,21 @@ public class ConversationTagService : IConversationTagService
             if (tag == null)
                 return new ConversationTagError.TagNotFound();
 
-            // Verificar autorização
             if (tag.UserId != userId)
                 return new ConversationTagError.UnauthorizedAccess();
 
             await context.ConversationTagRepository.DeleteTag(tagId);
+
+               var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                                    "DeleteTag",
+                                    new {TagReference = tag.TagName, UserEmail = myUser.Email},
+                                    userId,
+                                    coWorkerId
+                                ));
+
+
             return true;
         });
     }
@@ -117,16 +152,15 @@ public class ConversationTagService : IConversationTagService
         });
     }
 
-    public async Task<OneOf<bool, ConversationTagError>> TagConversation(int userId, int conversationId, int tagId)
+   
+    public async Task<OneOf<bool, ConversationTagError>> TagConversation(int userId, int? coWorkerId, int conversationId, int tagId)
     {
         return await _transactionManager.Run<OneOf<bool, ConversationTagError>>(async (context) =>
         {
-            // Verificar se user é participante da conversa
             var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, userId);
             if (!isParticipant)
                 return new ConversationTagError.UnauthorizedAccess();
 
-            // Verificar se tag existe e pertence ao user
             var tag = await context.ConversationTagRepository.GetById(tagId);
             if (tag == null)
                 return new ConversationTagError.TagNotFound();
@@ -143,20 +177,55 @@ public class ConversationTagService : IConversationTagService
             };
 
             await context.ConversationTagRepository.AssignTag(assignment);
+
+
+            var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+            var conversationWithParticipants = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
+        
+            var targetParticipant = conversationWithParticipants?.Participants?
+                .FirstOrDefault(p => p.UserId != userId);
+
+            var receiverName = targetParticipant?.User?.Name ?? "Utilizador Desconhecido";
+
+            await _auditQueue.EnqueueAsync(new AuditEntry(
+                            "AssignTag",
+                            new {TagReference = tag.TagName, UserEmail = myUser.Email, ReceiverName = receiverName},
+                            userId,
+                            coWorkerId
+                        ));
+
             return true;
         });
     }
 
-    public async Task<OneOf<bool, ConversationTagError>> UntagConversation(int userId, int conversationId)
+
+     public async Task<OneOf<bool, ConversationTagError>> UntagConversation(int userId, int? coWorkerId, int conversationId)
     {
         return await _transactionManager.Run<OneOf<bool, ConversationTagError>>(async (context) =>
         {
-            // Verificar se user é participante da conversa
             var isParticipant = await context.ConversationRepository.IsUserParticipant(conversationId, userId);
             if (!isParticipant)
                 return new ConversationTagError.UnauthorizedAccess();
 
             await context.ConversationTagRepository.RemoveTag(userId, conversationId);
+
+
+            var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+            var conversationWithParticipants = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
+        
+            var targetParticipant = conversationWithParticipants?.Participants?
+                .FirstOrDefault(p => p.UserId != userId);
+
+            var receiverName = targetParticipant?.User?.Name ?? "Utilizador Desconhecido";
+
+            await _auditQueue.EnqueueAsync(new AuditEntry(
+                            "UntagConversation",
+                            new {UserEmail = myUser.Email, ReceiverName = receiverName},
+                            userId,
+                            coWorkerId
+                        ));
             return true;
         });
     }

@@ -17,6 +17,8 @@ namespace Hubly.api.Infrastructure
         public async Task AddLog(AuditLog log)
         {
             await _context.AuditLogs.AddAsync(log);
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task<PagedResponse<AuditLog>> Search(int userId, int page, int pageSize)

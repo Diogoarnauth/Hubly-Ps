@@ -19,10 +19,12 @@ public class AuditBackgroundProcessor : BackgroundService
         {
             try
             {
+
                 using var scope = _serviceProvider.CreateScope();
                 var auditService = scope.ServiceProvider.GetRequiredService<IAuditService>();
-                
-                await auditService.LogAction(entry.Action, entry.UserId, entry.CoWorkerId, entry.Path, entry.Payload);
+                Console.WriteLine($"limpar queue: {entry}");
+
+                await auditService.LogAction(entry.Action, entry.UserId, entry.CoWorkerId, entry.Payload);
             }
             catch (Exception ex)
             {

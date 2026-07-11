@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Hubly.api.Domain.Entities;
 using Hubly.api.Infrastructure.Audit;
+using System.Text.Json;
 
 public class AuditLogFilter : ActionFilterAttribute
 {
@@ -16,7 +17,7 @@ public class AuditLogFilter : ActionFilterAttribute
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var resultContext = await next();
-        
+
         var statusCode = context.HttpContext.Response.StatusCode;
 
         if (/*resultContext.Result is ObjectResult objectResult &&*/ (statusCode >= 200 && statusCode < 300))
@@ -28,15 +29,21 @@ public class AuditLogFilter : ActionFilterAttribute
             var coWorker = context.HttpContext.Items["AuthenticatedCoWorker"] as AuthenticatedCoWorker;
 
             var path = context.HttpContext.Request.Path;
-            var payload = context.ActionArguments;
+            var filteredArguments = context.ActionArguments
+                .Where(arg => arg.Key != "user" && arg.Key != "coWorker")
+                .Where(arg => arg.Value is not AuthenticatedUser)
+                .Where(arg => arg.Value is not AuthenticatedCoWorker)
+                .ToDictionary(x => x.Key, x => x.Value);
 
-            await auditQueue.EnqueueAsync(new AuditLogEntry(
-                _actionName, 
-                user?.Id, 
-                coWorker?.Id, 
-                path, 
-                payload
-            ));
+            var jsonString = JsonSerializer.Serialize(filteredArguments);
+            var payloadElement = JsonSerializer.Deserialize<JsonElement>(jsonString);
+
+            await auditQueue.EnqueueAsync(new AuditEntry(
+                _actionName,
+                payloadElement,
+                user?.Id,
+                coWorker?.Id
+                ));
         }
     }
 }

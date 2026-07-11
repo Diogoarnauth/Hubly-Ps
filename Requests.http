@@ -5,14 +5,18 @@
 @contentType = application/json
 //owner
 //@token= m66//q1S0YaNu1VJsIukcxucRdF3tZ1cm6U+1+lmWJA=
-@token= ssgnD/FilpBpqbStUlCjVSmuEHF4X1piub+F/0Aova0=
+//@token= G5V4CA/hl5eZpEPqPUdgXnGUYS/UFApAT5SO5Gfk6dE=
 
 //solto
-//@token = j1PyxhI+JeVpWEt3qJF3Nov93T5D8Dr5eX9/k9h3GBE=
+//@token = OPWqBb8bul0SAD+1nRLWY1m7wm8jcnvuZu3NgqKMRWE=
+
+
 //solto2
-//@token = lev4R9pECvSrViUUbBk6O0ptAdFHzMx30yMpQ7B0ztU=
-//solto3
-//@token = pvvGju67JL4LEIvvW6euCFzKIAPfXjcjEpU149Sgb/8=
+//@token = DNnG0Vx8GfszsugYLknVMe8XYWt1ggFOLzxHg9skACo=
+
+
+
+@token = 0xHbhq98IT7sFeW+N3ddFUQ7IxQUnO8DMuW3hJVmCLE=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
@@ -20,7 +24,7 @@ Content-Type: {{contentType}}
 
 {
     "name": "Caro",
-    "email": "dioarnauth1@gmail.com",
+    "email": "dioarnauth1110@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -29,7 +33,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth1@gmail.com",
+    "email": "dioarnauth1110@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -96,8 +100,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "dioarnauth1@gmail.com",
-    "code": "301529" 
+    "email": "dioarnauth1110@gmail.com",
+    "code": "049115" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -214,7 +218,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "email": "dioarnauth@gmail.com"
+  "email": "dioarnauth11@gmail.com"
 }
 
 ### Accept co-worker invite
@@ -457,4 +461,7 @@ GET http://{{host}}/api/co-workers/myTeam
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-
+###
+GET http://{{host}}/api/conversation/tags/my-tags
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}

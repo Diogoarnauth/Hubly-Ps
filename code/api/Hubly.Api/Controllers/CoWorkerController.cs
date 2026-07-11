@@ -126,8 +126,8 @@ public class CoWorkerController : ControllerBase
         );
     }
 
-    [HttpDelete(Uris.Uris.CoWorkers.CancelCoworking)] //LOG
-    [AuditLogFilter("CancelCoworking")]
+    [HttpDelete(Uris.Uris.CoWorkers.CancelCoworking)] //LOG  FALTA
+    //[AuditLogFilter("CancelCoworking")]
     public async Task<IActionResult> CancelCoworking(
         [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
     {

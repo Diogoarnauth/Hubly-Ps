@@ -166,9 +166,9 @@ public class UserController : ControllerBase
             }
         );
     }
-
-    [HttpPost(Uris.Uris.Users.EditUser)] //LOG
-    [AuditLogFilter("EditUser")]
+ 
+    [HttpPost(Uris.Uris.Users.EditUser)] //LOG FALTA
+    //[AuditLogFilter("EditUser")]
     public async Task<IActionResult> EditUser([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] EditUserInputModel request)// TODO() prof
     {
         var response = await _userService.EditUser(user.Id, request.NewUsername);
@@ -182,8 +182,8 @@ public class UserController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Users.ChangePassword)] //LOG
-    [AuditLogFilter("ChangePassword")]
+    [HttpPost(Uris.Uris.Users.ChangePassword)] //LOG  FALTA
+  //  [AuditLogFilter("ChangePassword")]
     public async Task<IActionResult> ChangePassword([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] ChangePasswordInputModel request)
     {
         var response = await _userService.ChangePassword(user.Id, request.OldPassword, request.NewPassword);
@@ -200,8 +200,7 @@ public class UserController : ControllerBase
         );
     }
 
-    [HttpPost(Uris.Uris.Users.VerifyEmail)] //LOG
-    [AuditLogFilter("VerifyEmail")]
+    [HttpPost(Uris.Uris.Users.VerifyEmail)] 
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailInputModel request)
     {
         var result = await _userService.VerifyConfirmationCodeAsync(request.Email, request.Code);
@@ -218,8 +217,7 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpPost(Uris.Uris.Users.ResendEmailConfirmation)] //LOG
-    [AuditLogFilter("ResendEmailConfirmation")]
+    [HttpPost(Uris.Uris.Users.ResendEmailConfirmation)] 
     public async Task<IActionResult> ResendEmailConfirmation([FromBody] ResendEmailConfirmationInputModel request)
     {
         var response = await _userService.ResendEmailConfirmation(request.Email);
@@ -273,13 +271,13 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.FullCreatorProfile)] //LOG
-    [AuditLogFilter("GetFullCreatorProfile")]
+    //[AuditLogFilter("GetFullCreatorProfile")]
     public async Task<IActionResult> GetFullCreatorProfile(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,
         [FromRoute] int id)
     {
-        var result = await _userService.GetFullCreatorProfile(id, user.Id);
+        var result = await _userService.GetFullCreatorProfile(id, user.Id, coWorker?.Id);
 
         return result.Match<IActionResult>(
             success =>
@@ -298,13 +296,13 @@ public class UserController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Users.FullCompanyProfile)] //LOG
-    [AuditLogFilter("GetFullCompanyProfile")]
+    //[AuditLogFilter("GetFullCompanyProfile")]
     public async Task<IActionResult> GetFullCompanyProfile(
         [FromServices] AuthenticatedUser user,
         [FromServices] AuthenticatedCoWorker? coWorker,
         [FromRoute] int id)
     {
-        var result = await _userService.GetFullCompanyProfile(id, user.Id);
+        var result = await _userService.GetFullCompanyProfile(id, user.Id, coWorker?.Id);
 
         return result.Match<IActionResult>(
             success =>
@@ -337,7 +335,14 @@ public class UserController : ControllerBase
         return res.Match<IActionResult>(
             success => Ok(new
             {
-                Items = success.Items.Adapt<List<AuditLogOutputModel>>(),
+                Items = success.Items.Select(log => new AuditLogOutputModel
+                {
+                    Id = log.Id,
+                    UserId = log.UserId,
+                    CoWorkerId = log.CoWorkerId,
+                    Timestamp = log.Timestamp,
+                    Action = log.Action
+                }).ToList(),
                 TotalItems = success.TotalItems,
                 Page = success.Page,
                 PageSize = success.PageSize

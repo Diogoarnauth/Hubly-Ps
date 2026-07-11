@@ -21,8 +21,8 @@ public class CompanyController : ControllerBase
         _companyService = companyService;
     }
 
-    [HttpPost(Uris.Uris.Companies.Create)] //LOG
-    [AuditLogFilter("CreateCompany")] 
+    [HttpPost(Uris.Uris.Companies.Create)] //LOG FALTA
+    //[AuditLogFilter("CreateCompany")] 
     public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
     {
         var res = await _companyService.Register(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
@@ -45,17 +45,15 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost(Uris.Uris.Companies.EditCompanyProfile)] //LOG
-    [AuditLogFilter("EditCompany")] 
+    //[AuditLogFilter("EditCompany")] 
 
     public async Task<IActionResult> EditProfile(
     [FromServices] AuthenticatedUser user, 
     [FromServices] AuthenticatedCoWorker? coWorker, 
-    [FromBody] CompanyInputModel input)
+    [FromBody] CompanyEditInputModel input)
 
     {
-        Console.WriteLine($"User ID: {user?.Id}, CoWorker ID: {coWorker?.Id}");
-
-        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
+        var res = await _companyService.EditProfile(user.Id, coWorker?.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<CompanyOutputModel>()),
@@ -93,8 +91,8 @@ public class CompanyController : ControllerBase
     }
 
 
-    [HttpGet(Uris.Uris.Companies.Search)] //LOG
-    [AuditLogFilter("SearchCompany")] 
+    [HttpGet(Uris.Uris.Companies.Search)] //LOG FALTA
+    //[AuditLogFilter("SearchCompany")] 
 
     public async Task<IActionResult> Search(
     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
@@ -157,6 +155,7 @@ public class CompanyController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             });
     }
+    
 
     [HttpGet(Uris.Uris.Companies.GetRecommendations)]
     public async Task<IActionResult> GetRecommendations(
@@ -164,7 +163,6 @@ public class CompanyController : ControllerBase
         [FromServices] AuthenticatedCoWorker? coWorker
         )
     {
-        Console.WriteLine($"User ID: {user.Id}, CoWorker ID: {coWorker?.Id}");
         var res = await _companyService.GetRecommendedCompanies(user.Id);
 
         return res.Match<IActionResult>(

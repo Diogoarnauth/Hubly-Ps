@@ -36,11 +36,18 @@ builder.Services.AddSingleton<Hubly.api.Infrastructure.Audit.AuditQueue>();
 builder.Services.AddHostedService<Hubly.api.BackgroundServices.AuditBackgroundProcessor>();
 
 
+//Estruturar
+builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+
+builder.Services.AddScoped<IAuditService, AuditService>();
+
+
 builder.Services.AddScoped<UsersDomain>();
 builder.Services.AddScoped<CreatorsDomain>();
 builder.Services.AddScoped<CompaniesDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
+builder.Services.AddScoped<AuditFormatter>();
 //pipeline configuration
 // Pipeline configuration e Interceção de Erros de DTOs antes do Controller
 builder.Services.AddControllers(options =>

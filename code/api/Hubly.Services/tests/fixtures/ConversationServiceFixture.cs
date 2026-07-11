@@ -6,6 +6,7 @@ using Moq;
 using Microsoft.Extensions.Configuration;
 using Hubly.api.Services.Problems;
 using OneOf;
+using Hubly.api.Infrastructure.Audit;
 
 
 namespace Hubly.api.Services.Fixtures
@@ -19,7 +20,8 @@ namespace Hubly.api.Services.Fixtures
         public readonly Mock<ITransactionManager> TransactionManager;
         public readonly Mock<ITransactionContext> TransactionContext;
         public readonly Mock<IEventService> EventService;
-
+        public readonly Mock<IAuditService> AuditService; 
+        public readonly AuditQueue AuditQueue;
 
         public readonly ConversationService ConversationService;
 
@@ -36,6 +38,9 @@ namespace Hubly.api.Services.Fixtures
             TransactionManager = new Mock<ITransactionManager>();
             TransactionContext = new Mock<ITransactionContext>();
             EventService = new Mock<IEventService>();
+            AuditService = new Mock<IAuditService>();
+            AuditQueue = new AuditQueue();
+
 
             SetupTransactionContext();
 
@@ -50,7 +55,8 @@ namespace Hubly.api.Services.Fixtures
 
             ConversationService = new ConversationService(
                 TransactionManager.Object,
-                EventService.Object
+                EventService.Object,
+                AuditQueue
             );
 
             SetupDefaultMocks();
@@ -107,6 +113,7 @@ namespace Hubly.api.Services.Fixtures
             EventService.Reset();
             TransactionManager.Reset();
             TransactionContext.Reset();
+            AuditService.Reset();
 
             SetupTransactionContext();
 

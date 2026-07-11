@@ -419,9 +419,7 @@ public class HublyDbContext : DbContext
             entity.Property(al => al.UserId).HasColumnName("userid");
             entity.Property(al => al.CoWorkerId).HasColumnName("coworkerid");
             entity.Property(al => al.Timestamp).HasColumnName("timestamp");
-            entity.Property(al => al.Action).HasColumnName("action").IsRequired().HasMaxLength(100);
-            entity.Property(al => al.Endpoint).HasColumnName("endpoint").IsRequired().HasMaxLength(255);
-            entity.Property(al => al.Payload).HasColumnName("payload").HasColumnType("jsonb");
+            entity.Property(al => al.Action).HasColumnName("action").IsRequired();
         });
     }
 }

@@ -292,7 +292,7 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId)
+        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId, int? coWorkerId)
         {
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
@@ -327,8 +327,7 @@ namespace Hubly.api.Services
                 return user;
             });
         }
-
-        public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId)
+         public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId, int? coWorkerId)
         {
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
            {
@@ -338,24 +337,23 @@ namespace Hubly.api.Services
 
                var isOwner = targetCompanyId == viewerId;
 
-               if (!isOwner)
+            if (!isOwner){
+               try
                {
-                   try
+                   var historyEntry = new ProfileViewHistory
                    {
-                       var historyEntry = new ProfileViewHistory
-                       {
-                           ViewerUserId = viewerId,
-                           ViewedCompanyId = targetCompanyId,
-                           ViewedAt = DateTime.UtcNow
-                       };
+                       ViewerUserId = viewerId,
+                       ViewedCompanyId = targetCompanyId,
+                       ViewedAt = DateTime.UtcNow
+                   };
 
-                       await context.HistoryRepository.AddView(historyEntry);
-                   }
-                   catch (Exception ex)
-                   {
-                       Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
-                   }
+                   await context.HistoryRepository.AddView(historyEntry);
                }
+               catch (Exception ex)
+               {
+                   Console.WriteLine($"Erro ao gravar histórico: {ex.Message}");
+               }
+            }
 
                return user;
            });

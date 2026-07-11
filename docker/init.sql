@@ -189,8 +189,6 @@ CREATE TABLE IF NOT EXISTS dbo.auditLogs (
     id BIGSERIAL PRIMARY KEY,
     userId INT,
     coworkerid INT,
-    timestamp TIMESTAMP NOT NULL,
-    action VARCHAR(100) NOT NULL,
-    endpoint VARCHAR(255) NOT NULL,
-    payload JSONB 
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action TEXT NOT NULL
 );

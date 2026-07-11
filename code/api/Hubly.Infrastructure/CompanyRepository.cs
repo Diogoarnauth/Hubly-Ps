@@ -44,7 +44,7 @@ namespace Hubly.api.Infrastructure
                 .FirstOrDefaultAsync(com => com.Id == userId);
         }
 
-        public async Task<Company?> EditProfile(int user_id, string company_size, string company_name, string description, List<Sector> sectors, string website_link, string country_headquarters)
+        public async Task<Company?> EditProfile(int user_id, string? company_size, string company_name, string description, List<Sector> sectors, string website_link, string country_headquarters)
         {
             var company = await _context.Companies
                 .Include(c => c.Sectors)
@@ -54,7 +54,8 @@ namespace Hubly.api.Infrastructure
 
             company.CompanyName = company_name;
             company.Description = description;
-            company.CompanySize = company_size;
+            if (!string.IsNullOrWhiteSpace(company_size))
+                company.CompanySize = company_size;
             company.WebsiteLink = website_link;
             company.CountryHeadquarters = country_headquarters;
 
