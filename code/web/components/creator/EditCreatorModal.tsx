@@ -25,17 +25,29 @@ export function EditCreatorModal({
   async function handleSave() {
     setLoading(true);
     
-    // 🔥 Criamos um array dinâmico de promessas dependendo da role
     const promises: Promise<boolean>[] = [];
 
-    // Se NÃO for coworker, adiciona a edição de username à lista
-    if (!isCoWorker) {
+    // Apenas faz o pedido de username se foi alterado e não é coworker
+    if (!isCoWorker && username !== currentUsername) {
       promises.push(usersService.editUsername(username));
     }
 
-    // Estas duas são feitas sempre, independentemente da role
-    promises.push(creatorService.editCreator(artisticName));
-    promises.push(creatorService.changeStatus(status));
+    // Apenas faz o pedido de editCreator se foi alterado
+    if (artisticName !== currentArtisticName) {
+      promises.push(creatorService.editCreator(artisticName));
+    }
+
+    // Apenas faz o pedido de changeStatus se foi alterado
+    if (status !== currentStatus) {
+      promises.push(creatorService.changeStatus(status));
+    }
+
+    // Se não há nenhuma alteração, apenas fecha o modal
+    if (promises.length === 0) {
+      onClose();
+      setLoading(false);
+      return;
+    }
 
     // Executa apenas os pedidos necessários em paralelo
     const results = await Promise.all(promises);

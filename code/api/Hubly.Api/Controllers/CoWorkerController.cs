@@ -94,7 +94,7 @@ public class CoWorkerController : ControllerBase
         );
     }
 
-    [HttpGet(Uris.Uris.CoWorkers.GetSentInvites)]
+    [HttpGet(Uris.Uris.CoWorkers.GetSentInvites)] 
     public async Task<IActionResult> GetSentInvites([FromServices] AuthenticatedUser user,
     [FromServices] AuthenticatedCoWorker? coWorker)
     {
@@ -126,7 +126,8 @@ public class CoWorkerController : ControllerBase
         );
     }
 
-    [HttpDelete(Uris.Uris.CoWorkers.CancelCoworking)]
+    [HttpDelete(Uris.Uris.CoWorkers.CancelCoworking)] //LOG  FALTA
+    //[AuditLogFilter("CancelCoworking")]
     public async Task<IActionResult> CancelCoworking(
         [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
     {
@@ -144,7 +145,7 @@ public class CoWorkerController : ControllerBase
         );
     }
 
-    [HttpDelete(Uris.Uris.CoWorkers.OwnerCancelCoworking)]
+    [HttpDelete(Uris.Uris.CoWorkers.OwnerCancelCoworking)] 
     public async Task<IActionResult> CancelCoworking(
       [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int coWorkerUserId)
     {

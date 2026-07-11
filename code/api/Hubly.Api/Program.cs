@@ -32,6 +32,14 @@ var companyDomainConfig = new CompaniesDomainConfig
 builder.Services.AddSingleton(userDomainConfig);
 builder.Services.AddSingleton(creatorDomainConfig);
 builder.Services.AddSingleton(companyDomainConfig);
+builder.Services.AddSingleton<Hubly.api.Infrastructure.Audit.AuditQueue>();
+builder.Services.AddHostedService<Hubly.api.BackgroundServices.AuditBackgroundProcessor>();
+
+
+//Estruturar
+builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 
 builder.Services.AddScoped<UsersDomain>();
@@ -39,6 +47,7 @@ builder.Services.AddScoped<CreatorsDomain>();
 builder.Services.AddScoped<CompaniesDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
+builder.Services.AddScoped<AuditFormatter>();
 //pipeline configuration
 // Pipeline configuration e Interceção de Erros de DTOs antes do Controller
 builder.Services.AddControllers(options =>
@@ -88,6 +97,7 @@ builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IConversationTagService, ConversationTagService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICoWorkerService, CoWorkerService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddSignalR(); //todo()
 
 //Encoders
@@ -105,6 +115,7 @@ builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 builder.Services.AddScoped<ICoWorkerRepository, CoWorkerRepository>();
+
 
 
 

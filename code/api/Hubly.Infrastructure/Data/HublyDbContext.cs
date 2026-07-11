@@ -25,6 +25,7 @@ public class HublyDbContext : DbContext
     public DbSet<MessageReadStatus> MessageReadStatuses { get; set; }
     public DbSet<CoWorker> CoWorkers { get; set; }
     public DbSet<CoWorkerInvite> CoWorkerInvites { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; } 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -407,6 +408,18 @@ public class HublyDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(mrs => mrs.LastReadMessageId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.ToTable("auditlogs", "dbo");
+            entity.HasKey(al => al.Id);
+            entity.Property(al => al.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+            entity.Property(al => al.UserId).HasColumnName("userid");
+            entity.Property(al => al.CoWorkerId).HasColumnName("coworkerid");
+            entity.Property(al => al.Timestamp).HasColumnName("timestamp");
+            entity.Property(al => al.Action).HasColumnName("action").IsRequired();
         });
     }
 }

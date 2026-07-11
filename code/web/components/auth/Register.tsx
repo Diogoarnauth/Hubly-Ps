@@ -64,14 +64,7 @@ export function Register() {
     isPasswordMatch(password, confirmPassword);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Register</CardTitle>
-        <CardDescription>
-          Enter your email below to register to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+   
         <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
           <fieldset disabled={isLoading} className="space-y-4">
             <div>
@@ -143,7 +136,5 @@ export function Register() {
             )}
           </fieldset>
         </form>
-      </CardContent>
-    </Card>
   );
 }

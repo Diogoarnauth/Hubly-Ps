@@ -6,6 +6,7 @@ using OneOf;
 using System.Data.Common;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using Hubly.api.Infrastructure.Audit;
 
 
 namespace Hubly.api.Services
@@ -14,15 +15,19 @@ namespace Hubly.api.Services
     {
         private readonly ITransactionManager _transactionManager;
         private readonly CompaniesDomain _companiesDomain;
+        private readonly AuditQueue _auditQueue;
+
 
         public CompanyService(
             ITransactionManager transactionManager,
             IConfiguration configuration,
-            CompaniesDomain companiesDomain
+            CompaniesDomain companiesDomain,
+            AuditQueue auditQueue
         )
         {
             _transactionManager = transactionManager;
             _companiesDomain = companiesDomain;
+            _auditQueue = auditQueue;
 
         }
 
@@ -74,12 +79,12 @@ namespace Hubly.api.Services
             return result;
         }
 
-        public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int company_size, string company_name, string description, List<string> sectors, string website_link, string country_headquarters)
+       public async Task<OneOf<Company, CompanyError>> EditProfile(int user_id, int? coWorkerId, int? company_size, string company_name, string description, List<string> sectors, string website_link, string country_headquarters)
         {
             if (!_companiesDomain.IsValidWebsite(website_link)) return new CompanyError.InvalidWebSiteLink();
             if (!_companiesDomain.IsValidCountry(country_headquarters)) return new CompanyError.InvalidCountryHeadquarters();
 
-            string sizeCategory = _companiesDomain.ConvertCompanySize(company_size);
+            string? sizeCategory = company_size.HasValue ? _companiesDomain.ConvertCompanySize(company_size.Value) : null;
 
             var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {
@@ -92,18 +97,38 @@ namespace Hubly.api.Services
                 if (foundSectors.Count != sectors.Count) return new CompanyError.InvalidSectorName();
 
                 var updatedCompany = await context.CompanyRepository.EditProfile(
-                    user_id, sizeCategory, company_name, description, foundSectors, website_link, country_headquarters
+                    user_id, sizeCategory ?? companyExists.CompanySize, company_name, description, foundSectors, website_link, country_headquarters
                 );
 
                 if (updatedCompany == null) return new CompanyError.FailedToGetCompanyInfo();
 
+                var myUser = await context.UserRepository.GetUserById(coWorkerId ?? user_id);
+
+                var sectorsString = sectors != null && sectors.Any() ? string.Join(", ", sectors) : "Nenhum";
+                var sizeLabel = sizeCategory ?? companyExists.CompanySize ?? "Não especificado";
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                    "EditCompany", 
+                    new { 
+                        UserEmail = myUser?.Email ?? "Sem Email", 
+                        CompanyName = company_name,
+                        CompanySize = sizeLabel,
+                        Description = string.IsNullOrWhiteSpace(description) ? "Sem descrição" : description,
+                        Sectors = sectorsString,
+                        WebsiteLink = string.IsNullOrWhiteSpace(website_link) ? "Sem link" : website_link,
+                        CountryHeadquarters = string.IsNullOrWhiteSpace(country_headquarters) ? "Não especificado" : country_headquarters
+                    },
+                    user_id,   
+                    coWorkerId
+                ));
+
                 return updatedCompany;
             });
-
             return result;
         }
-
-        public async Task<OneOf<Company, CompanyError>> GetById(int targetCompanyId, int viewerId)
+        
+        
+                public async Task<OneOf<Company, CompanyError>> GetById(int targetCompanyId, int viewerId)
         {
             var result = await _transactionManager.Run<OneOf<Company, CompanyError>>(async (context) =>
             {

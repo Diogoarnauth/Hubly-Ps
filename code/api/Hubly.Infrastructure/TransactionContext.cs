@@ -23,6 +23,7 @@ public class TransactionContext : ITransactionContext
         MessageRepository = new MessageRepository(context);
         ConversationTagRepository = new ConversationTagRepository(context);
         CoWorkerRepository = new CoWorkerRepository(context);
+        AuditRepository = new AuditRepository(context);
 
     }
 
@@ -38,5 +39,5 @@ public class TransactionContext : ITransactionContext
     public ICreatorSocialRepository CreatorSocialRepository { get; }
     public IConversationTagRepository ConversationTagRepository { get; }
     public ICoWorkerRepository CoWorkerRepository { get; }
-
+    public IAuditRepository AuditRepository { get; }
 }

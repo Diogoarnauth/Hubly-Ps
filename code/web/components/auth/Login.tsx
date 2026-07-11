@@ -58,59 +58,49 @@ export function LoginForm() {
         */
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-2xl">Login</CardTitle>
-                <CardDescription>
-                    Enter your email below to login to your account
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
-                    <fieldset disabled={isLoading} className="space-y-4">
-                        {errorMessage && (
-                            <Alert variant="destructive" className="py-2">
-                                <AlertDescription className="text-xs">
-                                    {errorMessage}
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                        <div>
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="example@email.com"
-                                required
-                                className={errorMessage ? "border-destructive" : ""}
-                            />
-                        </div>
+        <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
+            <fieldset disabled={isLoading} className="space-y-4">
+                {errorMessage && (
+                    <Alert variant="destructive" className="py-2">
+                        <AlertDescription className="text-xs">
+                            {errorMessage}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="example@email.com"
+                        required
+                        className={errorMessage ? "border-destructive" : ""}
+                    />
+                </div>
 
-                        <PasswordInput
-                            label="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                <PasswordInput
+                    label="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
 
-                        <Button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full"
-                        >
-                            {isLoading ? 'Logging in...' : 'Login'}
-                        </Button>
+                <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full"
+                >
+                    {isLoading ? 'Logging in...' : 'Login'}
+                </Button>
 
-                        <p className="mt-4 text-center text-sm">
-                            Do not have an account?{' '}
-                            <Link href="/register" className="underline">
-                                Register
-                            </Link>
-                        </p>
-                    </fieldset>
-                </form>
-            </CardContent>
-        </Card>
+                <p className="mt-4 text-center text-sm">
+                    Do not have an account?{' '}
+                    <Link href="/register" className="underline">
+                        Register
+                    </Link>
+                </p>
+            </fieldset>
+        </form>
     );
 }

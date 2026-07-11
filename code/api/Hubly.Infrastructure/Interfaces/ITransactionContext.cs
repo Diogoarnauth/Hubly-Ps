@@ -14,5 +14,5 @@ public interface ITransactionContext
         IMessageRepository MessageRepository { get; }
         IConversationTagRepository ConversationTagRepository { get; }
         ICoWorkerRepository CoWorkerRepository { get; }
-
+        IAuditRepository AuditRepository { get; }
 }

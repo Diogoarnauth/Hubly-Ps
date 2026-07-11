@@ -21,9 +21,8 @@ namespace Hubly.api.Services.Problems
         public class UserNotFound : UserError { }
         public class OldPasswordIsIncorrect : UserError { }
         public class NewPasswordCannotBeTheSameAsTheOldPassword : UserError { }  
-        
-
-        
+        public class FailedToGetLogs : UserError;
+    
         
     }
 }

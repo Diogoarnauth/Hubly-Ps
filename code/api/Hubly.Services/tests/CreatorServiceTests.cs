@@ -45,7 +45,7 @@ public class CreatorServiceTests : IClassFixture<CreatorServiceFixture>
     {
         string invalidStatus = "INVALIDO";
 
-        var result = await _fixture.CreatorService.UpdateStatus(_fixture.UserId, invalidStatus);
+        var result = await _fixture.CreatorService.UpdateStatus(_fixture.UserId, null, invalidStatus);
 
         
         Assert.True(result.IsT1);
@@ -57,7 +57,7 @@ public class CreatorServiceTests : IClassFixture<CreatorServiceFixture>
     {
         _fixture.SetupCreatorNotFound(_fixture.UserId);
 
-        var result = await _fixture.CreatorService.UpdateStatus(1, "AVAILABLE");
+        var result = await _fixture.CreatorService.UpdateStatus(1, null, "AVAILABLE");
 
         Assert.True(result.IsT1);
         Assert.IsType<CreatorError.CreatorNotFound>(result.AsT1);
@@ -106,7 +106,7 @@ public class CreatorServiceTests : IClassFixture<CreatorServiceFixture>
 
         _fixture.SetupPlatformNotFound(platformId);
 
-        var result = await _fixture.CreatorService.AddSocialProfile(userId, user_name, link, description, followers, priceMin, priceMax, platformId, new List<string>());
+        var result = await _fixture.CreatorService.AddSocialProfile(userId, null, user_name, link, description, followers, priceMin, priceMax, platformId, new List<string>());
 
         Assert.True(result.IsT1);
         Assert.IsType<CreatorError.PlatformNotFound>(result.AsT1);
@@ -126,7 +126,7 @@ public class CreatorServiceTests : IClassFixture<CreatorServiceFixture>
 
         _fixture.SetupSectorsCheckFailure(expectedCount: 2, actualCount: 1);
 
-        var result = await _fixture.CreatorService.AddSocialProfile(userId, user_name, link, description, followers, priceMin, priceMax, platformId, new List<string> { "S1", "S2" });
+        var result = await _fixture.CreatorService.AddSocialProfile(userId, null, user_name, link, description, followers, priceMin, priceMax, platformId, new List<string> { "S1", "S2" });
 
         Assert.True(result.IsT1);
         Assert.IsType<CreatorError.InvalidSectorName>(result.AsT1);
@@ -146,7 +146,7 @@ public class CreatorServiceTests : IClassFixture<CreatorServiceFixture>
 
        _fixture.SetupProfileById(socialProfileId, ownerId: 1);
 
-        var result = await _fixture.CreatorService.EditCreatorSocialProfile(userId, socialProfileId, user_name, link, description, followers, priceMin, priceMax, new List<string>());
+        var result = await _fixture.CreatorService.EditCreatorSocialProfile(userId, null, socialProfileId, user_name, link, description, followers, priceMin, priceMax, new List<string>());
 
         Assert.True(result.IsT1);
         Assert.IsType<CreatorError.ProfileDoesntBellongToYou>(result.AsT1);
@@ -183,7 +183,7 @@ public class CreatorServiceTests : IClassFixture<CreatorServiceFixture>
 
         _fixture.SetupProfileByIdWithOwnership(profileId, ownerId);
 
-        var result = await _fixture.CreatorService.RemoveSocialProfile(hackerId, profileId);
+        var result = await _fixture.CreatorService.RemoveSocialProfile(hackerId, null, profileId);
 
         Assert.True(result.IsT1);
         Assert.IsType<CreatorError.SocialProfileNotFound>(result.AsT1);

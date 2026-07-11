@@ -360,4 +360,10 @@ public class ProblemResponse
         404
     );
 
+    public static readonly ProblemResponse FailedToGetLogs = new(
+        "failed-to-get-logs",
+        "Failed To Get Logs",
+        404
+    );
+
 }

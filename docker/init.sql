@@ -184,3 +184,11 @@ CREATE TABLE IF NOT EXISTS dbo.co_worker_invites (
     CONSTRAINT unique_pending_invite UNIQUE(owner_id, co_worker_email),
     CONSTRAINT chk_status CHECK (status IN ('WAITING', 'ACCEPTED', 'REJECTED'))
 );
+
+CREATE TABLE IF NOT EXISTS dbo.auditLogs (
+    id BIGSERIAL PRIMARY KEY,
+    userId INT,
+    coworkerid INT,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action TEXT NOT NULL
+);

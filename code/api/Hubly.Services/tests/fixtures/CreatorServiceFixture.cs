@@ -6,6 +6,8 @@ using Moq;
 using Microsoft.Extensions.Configuration;
 using Hubly.api.Services.Problems;
 using OneOf;
+using Hubly.api.Infrastructure.Audit;
+
 
 
 namespace Hubly.api.Services.Fixtures
@@ -25,6 +27,8 @@ namespace Hubly.api.Services.Fixtures
         public readonly CreatorsDomain CreatorsDomain;
 
         public readonly CreatorService CreatorService;
+        public readonly AuditQueue AuditQueue;
+
 
 
         public readonly int UserId = 1;
@@ -42,6 +46,8 @@ namespace Hubly.api.Services.Fixtures
             TransactionManager = new Mock<ITransactionManager>();
             TransactionContext = new Mock<ITransactionContext>();
             Configuration = new Mock<IConfiguration>();
+            AuditQueue = new AuditQueue();
+
 
             CreatorsDomainConfig = new CreatorsDomainConfig
             {
@@ -71,7 +77,9 @@ namespace Hubly.api.Services.Fixtures
             CreatorService = new CreatorService(
                 TransactionManager.Object,
                 Configuration.Object,
-                CreatorsDomain
+                CreatorsDomain,
+                AuditQueue
+
             );
 
             SetupDefaultMocks();
@@ -176,7 +184,7 @@ namespace Hubly.api.Services.Fixtures
             TransactionContext.Reset();
 
             SetupTransactionContext();
-            
+
             SetupTransactionManager();
             SetupConfigurationMock();
             SetupDefaultMocks();
