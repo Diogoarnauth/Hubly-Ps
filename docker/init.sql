@@ -163,3 +163,32 @@ CREATE TABLE IF NOT EXISTS dbo.conversation_tag_assignments (
     PRIMARY KEY (user_id, conversation_id), 
     updated_at BIGINT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS dbo.co_workers (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES dbo.users(id) ON DELETE CASCADE,
+    owner_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_not_self_owner CHECK (user_id <> owner_id)
+);
+
+CREATE TABLE IF NOT EXISTS dbo.co_worker_invites (
+    id SERIAL PRIMARY KEY,
+    owner_id INTEGER NOT NULL REFERENCES dbo.users(id) ON DELETE CASCADE,
+    co_worker_email VARCHAR(150) NOT NULL,
+    status VARCHAR(20) DEFAULT 'WAITING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL,
+    
+    CONSTRAINT unique_pending_invite UNIQUE(owner_id, co_worker_email),
+    CONSTRAINT chk_status CHECK (status IN ('WAITING', 'ACCEPTED', 'REJECTED'))
+);
+
+CREATE TABLE IF NOT EXISTS dbo.auditLogs (
+    id BIGSERIAL PRIMARY KEY,
+    userId INT,
+    coworkerid INT,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action TEXT NOT NULL
+);

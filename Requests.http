@@ -3,15 +3,28 @@
 @port = 80
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token= WPq1xZF6Zs2CVD1GT/GuxbRCXGVZAsSpe0CpHdF3P2A=
+//owner
+//@token= m66//q1S0YaNu1VJsIukcxucRdF3tZ1cm6U+1+lmWJA=
+//@token= G5V4CA/hl5eZpEPqPUdgXnGUYS/UFApAT5SO5Gfk6dE=
+
+//solto
+//@token = OPWqBb8bul0SAD+1nRLWY1m7wm8jcnvuZu3NgqKMRWE=
+
+
+//solto2
+//@token = DNnG0Vx8GfszsugYLknVMe8XYWt1ggFOLzxHg9skACo=
+
+
+
+@token = 0xHbhq98IT7sFeW+N3ddFUQ7IxQUnO8DMuW3hJVmCLE=
 
 ### 1. Criar um Novo Utilizador
 POST http://{{host}}/api/users
 Content-Type: {{contentType}}
 
 {
-    "name": "olo",
-    "email": "carolbrazete10@gmail.com",
+    "name": "Caro",
+    "email": "dioarnauth1110@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -20,7 +33,7 @@ POST http://{{host}}/api/users/token
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete100@gmail.com",
+    "email": "dioarnauth1110@gmail.com",
     "password": "Carol2010!"
 }
 
@@ -35,6 +48,12 @@ GET http://{{host}}/api/getCountries
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
+
+
+### Get my Logs 
+GET http://{{host}}/api/users/auditLogs
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
 
 
 ### Get user info
@@ -81,8 +100,8 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "email": "carolbrazete100@gmail.com",
-    "code": "555029" 
+    "email": "dioarnauth1110@gmail.com",
+    "code": "049115" 
 }
 
 ### 7. Reenviar Confirmação de Email
@@ -104,7 +123,7 @@ Content-Type: {{contentType}}
 }
 
 ### Get creator info
-GET http://{{host}}/api/creator/42
+GET http://{{host}}/api/creator/7
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -159,7 +178,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "AvailabilityStatus": "UNAVAILABLE"
+  "AvailabilityStatus": "AVAILABLE"
 }
 
 ### Edit Creator
@@ -175,19 +194,50 @@ Content-Type: {{contentType}}
 POST http://{{host}}/api/company/edit
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
-
+ 
 {
   "CompanySize": 200000,
   "CompanyName": "Hublizinho",
   "Description": "Adoro o que faço",
   "Sectors": ["Automotive & Mobility"],
   "WebsiteLink": "http://www.bananinha.ed",
-  "CountryHeadquarters": "Spain"
+  "CountryHeadquarters": "Portugal"
 }
 
 
 ### Get company info
-GET http://{{host}}/api/company/5
+GET http://{{host}}/api/company/23
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Co-worker invites
+
+### Send co-worker invite
+POST http://{{host}}/api/co-workers/invite
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "email": "dioarnauth11@gmail.com"
+}
+
+### Accept co-worker invite
+POST http://{{host}}/api/co-workers/invites/4/accept
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Reject co-worker invite
+POST http://{{host}}/api/co-workers/invites/5/reject
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get received co-worker invites
+GET http://{{host}}/api/co-workers/invites/received
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+### Get sent co-worker invites
+GET http://{{host}}/api/co-workers/invites/sent
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -259,7 +309,7 @@ Content-Type: {{contentType}}
 
 
 ### Edit CreateSocialProfile erro 500 quando tentamos edi
-POST http://{{host}}/api/creator/socialProfile/edit/1
+POST http://{{host}}/api/creator/socialProfile/edit/22
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
@@ -390,83 +440,28 @@ DELETE http://{{host}}/api/conversation/message/1
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-### Get Messages (Paginated)
-GET http://{{host}}/api/conversation/1/messages?page=1&pageSize=100
+
+### Get My CoWorker Info
+GET http://{{host}}/api/co-workers/myInfo/
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-### Get My Conversations Creator (List of conversations with last message and timestamp)
-GET http://{{host}}/api/conversation/22/my-conversations
+### Cancel Coworking (Co-worker a sair da equipa)
+DELETE http://{{host}}/api/co-workers/remove
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-
-### Get My Conversations Company (List of conversations with last message and timestamp)
-GET http://{{host}}/api/conversation/46/company-conversations
+### Owner Cancel Coworking (Owner a remover um Co-worker específico)
+DELETE http://{{host}}/api/co-workers/remove/40
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-
-
-### Get Recommended Companies (Baseado no histórico e scoring)
-GET http://{{host}}/api/company/getRecommendations
+### Get My Team (Para o Owner ver a sua equipa)
+GET http://{{host}}/api/co-workers/myTeam
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
-### Get Recommended Creators (Baseado no histórico e scoring)
-GET http://{{host}}/api/creators/getRecommendations
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-##############################################################################
-
-########################## Conversation Tags ##########################
-
-### Create Tag
-POST http://{{host}}/api/conversation/tags
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-{
-  "tagName": "Accepted before presenting",
-  "colorHex": "#FF6B7B"
-}
-
-### Get All My Tags
+###
 GET http://{{host}}/api/conversation/tags/my-tags
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-### Get Conversation Tags (for a specific conversation)
-GET http://{{host}}/api/conversation/1/tags
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-### Update Tag
-PUT http://{{host}}/api/conversation/tags/2
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-{
-  "tagName": "Negotiatingahjaos",
-  "colorHex": "#FF966D"
-}
-
-### Tag a Conversation (Assign tag to conversation)
-POST http://{{host}}/api/conversation/1/assign-tag
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-{
-  "tagId": 2
-}
-
-### Remove Tag from Conversation
-POST http://{{host}}/api/conversation/1/remove-tag
-Authorization: Bearer {{token}}
-Content-Type: {{contentType}}
-
-### Delete Tag
-DELETE http://{{host}}/api/conversation/tags/72
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}

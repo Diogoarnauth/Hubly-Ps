@@ -8,10 +8,11 @@ public interface ITransactionContext
         ICreatorRepository CreatorRepository { get; }
         ICompanyRepository CompanyRepository { get; }
         IHistoryRepository HistoryRepository { get; }
-        ISocialPlatformRepository SocialPlatformRepository {get; }
-        ICreatorSocialRepository CreatorSocialRepository {get; }
-        IConversationRepository ConversationRepository {get; }
-        IMessageRepository MessageRepository {get; }
-        IConversationTagRepository ConversationTagRepository {get; }
-
+        ISocialPlatformRepository SocialPlatformRepository { get; }
+        ICreatorSocialRepository CreatorSocialRepository { get; }
+        IConversationRepository ConversationRepository { get; }
+        IMessageRepository MessageRepository { get; }
+        IConversationTagRepository ConversationTagRepository { get; }
+        ICoWorkerRepository CoWorkerRepository { get; }
+        IAuditRepository AuditRepository { get; }
 }

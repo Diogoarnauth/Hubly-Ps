@@ -28,7 +28,7 @@ public class ConversationServiceTests : IClassFixture<ConversationServiceFixture
         _fixture.SetupMessageAdd(messageId);
         _fixture.SetupConversationExists(_fixture.TestConversation);
 
-        var result = await _fixture.ConversationService.SendMessage(_fixture.UserId, _fixture.TestConversation.Id, "Olá!");
+        var result = await _fixture.ConversationService.SendMessage(_fixture.UserId, null, _fixture.TestConversation.Id, "Olá!");
 
         Assert.True(result.IsT0);
         Assert.Equal(messageId, result.AsT0);
@@ -40,7 +40,7 @@ public class ConversationServiceTests : IClassFixture<ConversationServiceFixture
     {
         _fixture.SetupParticipantStatus(_fixture.TestConversation.Id, _fixture.UserId, false);
 
-        var result = await _fixture.ConversationService.SendMessage(_fixture.UserId, _fixture.TestConversation.Id, "Olá!");
+        var result = await _fixture.ConversationService.SendMessage(_fixture.UserId, null, _fixture.TestConversation.Id, "Olá!");
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationError.AccessDenied>(result.AsT1);
@@ -74,7 +74,7 @@ public class ConversationServiceTests : IClassFixture<ConversationServiceFixture
             .Setup(r => r.AddConversation(It.IsAny<Conversation>()))
             .ReturnsAsync(99);
 
-        var result = await _fixture.ConversationService.CreateConversation(_fixture.UserId, 1, null, 2, null);
+        var result = await _fixture.ConversationService.CreateConversation(_fixture.UserId, null, 1, null, 2, null);
 
         Assert.True(result.IsT0);
         Assert.Equal(99, result.AsT0);
@@ -86,7 +86,7 @@ public class ConversationServiceTests : IClassFixture<ConversationServiceFixture
         var message = new Message { Id = 1, SenderId = 999 };
         _fixture.SetupMessageById(1, message);
 
-        var result = await _fixture.ConversationService.DeleteMessage(_fixture.UserId, 1);
+        var result = await _fixture.ConversationService.DeleteMessage(_fixture.UserId, null, 1);
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationError.AccessDenied>(result.AsT1);

@@ -21,7 +21,8 @@ public class CompanyController : ControllerBase
         _companyService = companyService;
     }
 
-    [HttpPost(Uris.Uris.Companies.Create)]
+    [HttpPost(Uris.Uris.Companies.Create)] //LOG FALTA
+    //[AuditLogFilter("CreateCompany")] 
     public async Task<IActionResult> Create([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
     {
         var res = await _companyService.Register(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
@@ -36,16 +37,23 @@ public class CompanyController : ControllerBase
                 CompanyError.UserAlreadyRegisteredAsCreator => ProblemResponse.UserAlreadyRegisteredAsCreator.ToResponse(),
                 CompanyError.InvalidWebSiteLink => ProblemResponse.InvalidWebSiteLink.ToResponse(),
                 CompanyError.InvalidCountryHeadquarters => ProblemResponse.InvalidCountryHeadquarters.ToResponse(),
+                CompanyError.UserAlreadyRegisteredAsCoWorker => ProblemResponse.UserAlreadyRegisteredAsCoWorker.ToResponse(),
                 _ => ProblemResponse.InternalServerError.ToResponse()
             }
         );
 
     }
 
-    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)]
-    public async Task<IActionResult> EditProfile([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromBody] CompanyInputModel input)
+    [HttpPost(Uris.Uris.Companies.EditCompanyProfile)] //LOG
+    //[AuditLogFilter("EditCompany")] 
+
+    public async Task<IActionResult> EditProfile(
+    [FromServices] AuthenticatedUser user, 
+    [FromServices] AuthenticatedCoWorker? coWorker, 
+    [FromBody] CompanyEditInputModel input)
+
     {
-        var res = await _companyService.EditProfile(user.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
+        var res = await _companyService.EditProfile(user.Id, coWorker?.Id, input.CompanySize, input.CompanyName, input.Description, input.Sectors, input.WebsiteLink, input.CountryHeadquarters);
 
         return res.Match<IActionResult>(
             success => Ok(success.Adapt<CompanyOutputModel>()),
@@ -63,8 +71,13 @@ public class CompanyController : ControllerBase
     }
 
     [HttpGet(Uris.Uris.Companies.GetById)]
-    public async Task<IActionResult> GetById([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user, [FromRoute] int id)
+
+    public async Task<IActionResult> GetById( 
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker, 
+        [FromRoute] int id)
     {
+        Console.WriteLine($"User ID: {user.Id}, Requested Company ID: {id}");
         var res = await _companyService.GetById(id, user.Id);
 
         return res.Match<IActionResult>(
@@ -78,7 +91,9 @@ public class CompanyController : ControllerBase
     }
 
 
-    [HttpGet(Uris.Uris.Companies.Search)]
+    [HttpGet(Uris.Uris.Companies.Search)] //LOG FALTA
+    //[AuditLogFilter("SearchCompany")] 
+
     public async Task<IActionResult> Search(
     [ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user,
     [FromQuery] CompanySearchInputModel input)
@@ -140,9 +155,13 @@ public class CompanyController : ControllerBase
                 _ => ProblemResponse.InternalServerError.ToResponse()
             });
     }
+    
 
     [HttpGet(Uris.Uris.Companies.GetRecommendations)]
-    public async Task<IActionResult> GetRecommendations([ModelBinder(typeof(AuthenticatedUserModelBinder))] AuthenticatedUser user)
+    public async Task<IActionResult> GetRecommendations(
+        [FromServices] AuthenticatedUser user, 
+        [FromServices] AuthenticatedCoWorker? coWorker
+        )
     {
         var res = await _companyService.GetRecommendedCompanies(user.Id);
 
@@ -156,6 +175,4 @@ public class CompanyController : ControllerBase
     }
 
 }
-
-//verificações de pipelina(ou handler), verificar se o user está registado pura e exclusivamente como creator ver se o token -> user -> creator(fazer get para obter creator desse user)
 

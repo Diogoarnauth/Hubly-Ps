@@ -122,7 +122,7 @@ public class CompanyServiceTests : IClassFixture<CompanyServiceFixture>
         string countryHeadquarters = "Portugal";
 
         _fixture.SetupCreatorExists(userId, true);
-        var result = await _fixture.CompanyService.EditProfile(userId, companySizeId, name, description, sectors, validUrl, countryHeadquarters);
+        var result = await _fixture.CompanyService.EditProfile(userId, null, companySizeId, name, description, sectors, validUrl, countryHeadquarters);
         Assert.True(result.IsT1);
         Assert.IsType<CompanyError.UserAlreadyRegisteredAsCreator>(result.AsT1);
     }
@@ -140,7 +140,7 @@ public class CompanyServiceTests : IClassFixture<CompanyServiceFixture>
 
         _fixture.SetupCreatorExists(userId, false);
         _fixture.SetupGetByUserId(userId, null);
-        var result = await _fixture.CompanyService.EditProfile(userId, companySizeId, name, description, sectors, validUrl, countryHeadquarters);
+        var result = await _fixture.CompanyService.EditProfile(userId, null, companySizeId, name, description, sectors, validUrl, countryHeadquarters);
         Assert.True(result.IsT1);
         Assert.IsType<CompanyError.FailedToGetCompanyInfo>(result.AsT1);
     }

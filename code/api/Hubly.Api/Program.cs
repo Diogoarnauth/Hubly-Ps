@@ -32,6 +32,14 @@ var companyDomainConfig = new CompaniesDomainConfig
 builder.Services.AddSingleton(userDomainConfig);
 builder.Services.AddSingleton(creatorDomainConfig);
 builder.Services.AddSingleton(companyDomainConfig);
+builder.Services.AddSingleton<Hubly.api.Infrastructure.Audit.AuditQueue>();
+builder.Services.AddHostedService<Hubly.api.BackgroundServices.AuditBackgroundProcessor>();
+
+
+//Estruturar
+builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 
 builder.Services.AddScoped<UsersDomain>();
@@ -39,6 +47,7 @@ builder.Services.AddScoped<CreatorsDomain>();
 builder.Services.AddScoped<CompaniesDomain>();
 builder.Services.AddScoped<TokenProcessor>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
+builder.Services.AddScoped<AuditFormatter>();
 //pipeline configuration
 // Pipeline configuration e Interceção de Erros de DTOs antes do Controller
 builder.Services.AddControllers(options =>
@@ -87,6 +96,8 @@ builder.Services.AddScoped<ISocialPlatformService, SocialPlatformService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IConversationTagService, ConversationTagService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ICoWorkerService, CoWorkerService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddSignalR(); //todo()
 
 //Encoders
@@ -103,6 +114,9 @@ builder.Services.AddScoped<ISocialPlatformRepository, SocialPlatformRepository>(
 builder.Services.AddScoped<ICreatorSocialRepository, CreatorSocialRepository>();
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<ICoWorkerRepository, CoWorkerRepository>();
+
+
 
 
 TypeAdapterConfig<CreatorSocialProfile, SocialProfileOutputModel>
@@ -118,6 +132,9 @@ TypeAdapterConfig<Company, CompanyOutputModel>
 TypeAdapterConfig<Company, CompanyOutputModel>
     .NewConfig()
     .Map(dest => dest.Sectors, src => src.Sectors.Select(s => s.SectorName));
+TypeAdapterConfig<CoWorker, GetMyCoWorkerWithEmailOutputModel>
+    .NewConfig()
+    .Map(dest => dest.CoWorkerEmail, src => src.User.Email);
 
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 

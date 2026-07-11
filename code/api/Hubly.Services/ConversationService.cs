@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Hubly.api.Infrastructure.Data;
+using Hubly.api.Infrastructure.Audit;
 
 
 namespace Hubly.api.Services
@@ -16,19 +17,27 @@ namespace Hubly.api.Services
         private readonly ITransactionManager _transactionManager;
 
         private readonly IEventService _eventService;
+        private readonly IAuditService _auditService;
+        private readonly AuditQueue _auditQueue;
 
         public ConversationService(
             ITransactionManager transactionManager,
-            IEventService eventService
+            IEventService eventService,
+            //IAuditService auditService,
+            AuditQueue auditQueue
+
         )
         {
             _transactionManager = transactionManager;
             _eventService = eventService;
+            //_auditService = auditService;
+            _auditQueue = auditQueue;
+
         }
 
 
 
-        public async Task<OneOf<int, ConversationError>> CreateConversation(int currentUserId, int? senderCompanyId, int? senderSocialProfileId, int? receiverCompanyId, int? receiverSocialProfileId)
+        public async Task<OneOf<int, ConversationError>> CreateConversation(int currentUserId, int? coWorkerId, int? senderCompanyId, int? senderSocialProfileId, int? receiverCompanyId, int? receiverSocialProfileId)
         {
             return await _transactionManager.Run<OneOf<int, ConversationError>>(async (context) =>
             {
@@ -100,7 +109,20 @@ namespace Hubly.api.Services
                         }
                     };
 
+                    var myUser = await context.UserRepository.GetUserById(coWorkerId ?? currentUserId);
+
+                    var targetUser = await context.UserRepository.GetUserById(targetUserId);
+
                     var id = await context.ConversationRepository.AddConversation(conversation);
+
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                        "CreateConversation",
+                        new { UserEmail = myUser.Email, UserName = targetUser.Name },
+                        currentUserId,
+                        coWorkerId
+                    ));
+
                     return id;
                 }
                 catch (Exception)
@@ -117,24 +139,20 @@ namespace Hubly.api.Services
         {
             return await _transactionManager.Run<OneOf<bool, ConversationError>>(async (context) =>
             {
-                // 1. Validação do Sender (Quem está a tentar verificar)
                 if (senderCompanyId.HasValue)
                 {
                     var company = await context.CompanyRepository.GetByUserId(senderCompanyId.Value);
-                    // Verifica se a empresa existe e se pertence ao utilizador logado
                     if (company == null || company.Id != currentUserId)
                         return new ConversationError.InvalidParticipantRole();
                 }
                 else if (senderSocialProfileId.HasValue)
                 {
                     var profile = await context.CreatorSocialRepository.GetById(senderSocialProfileId.Value);
-                    // Verifica se o perfil existe e se pertence ao utilizador logado
                     if (profile == null || profile.CreatorId != currentUserId)
                         return new ConversationError.InvalidParticipantRole();
                 }
                 else return new ConversationError.InvalidParticipantRole();
 
-                // 2. Validação do Target (Destinatário)
                 if (receiverCompanyId.HasValue)
                 {
                     var targetComp = await context.CompanyRepository.GetByUserId(receiverCompanyId.Value);
@@ -147,7 +165,6 @@ namespace Hubly.api.Services
                 }
                 else return new ConversationError.UserNotFound();
 
-                // 3. Busca tipada no Repositório
                 var existing = await context.ConversationRepository.GetConversationByParticipants(
                     senderCompanyId,
                     senderSocialProfileId,
@@ -161,7 +178,8 @@ namespace Hubly.api.Services
 
         internal record SendMessageResult(int MessageId, List<int> ParticipantProfileIds);
 
-        public async Task<OneOf<int, ConversationError>> SendMessage(int currentUserId, int conversationId, string content)
+
+        public async Task<OneOf<int, ConversationError>> SendMessage(int currentUserId, int? coWorkerId, int conversationId, string content)
         {
             var result = await _transactionManager.Run<OneOf<SendMessageResult, ConversationError>>(async (context) =>
             {
@@ -186,6 +204,7 @@ namespace Hubly.api.Services
                     var messageId = await context.MessageRepository.AddMessage(message);
 
                     var conversation = await context.ConversationRepository.GetById(conversationId);
+                    Console.WriteLine("conversation  " + conversation);
                     if (conversation != null)
                     {
                         conversation.LastMessageAt = sentAt;
@@ -193,11 +212,27 @@ namespace Hubly.api.Services
                     }
 
                     var conversationWithParticipants = await context.ConversationRepository.GetConversationWithParticipants(conversationId);
+
+                    Console.WriteLine("conversationWithParticipantsmsss" + conversationWithParticipants.Participants);
+
                     var participants = conversationWithParticipants?.Participants
                         .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
                         .Where(id => id != 0)
                         .ToList() ?? new List<int>();
 
+                    var myUser = await context.UserRepository.GetUserById(coWorkerId ?? currentUserId);
+
+                    var targetParticipant = conversationWithParticipants?.Participants?
+                        .FirstOrDefault(p => p.UserId != currentUserId);
+
+                    var receiverName = targetParticipant?.User?.Name ?? "Utilizador Desconhecido";
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                                          "SendMessage",
+                                          new { Message = message.Content, UserName = myUser.Email, ReceiverName = receiverName },
+                                          currentUserId,
+                                          coWorkerId
+                                      ));
 
                     return new SendMessageResult(messageId, participants);
                 }
@@ -255,7 +290,7 @@ namespace Hubly.api.Services
             return result.AsT1;
         }
 
-        public async Task<OneOf<bool, ConversationError>> EditMessage(int currentUserId, int messageId, string newContent)
+        public async Task<OneOf<bool, ConversationError>> EditMessage(int currentUserId, int? coWorkerId, int messageId, string newContent)
         {
             var result = await _transactionManager.Run<OneOf<(int ConversationId, List<int> ParticipantProfileIds), ConversationError>>(async (context) =>
             {
@@ -277,6 +312,22 @@ namespace Hubly.api.Services
                         .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
                         .Where(id => id != 0)
                         .ToList() ?? new List<int>();
+
+
+                    var myUser = await context.UserRepository.GetUserById(coWorkerId ?? currentUserId);
+
+                    var targetParticipant = conversation?.Participants?
+                        .FirstOrDefault(p => p.UserId != currentUserId);
+
+                    var receiverName = targetParticipant?.User?.Name ?? "Utilizador Desconhecido";
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                                    "EditMessage",
+                                    new { NewMessage = newContent, UserEmail = myUser.Email, ReceiverName = receiverName },
+                                    currentUserId,
+                                    coWorkerId
+                                ));
+
 
                     return (message.ConversationId, participants);
                 }
@@ -317,8 +368,7 @@ namespace Hubly.api.Services
 
             return result.AsT1;
         }
-
-        public async Task<OneOf<bool, ConversationError>> DeleteMessage(int currentUserId, int messageId)
+        public async Task<OneOf<bool, ConversationError>> DeleteMessage(int currentUserId, int? coWorkerId, int messageId)
         {
             var result = await _transactionManager.Run<OneOf<(int ConversationId, List<int> ParticipantProfileIds), ConversationError>>(async (context) =>
             {
@@ -337,6 +387,22 @@ namespace Hubly.api.Services
                         .Select(p => p.CompanyId ?? p.SocialProfileId ?? 0)
                         .Where(id => id != 0)
                         .ToList() ?? new List<int>();
+
+                    var myUser = await context.UserRepository.GetUserById(coWorkerId ?? currentUserId);
+
+                    var targetParticipant = conversation?.Participants?
+                        .FirstOrDefault(p => p.UserId != currentUserId);
+
+                    var receiverName = targetParticipant?.User?.Name ?? "Utilizador Desconhecido";
+
+                    await _auditQueue.EnqueueAsync(new AuditEntry(
+                                   "DeleteMessage",
+                                   new { Message = message.Content, UserEmail = myUser.Email, ReceiverName = receiverName },
+                                   currentUserId,
+                                   coWorkerId
+                               ));
+
+
 
                     return (message.ConversationId, participants);
                 }
@@ -377,7 +443,6 @@ namespace Hubly.api.Services
 
             return result.AsT1;
         }
-
         public async Task<OneOf<PagedResponse<Message>, ConversationError>> GetMessages(int currentUserId, int conversationId, int page = 1, int pageSize = 25)
         {
             return await _transactionManager.Run<OneOf<PagedResponse<Message>, ConversationError>>(async (context) =>

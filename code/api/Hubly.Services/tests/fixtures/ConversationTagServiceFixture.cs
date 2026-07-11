@@ -6,6 +6,7 @@ using Moq;
 using Microsoft.Extensions.Configuration;
 using Hubly.api.Services.Problems;
 using OneOf;
+using Hubly.api.Infrastructure.Audit;
 
 
 namespace Hubly.api.Services.Fixtures
@@ -19,6 +20,8 @@ namespace Hubly.api.Services.Fixtures
         public readonly Mock<ITransactionContext> TransactionContext;
 
         public readonly ConversationTagService ConversationTagService;
+        public readonly AuditQueue AuditQueue;
+
 
         public readonly int UserId = 1;
         public readonly ConversationTag TestConversationTag;
@@ -30,6 +33,8 @@ namespace Hubly.api.Services.Fixtures
             ConversationRepository = new Mock<IConversationRepository>();
             TransactionManager = new Mock<ITransactionManager>();
             TransactionContext = new Mock<ITransactionContext>();
+            AuditQueue = new AuditQueue();
+
 
             SetupTransactionContext();
 
@@ -45,7 +50,9 @@ namespace Hubly.api.Services.Fixtures
             SetupTransactionManager();
 
             ConversationTagService = new ConversationTagService(
-                TransactionManager.Object
+                TransactionManager.Object,
+                AuditQueue
+
             );
 
             SetupDefaultMocks();

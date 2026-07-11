@@ -13,7 +13,8 @@ export const CreatorChatSelection = ({ id }: CreatorChatSelectionProps) => {
     useEffect(() => {
         const loadProfiles = async () => {
             try {
-                const user = await userService.getCurrentUser();
+                const user = await userService.getCurrentOwnerUser();
+                console.log("User info for CreatorChatSelection:", user);
                 const fullProfile = await userService.getFullCreatorProfile(user.id);
                 
                 console.log("Resposta da API FullProfile:", fullProfile);

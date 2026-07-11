@@ -308,4 +308,62 @@ public class ProblemResponse
         "unauthorized-access",
         "Unauthorized Access",
     403);
+
+    public static readonly ProblemResponse AlreadyInvited = new(
+        "already-invited",
+        "User Already Invited",
+    409);
+
+    public static readonly ProblemResponse InviteNotFound = new(
+        "invite-not-found",
+        "Invite Not Found",
+    404);
+
+    public static readonly ProblemResponse InviteExpired = new(
+        "invite-expired",
+        "Invite Expired",
+    410);
+
+    public static readonly ProblemResponse Unauthorized = new(
+        "unauthorized",
+        "Unauthorized",
+    403);
+
+    public static readonly ProblemResponse CannotInviteSelf = new(
+        "cannot-invite-self",
+        "Cannot Invite Self",
+    403);
+
+    public static readonly ProblemResponse UserCannotBeACoWorker = new(
+        "user-cannot-be-a-coworker",
+        "User Cannot Be A CoWorker",
+    403);
+
+    public static readonly ProblemResponse UserAlreadyACoWorker = new(
+        "user-already-a-coworker",
+        "User Already A CoWorker",
+    409);
+
+    public static readonly ProblemResponse UserIsNotACreatorOrCompany = new(
+        "user-is-not-a-creator-or-company",
+        "User Is Not A Creator Or Company",
+    403);
+
+    public static readonly ProblemResponse UserAlreadyRegisteredAsCoWorker = new(
+        "user-already-registered-as-coworker",
+        "User Already Registered As CoWorker",
+        409
+    );
+    public static readonly ProblemResponse CoWorkerRelationshipNotFound = new(
+        "coworker-relationship-not-found",
+        "CoWorker Relationship Not Found",
+        404
+    );
+
+    public static readonly ProblemResponse FailedToGetLogs = new(
+        "failed-to-get-logs",
+        "Failed To Get Logs",
+        404
+    );
+
 }

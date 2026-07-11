@@ -46,7 +46,7 @@ namespace Hubly.api.Services
         public async Task<OneOf<User, UserError>> Register(string userName, string email, string password)
         {
             if (!_usersDomain.IsValidUsername(userName)) return new UserError.InvalidName();
-            if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();      
+            if (!_usersDomain.ValidationEmail(email)) return new UserError.InvalidEmail();
             if (!_usersDomain.IsSafePassword(password)) return new UserError.InvalidPassword();
 
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
@@ -189,7 +189,7 @@ namespace Hubly.api.Services
 
                 if (!_passwordEncoder.Verify(oldPassword, user.PasswordValidation)) return new UserError.OldPasswordIsIncorrect();
 
-                if (oldPassword == newPassword)return new UserError.NewPasswordCannotBeTheSameAsTheOldPassword();
+                if (oldPassword == newPassword) return new UserError.NewPasswordCannotBeTheSameAsTheOldPassword();
 
                 var newPasswordHash = _passwordEncoder.createValidationInformation(newPassword);
                 await context.UserRepository.ChangePassword(userId, newPasswordHash);
@@ -292,7 +292,7 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId)
+        public async Task<OneOf<User, UserError>> GetFullCreatorProfile(int targetCreatorId, int viewerId, int? coWorkerId)
         {
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
             {
@@ -327,8 +327,7 @@ namespace Hubly.api.Services
                 return user;
             });
         }
-
-        public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId)
+         public async Task<OneOf<User, UserError>> GetFullCompanyProfile(int targetCompanyId, int viewerId, int? coWorkerId)
         {
             return await _transactionManager.Run<OneOf<User, UserError>>(async (context) =>
            {
@@ -359,6 +358,7 @@ namespace Hubly.api.Services
                return user;
            });
         }
+
 
         private string GenerateNumericCode(int length)
         {

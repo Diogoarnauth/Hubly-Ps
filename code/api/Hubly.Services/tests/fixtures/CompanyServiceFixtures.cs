@@ -6,6 +6,8 @@ using Moq;
 using Microsoft.Extensions.Configuration;
 using Hubly.api.Services.Problems;
 using OneOf;
+using Hubly.api.Infrastructure.Audit;
+
 
 
 namespace Hubly.api.Services.Fixtures
@@ -21,6 +23,8 @@ namespace Hubly.api.Services.Fixtures
 
         public readonly CompaniesDomainConfig CompaniesDomainConfig;
         public readonly CompaniesDomain CompaniesDomain;
+
+        public readonly AuditQueue AuditQueue;
 
         public readonly CompanyService CompanyService;
 
@@ -39,9 +43,8 @@ namespace Hubly.api.Services.Fixtures
             TransactionManager = new Mock<ITransactionManager>();
             TransactionContext = new Mock<ITransactionContext>();
             Configuration = new Mock<IConfiguration>();
-
             CompaniesDomainConfig = new CompaniesDomainConfig();
-
+            AuditQueue = new AuditQueue();
             CompaniesDomain = new CompaniesDomain(CompaniesDomainConfig);
 
             SetupConfigurationMock();
@@ -64,7 +67,9 @@ namespace Hubly.api.Services.Fixtures
             CompanyService = new CompanyService(
                 TransactionManager.Object,
                 Configuration.Object,
-                CompaniesDomain
+                CompaniesDomain,
+                AuditQueue
+
             );
 
             SetupDefaultMocks();

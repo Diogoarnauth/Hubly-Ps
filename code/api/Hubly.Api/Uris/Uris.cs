@@ -13,6 +13,8 @@ public static class Uris
         public const string Create = $"{Prefix}/users";
         public const string GetById = $"{Prefix}/users/{{id:int}}";
         public const string GetMyInfo = $"{Prefix}/users/profile/me";
+        public const string GetMyOnwerInfo = $"{Prefix}/users/profile/owner";
+
         public const string CheckCreatorOrCompany = $"{Prefix}/users/profile/CheckCreatorOrCompany";
         public const string Token = $"{Prefix}/users/token";
         public const string Logout = $"{Prefix}/users/logout";
@@ -23,6 +25,7 @@ public static class Uris
         public const string GetHistory = $"{Prefix}/users/getHistory";
         public const string FullCreatorProfile = $"{Prefix}/users/{{id:int}}/fullCreatorProfile";
         public const string FullCompanyProfile = $"{Prefix}/users/{{id:int}}/fullCompanyProfile";
+        public const string GetAuditLogs = $"{Prefix}/users/auditLogs";
 
 
 
@@ -69,7 +72,7 @@ public static class Uris
     {
 
         public const string Create = $"{Prefix}/company";
-        public const string GetById = $"{Prefix}/company/{{id}}";
+        public const string GetById = $"{Prefix}/company/{{id:int}}";
         public const string EditCompanyProfile = $"{Prefix}/company/edit";
         public const string Search = $"{Prefix}/company";
         public const string GetTrending = $"{Prefix}/company/trending"; 
@@ -121,6 +124,17 @@ public static class Uris
         public const string UntagConversation = $"{Prefix}/conversation/{{conversationId}}/remove-tag";
     }
 
-
+    public static class CoWorkers
+    {
+        public const string SendInvite = $"{Prefix}/co-workers/invite";
+        public const string AcceptInvite = $"{Prefix}/co-workers/invites/{{inviteId}}/accept";
+        public const string RejectInvite = $"{Prefix}/co-workers/invites/{{inviteId}}/reject";
+        public const string GetReceivedInvites = $"{Prefix}/co-workers/invites/received";
+        public const string GetSentInvites = $"{Prefix}/co-workers/invites/sent";
+        public const string GetMyCoWorkerInfo = $"{Prefix}/co-workers/myInfo";
+        public const string CancelCoworking = $"{Prefix}/co-workers/remove";
+        public const string OwnerCancelCoworking = $"{Prefix}/co-workers/remove/{{coWorkerUserId:int}}";
+        public const string GetMyTeam = $"{Prefix}/co-workers/myTeam";
+    }
 
 }

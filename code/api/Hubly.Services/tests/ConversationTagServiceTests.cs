@@ -26,7 +26,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         _fixture.ConversationTagRepository.Setup(r => r.CreateTag(It.IsAny<ConversationTag>()))
             .ReturnsAsync(10);
 
-        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, "Nova Tag", "#FFFFFF");
+        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, null, "Nova Tag", "#FFFFFF");
 
         Assert.True(result.IsT0);
         Assert.Equal(10, result.AsT0);
@@ -39,7 +39,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         _fixture.SetupTagNameExists(true);
         _fixture.SetupCreateTag(10);
 
-        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, "Duplicada", "#FFFFFF");
+        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, null, "Duplicada", "#FFFFFF");
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.TagNameAlreadyExists>(result.AsT1);
@@ -53,7 +53,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         _fixture.SetupTagExists(globalTag);
         _fixture.SetupAssignTag();
 
-        var result = await _fixture.ConversationTagService.TagConversation(_fixture.UserId, 1, 5);
+        var result = await _fixture.ConversationTagService.TagConversation(_fixture.UserId, null, 1, 5);
 
         Assert.True(result.IsT0);
         Assert.True(result.AsT0);
@@ -65,7 +65,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         var tag = new ConversationTag { Id = 1, UserId = 999 }; // Diferente do _fixture.UserId (1)
         _fixture.SetupTagExists(tag);
 
-        var result = await _fixture.ConversationTagService.UpdateTag(_fixture.UserId, 1, "Nova", "#FFFFFF");
+        var result = await _fixture.ConversationTagService.UpdateTag(_fixture.UserId, null, 1, "Nova", "#FFFFFF");
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.UnauthorizedAccess>(result.AsT1);
@@ -76,7 +76,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
     {
         _fixture.SetupTagExists(null);
 
-        var result = await _fixture.ConversationTagService.DeleteTag(_fixture.UserId, 99);
+        var result = await _fixture.ConversationTagService.DeleteTag(_fixture.UserId, null, 99);
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.TagNotFound>(result.AsT1);
@@ -90,7 +90,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
     {
         _fixture.SetupUserExists(true);
 
-        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, invalidName, "#FFFFFF");
+        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, null, invalidName, "#FFFFFF");
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.InvalidTagName>(result.AsT1);
@@ -102,7 +102,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         _fixture.SetupUserExists(true);
         var longName = new string('A', 51);
 
-        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, longName, "#FFFFFF");
+        var result = await _fixture.ConversationTagService.CreateTag(_fixture.UserId, null, longName, "#FFFFFF");
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.InvalidTagName>(result.AsT1);
@@ -120,7 +120,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
             .Setup(r => r.GetById(1))
             .ReturnsAsync(new ConversationTag { Id = 2, TagName = "Tag B" });
 
-        var result = await _fixture.ConversationTagService.UpdateTag(_fixture.UserId, 1, "Tag B", "#FFFFFF");
+        var result = await _fixture.ConversationTagService.UpdateTag(_fixture.UserId, null, 1, "Tag B", "#FFFFFF");
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.UnauthorizedAccess>(result.AsT1);
@@ -134,7 +134,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         _fixture.SetupTagExists(tag);
         _fixture.SetupTagNameExists(true);
 
-        var result = await _fixture.ConversationTagService.UpdateTag(_fixture.UserId, 1, "Tag A", "#FFFFFF");
+        var result = await _fixture.ConversationTagService.UpdateTag(_fixture.UserId, null, 1, "Tag A", "#FFFFFF");
 
         Assert.True(result.IsT0);
         Assert.True(result.AsT0);
@@ -147,7 +147,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
             .Setup(r => r.IsUserParticipant(1, _fixture.UserId))
             .ReturnsAsync(false);
 
-        var result = await _fixture.ConversationTagService.TagConversation(_fixture.UserId, 1, 5);
+        var result = await _fixture.ConversationTagService.TagConversation(_fixture.UserId, null, 1, 5);
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.UnauthorizedAccess>(result.AsT1);
@@ -161,7 +161,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         var otherUserTag = new ConversationTag { Id = 10, UserId = 99, TagName = "Privada" };
         _fixture.SetupTagExists(otherUserTag);
 
-        var result = await _fixture.ConversationTagService.TagConversation(_fixture.UserId, 1, 10);
+        var result = await _fixture.ConversationTagService.TagConversation(_fixture.UserId, null, 1, 10);
 
         Assert.True(result.IsT1);
         Assert.IsType<ConversationTagError.UnauthorizedAccess>(result.AsT1);
@@ -185,7 +185,7 @@ public class ConversationTagServiceTests : IClassFixture<ConversationTagServiceF
         _fixture.SetupUserIsParticipant(true);
         _fixture.SetupRemoveTag();
 
-        var result = await _fixture.ConversationTagService.UntagConversation(_fixture.UserId, 1);
+        var result = await _fixture.ConversationTagService.UntagConversation(_fixture.UserId, null, 1);
 
         Assert.True(result.IsT0);
         Assert.True(result.AsT0);

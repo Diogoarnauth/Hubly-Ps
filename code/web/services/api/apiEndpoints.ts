@@ -4,6 +4,8 @@ export const API_ENDPOINTS = {
    
     user: {
         login: `${API_BASE_URL}/users/token`,
+        getById: (id: number) => `${API_BASE_URL}/users/${id}`,
+        getMyOnwerInfo : `${API_BASE_URL}/users/profile/owner`,
         register: `${API_BASE_URL}/users`,
         verifyEmail: `${API_BASE_URL}/users/verifyEmail`,
         resendEmailConfirmation: `${API_BASE_URL}/users/resendEmailConfirmation`,
@@ -71,5 +73,17 @@ export const API_ENDPOINTS = {
         deleteTag : `${API_BASE_URL}/conversation/tags/{tagId}`,
         tagConversation : `${API_BASE_URL}/conversation/{conversationId}/assign-tag`,
         untagConversation : `${API_BASE_URL}/conversation/{conversationId}/remove-tag`
+    },
+
+    coWorker: {
+        getMyInfo: `${API_BASE_URL}/co-workers/myInfo`,
+        sendInvite: `${API_BASE_URL}/co-workers/invite`,
+        acceptInvite: (inviteId: number) => `${API_BASE_URL}/co-workers/invites/${inviteId}/accept`,
+        rejectInvite: (inviteId: number) => `${API_BASE_URL}/co-workers/invites/${inviteId}/reject`,
+        getReceivedInvites: `${API_BASE_URL}/co-workers/invites/received`,
+        getSentInvites: `${API_BASE_URL}/co-workers/invites/sent`,
+        CancelCoworking: `${API_BASE_URL}/co-workers/remove`,
+        OwnerCancelCoworking: (coWorkerUserId: number) => `${API_BASE_URL}/co-workers/remove/${coWorkerUserId}`,
+        GetMyTeam: `${API_BASE_URL}/co-workers/myTeam`
     }
 }

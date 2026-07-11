@@ -30,7 +30,7 @@ export const ChatPage = ({ id }: ChatPageProps) => {
 
   useEffect(() => {
     const fetchMe = async () => {
-      const myProfile = await userService.getCurrentUser();
+      const myProfile = await userService.getCurrentOwnerUser();
       if (myProfile) {
         setCurrentUserId(myProfile.id);
       }

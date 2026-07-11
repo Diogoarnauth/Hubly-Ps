@@ -1,9 +1,11 @@
 'use client';
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import usersService from '@/services/api/UsersService';
 import creatorService from '@/services/api/CreatorService'; 
-import EditCreatorModalProps  from '@/services/DTO/creator/EditCreatorModalPropsInputModal';
+import EditCreatorModalProps from '@/services/DTO/creator/EditCreatorModalPropsInputModal';
+import { useUser } from '@/providers/UserProvider'; 
 
 export function EditCreatorModal({ 
   currentUsername, 
@@ -12,6 +14,9 @@ export function EditCreatorModal({
   onClose, 
   onSuccess 
 }: EditCreatorModalProps) {
+  const { user } = useUser(); 
+  const isCoWorker = user?.role === 'coworker'; 
+
   const [username, setUsername] = useState(currentUsername);
   const [artisticName, setArtisticName] = useState(currentArtisticName); 
   const [status, setStatus] = useState(currentStatus);
@@ -20,12 +25,32 @@ export function EditCreatorModal({
   async function handleSave() {
     setLoading(true);
     
-    // Executa as três chamadas em paralelo
-    const results = await Promise.all([
-      usersService.editUsername(username),
-      creatorService.editCreator(artisticName), 
-      creatorService.changeStatus(status)
-    ]);
+    const promises: Promise<boolean>[] = [];
+
+    // Apenas faz o pedido de username se foi alterado e não é coworker
+    if (!isCoWorker && username !== currentUsername) {
+      promises.push(usersService.editUsername(username));
+    }
+
+    // Apenas faz o pedido de editCreator se foi alterado
+    if (artisticName !== currentArtisticName) {
+      promises.push(creatorService.editCreator(artisticName));
+    }
+
+    // Apenas faz o pedido de changeStatus se foi alterado
+    if (status !== currentStatus) {
+      promises.push(creatorService.changeStatus(status));
+    }
+
+    // Se não há nenhuma alteração, apenas fecha o modal
+    if (promises.length === 0) {
+      onClose();
+      setLoading(false);
+      return;
+    }
+
+    // Executa apenas os pedidos necessários em paralelo
+    const results = await Promise.all(promises);
 
     if (results.every(res => res === true)) {
       onSuccess();
@@ -42,14 +67,18 @@ export function EditCreatorModal({
         <h2 className="text-2xl font-bold text-white">Edit Profile</h2>
         
         <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm text-zinc-400">Username (Login)</label>
-            <input 
-              className="w-full bg-[#1A1A1A] border border-zinc-700 p-3 rounded-lg text-white outline-none focus:border-[#A78BFA]"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
+          
+          {/* 🔥 Renderização Condicional: Só mostra o campo Username se NÃO for coworker */}
+          {!isCoWorker && (
+            <div className="space-y-2">
+              <label className="text-sm text-zinc-400">Username (Login)</label>
+              <input 
+                className="w-full bg-[#1A1A1A] border border-zinc-700 p-3 rounded-lg text-white outline-none focus:border-[#A78BFA]"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <label className="text-sm text-zinc-400">Artistic Name</label>

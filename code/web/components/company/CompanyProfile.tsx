@@ -39,8 +39,9 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
         setLoading(false);
       } else {
         toastError('Company not found', 'Invalid id');
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        router.push('/');
+        setTimeout(() => {
+          router.push('/');
+        }, 2000);
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -51,12 +52,12 @@ export function CompanyProfile({ id }: CompanyProfileProps) {
 
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile]);
+  }, []);
 
   useEffect(() => {
     const loadCurrentUser = async () => {
       try {
-        const myInfo = await usersService.getCurrentUser();
+        const myInfo = await usersService.getCurrentOwnerUser();
         if (!myInfo) return;
 
         setCurrentUser(myInfo);

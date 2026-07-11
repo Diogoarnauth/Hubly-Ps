@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Search, MessageSquare, LogIn } from "lucide-react";
+import { Home, Search, MessageSquare, LogIn, UserPlus } from "lucide-react";
 import { NavUser } from "./nav-user";
 import { useUser } from "@/providers/UserProvider";
 
@@ -14,6 +14,7 @@ export function Navbar() {
     { title: "Home", url: "/", icon: Home },
     { title: "Search", url: "/search", icon: Search },
     { title: "Messages", icon: MessageSquare },
+    { title: "Invites", url: "/invite", icon: UserPlus }, 
   ];
 
   const handleMessagesClick = () => {
@@ -24,15 +25,36 @@ export function Navbar() {
       return;
     }
 
+    // 1. Fluxo Direto: Creator
     if (userData.role === 'creator') {
-      router.push('/chatsCreator');
-    } else if (userData.role === 'company') {
+      router.push('/chatsCreator/');
+      return;
+    } 
+    
+    // 2. Fluxo Direto: Company
+    if (userData.role === 'company') {
       const idParaNavegar = userData.companyId || userData.id;
-      
       if (idParaNavegar) {
         router.push(`/chatsCompany/${idParaNavegar}`);
+      }
+      return;
+    } 
+
+    // 3. Fluxo Dinâmico: CoWorker (Verifica a role do Owner)
+    if (userData.role === 'coworker') {
+      const owner = userData.ownerInfo;
+      
+      if (!owner) {
+        console.error("Hubly: Owner info missing for coworker.");
+        return;
+      }
+
+      if (owner.role === 'creator') {
+        router.push('/chatsCreator');
+      } else if (owner.role === 'company') {
+        router.push(`/chatsCompany/${owner.id}`);
       } else {
-        console.error("Hubly: User data is missing companyId for company role or id for creator role.");
+        console.error(`Hubly: Unknown owner role (${owner.role}) for coworker.`);
       }
     }
   };
@@ -41,19 +63,19 @@ export function Navbar() {
     <nav className="fixed top-0 w-full h-16 border-b bg-background/95 backdrop-blur z-50">
       <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
         
-        {/* LADO ESQUERDO: Logo e Links */}
         <div className="flex items-center gap-10">
-          <span 
-            onClick={() => router.push('/')}
-            className="text-xl font-black tracking-tighter text-primary cursor-pointer"
-          >
+          <span onClick={() => router.push('/')} className="text-xl font-black tracking-tighter text-primary cursor-pointer">
             HUBLY
           </span>
           
-          {/* Mostrar navItems apenas quando user está autenticado */}
-          { (
-            <div className="flex items-center gap-6">
-              {navItems.map((item) => {
+          <div className="flex items-center gap-6">
+            {navItems
+              .filter(item => {
+                // Filtro: Esconder "Invites" se não estiver logado
+                if (item.title === "Invites" && !user) return false;
+                return true;
+              })
+              .map((item) => {
                 const isMessages = item.title === "Messages";
                 const isActive = isMessages 
                   ? (pathname.includes("chatsCreator") || pathname.includes("chatsCompany"))
@@ -71,9 +93,8 @@ export function Navbar() {
                     {item.title}
                   </button>
                 );
-              })}
-            </div>
-          )}
+            })}
+          </div>
         </div>
 
         {/* LADO DIREITO: Perfil, Logout ou Login */}

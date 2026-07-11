@@ -6,6 +6,8 @@ using OneOf;
 using System.Data.Common;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using Hubly.api.Infrastructure.Audit;
+
 
 
 namespace Hubly.api.Services
@@ -14,15 +16,21 @@ namespace Hubly.api.Services
     {
         private readonly ITransactionManager _transactionManager;
         private readonly CreatorsDomain _creatorsDomain;
+        private readonly AuditQueue _auditQueue;
+
 
         public CreatorService(
             ITransactionManager transactionManager,
             IConfiguration configuration,
-            CreatorsDomain creatorsDomain
+            CreatorsDomain creatorsDomain,
+            AuditQueue auditQueue
+
         )
         {
             _transactionManager = transactionManager;
             _creatorsDomain = creatorsDomain;
+            _auditQueue = auditQueue;
+
         }
 
         public async Task<OneOf<Creator, CreatorError>> Register(int userId, string artisticName)
@@ -35,6 +43,11 @@ namespace Hubly.api.Services
                 if (await context.CreatorRepository.ExistsByUserId(userId)) return new CreatorError.CreatorAlreadyExists();
 
                 if (await context.CompanyRepository.ExistsByUserId(userId)) return new CreatorError.UserAlreadyRegisteredAsCompany();
+
+                var coworker = await context.CoWorkerRepository.GetCoWorker(userId) != null;
+
+                if (coworker) return new CreatorError.UserAlreadyRegisteredAsCoWorker();
+
 
                 var newCreator = new Creator
                 {
@@ -56,7 +69,7 @@ namespace Hubly.api.Services
 
         }
 
-        public async Task<OneOf<Creator, CreatorError>> UpdateStatus(int userId, string newStatus)
+        public async Task<OneOf<Creator, CreatorError>> UpdateStatus(int userId, int? coWorkerId, string newStatus)
         {
             if (!_creatorsDomain.IsValidAvailabilityStatus(newStatus)) return new CreatorError.InvalidAvailabilityStatus();
 
@@ -74,17 +87,43 @@ namespace Hubly.api.Services
 
                 if (success == null) return new CreatorError.FailedToUpdateStatus();
 
+                var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                                      "UpdateStatus",
+                                      new { Status = newStatus, UserEmail = myUser.Email },
+                                      userId,
+                                      coWorkerId
+                                  ));
+
+
                 return creator;
             });
         }
 
 
-        public async Task<OneOf<Creator, CreatorError>> GetById(int targetCreatorId, int viewerId)
+
+        public async Task<OneOf<Creator, CreatorError>> GetById(int targetCreatorId, int viewerId, int? coWorkerId)
         {
             return await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
                 var creator = await context.CreatorRepository.GetByUserIdSocialProfiles(targetCreatorId);
                 if (creator == null) return new CreatorError.CreatorNotFound();
+
+                var viewerUser = await context.UserRepository.GetUserById(coWorkerId ?? viewerId);
+
+                var creatorName = creator.ArtisticName ?? "Criador Sem Nome";
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                    "ViewCreatorProfile", 
+                    new
+                    {
+                        UserEmail = viewerUser?.Email ?? "Sem Email",
+                        CreatorName = creatorName
+                    },
+                    viewerId, 
+                    coWorkerId
+                ));
 
                 return creator;
             });
@@ -156,7 +195,7 @@ namespace Hubly.api.Services
         }
 
 
-        public async Task<OneOf<(CreatorSocialProfile Profile, bool IsOwner), CreatorError>> GetSocialProfileById(int creatorProfileId, int userId)
+        public async Task<OneOf<(CreatorSocialProfile Profile, bool IsOwner), CreatorError>> GetSocialProfileById(int creatorProfileId, int userId, int? coWorkerId)
         {
             return await _transactionManager.Run<OneOf<(CreatorSocialProfile, bool), CreatorError>>(async (context) =>
             {
@@ -184,10 +223,26 @@ namespace Hubly.api.Services
                     }
                 }
 
+
+                var viewerUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+        var spName = profile.PlatformUserName ?? "Perfil Social";
+
+        await _auditQueue.EnqueueAsync(new AuditEntry(
+            "ViewCreatorSocialProfile", 
+            new { 
+                UserEmail = viewerUser?.Email ?? "Sem Email", 
+                SPName = spName 
+            },
+            userId,     
+            coWorkerId
+        ));
+
                 return (profile, isOwner);
             });
         }
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id, List<String> sectors)
+
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> AddSocialProfile(int userId, int? coWorkerId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, int platform_id, List<String> sectors)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
@@ -230,12 +285,21 @@ namespace Hubly.api.Services
 
                 await context.CreatorSocialRepository.Add(newProfile);
 
+                var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                                      "AddSocialProfile",
+                                      new { SPName = user_name, UserEmail = myUser.Email },
+                                      userId,
+                                      coWorkerId
+                                  ));
+
                 return newProfile;
             });
 
         }
 
-        public async Task<OneOf<bool, CreatorError>> RemoveSocialProfile(int userId, int profileId)
+        public async Task<OneOf<bool, CreatorError>> RemoveSocialProfile(int userId, int? coWorkerId, int profileId)
         {
             return await _transactionManager.Run<OneOf<bool, CreatorError>>(async (context) =>
             {
@@ -253,10 +317,19 @@ namespace Hubly.api.Services
 
                 context.CreatorSocialRepository.Delete(profile);
 
+                var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                                      "RemoveSocialProfile",
+                                      new { SPName = profile?.PlatformUserName, UserEmail = myUser.Email },
+                                      userId,
+                                      coWorkerId
+                                  ));
+
+
                 return true;
             });
         }
-
         public async Task<OneOf<List<Sector>, CreatorError>> GetAllSectors()
         {
             return await _transactionManager.Run<OneOf<List<Sector>, CreatorError>>(async (context) =>
@@ -269,7 +342,7 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, List<String> sectors)
+        public async Task<OneOf<CreatorSocialProfile, CreatorError>> EditCreatorSocialProfile(int userId, int? coWorkerId, int socialProfileId, string user_name, string link, string description, int followers_count, decimal? priceMin, decimal? priceMax, List<String> sectors)
         {
             if (!_creatorsDomain.IsValidPriceRange(priceMin, priceMax)) return new CreatorError.InvalidPriceRange();
             if (!_creatorsDomain.IsValidArtisticName(user_name)) return new CreatorError.InvalidArtisticName();
@@ -295,6 +368,26 @@ namespace Hubly.api.Services
 
                 if (updatedCreatorSocialProfile == null) return new CreatorError.FailedToGetCreatorSocialProfileInfo();
 
+                var myUser = await context.UserRepository.GetUserById(coWorkerId ?? userId);
+
+                var sectorsString = sectors != null && sectors.Any() ? string.Join(", ", sectors) : "Nenhum";
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                    "EditCreatorSocialProfile",
+                    new
+                    {
+                        UserEmail = myUser?.Email ?? "Sem Email",
+                        UserName = user_name,
+                        Link = link,
+                        Description = string.IsNullOrWhiteSpace(description) ? "Sem descrição" : description,
+                        FollowersCount = followers_count,
+                        PriceMin = priceMin.HasValue ? priceMin.Value.ToString("F2") : "Não definido",
+                        PriceMax = priceMax.HasValue ? priceMax.Value.ToString("F2") : "Não definido",
+                        Sectors = sectorsString
+                    },
+                    userId,
+                    coWorkerId
+                ));
                 return updatedCreatorSocialProfile;
             });
 
@@ -341,7 +434,7 @@ namespace Hubly.api.Services
             });
         }
 
-        public async Task<OneOf<Creator, CreatorError>> Edit(int user_id, string artisticName)
+        public async Task<OneOf<Creator, CreatorError>> Edit(int user_id, int? coWorkerId, string artisticName)
         {
             var result = await _transactionManager.Run<OneOf<Creator, CreatorError>>(async (context) =>
             {
@@ -353,6 +446,20 @@ namespace Hubly.api.Services
                 var updatedCreator = await context.CreatorRepository.Edit(user_id, artisticName);
 
                 if (updatedCreator == null) return new CreatorError.FailedToGetCreatorInfo();
+
+                var myUser = await context.UserRepository.GetUserById(coWorkerId ?? user_id);
+
+                await _auditQueue.EnqueueAsync(new AuditEntry(
+                    "EditCreatorProfile", 
+                    new { 
+                        UserEmail = myUser?.Email ?? "Sem Email", 
+                        ArtisticName = artisticName 
+                    },
+                    user_id,
+                    coWorkerId
+                ));
+
+
 
                 return updatedCreator;
             });
