@@ -10,6 +10,20 @@ import GetCompanyOutputModel from "../DTO/company/GetCompanyOutputModel";
 import { ProfileHistoryOutputModel } from "../DTO/ProfileHistoryOutputModel";
 import { PagedResponse } from "../DTO/PagedResponse";
 
+export interface AuditLogEntry {
+    id: number;
+    userId?: number | null;
+    coWorkerId?: number | null;
+    timestamp: string;
+    action: string;
+}
+
+export interface AuditLogsResponse {
+    items: AuditLogEntry[];
+    totalItems: number;
+    page: number;
+    pageSize: number;
+}
 
 export interface UserInfo {
     id: number;
@@ -28,9 +42,9 @@ class UsersService implements IUserService {
         };
 
         try {
-            const response = await this.apiClient.post(API_ENDPOINTS.user.login, user);
+            const response = await this.apiClient.post<{ token?: string }>(API_ENDPOINTS.user.login, user);
 
-            if (!response) {
+            if (!response || isConflictResponse(response)) {
                 return false;
             }
 
@@ -75,8 +89,9 @@ class UsersService implements IUserService {
 
     async checkHasProfile(): Promise<boolean> {
         try {
-            const response = await this.apiClient.get(API_ENDPOINTS.user.checkProfile);
-            return response?.hasProfile === true;
+            const response = await this.apiClient.get<{ hasProfile?: boolean }>(API_ENDPOINTS.user.checkProfile);
+            if (!response || isConflictResponse(response)) return false;
+            return response.hasProfile === true;
         } catch (error) {
             console.error("Error checking profile:", error);
             return false; // Por segurança, se falhar, assumimos que não tem
@@ -117,36 +132,40 @@ class UsersService implements IUserService {
 
 
     async getCurrentUser(): Promise<UserInfo | null> {
-    const response = await this.apiClient.get<UserInfo>(
-        API_ENDPOINTS.user.getMyInfo, 
-        undefined, 
-        { skipUnauthorizedHandler: true, suppressError: true }
-    );
-    console.log("responseeee", response);
-    if (!response) return null;
-    return {
-        id: response.id,
-        name: response.name,
-        email: response.email,
-        role: response.role
-    };
-}
+        const response = await this.apiClient.get<UserInfo>(
+            API_ENDPOINTS.user.getMyInfo,
+            undefined,
+            { skipUnauthorizedHandler: true, suppressError: true }
+        );
+
+        if (!response || isConflictResponse(response)) return null;
+
+        const user = response as UserInfo;
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        };
+    }
 
     async getCurrentOwnerUser(): Promise<UserInfo | null> {
-        const response = await this.apiClient.get<UserInfo>(API_ENDPOINTS.user.getMyOnwerInfo);
-        console.log("responseeee", response)
+        try {
+            const response = await this.apiClient.get<UserInfo>(API_ENDPOINTS.user.getMyOnwerInfo);
 
-        if (!response) return null;
+            if (!response || isConflictResponse(response)) return null;
 
-        return {
-            id: response.id,
-            name: response.name,
-            email: response.email,
-            role: response.role
-        };
-    } catch(error) {
-        console.error("Erro ao obter info do utilizador:", error);
-        return null;
+            const user = response as UserInfo;
+            return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            };
+        } catch (error) {
+            console.error("Erro ao obter info do utilizador:", error);
+            return null;
+        }
     }
 
     async logout(): Promise<boolean> {//melhorar errors disto
@@ -178,25 +197,41 @@ class UsersService implements IUserService {
         }
     }
 
+    async getAuditLogs(page: number = 1, pageSize: number = 20): Promise<AuditLogsResponse | null> {
+        try {
+            const response = await this.apiClient.get<AuditLogsResponse>(API_ENDPOINTS.user.getAuditLogs, {
+                page,
+                pageSize
+            });
+
+            if (!response || isConflictResponse(response)) {
+                return null;
+            }
+
+            return response;
+        } catch (error) {
+            console.error("Erro ao obter audit logs:", error);
+            return null;
+        }
+    }
+
     async getUser(id: number): Promise<UserInfo | null> {
         try {
-            // Nota: Certifica-te de que tens API_ENDPOINTS.user.getById mapeado no teu ficheiro de rotas
-            // Exemplo esperado em apiEndpoints: getById: (id: number) => `/users/${id}`
             const url = API_ENDPOINTS.user.getById ? API_ENDPOINTS.user.getById(id) : `/users/${id}`;
             const response = await this.apiClient.get<UserInfo>(url);
-            console.log("responseeee bolachinha", response)
-            
-            if (!response) return null;
 
+            if (!response || isConflictResponse(response)) return null;
+
+            const user = response as UserInfo;
             return {
-                id: response.id,
-                name: response.name,
-                email: response.email,
-                role: response.role
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
             };
         } catch (error) {
             console.error(`Erro ao obter utilizador com id ${id}:`, error);
-            throw error; 
+            throw error;
         }
     }
 

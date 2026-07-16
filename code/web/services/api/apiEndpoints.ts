@@ -15,7 +15,8 @@ export const API_ENDPOINTS = {
         getFullCreatorProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCreatorProfile`, 
         getFullCompanyProfile: (id: number) => `${API_BASE_URL}/users/${id}/fullCompanyProfile`,
         edit: `${API_BASE_URL}/users/edit`,
-        getHistory: `${API_BASE_URL}/users/getHistory`
+        getHistory: `${API_BASE_URL}/users/getHistory`,
+        getAuditLogs: `${API_BASE_URL}/users/auditLogs`
     },
     
     creator: {

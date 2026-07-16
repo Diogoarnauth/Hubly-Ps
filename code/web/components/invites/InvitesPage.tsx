@@ -6,6 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser } from '@/providers/UserProvider';
 import coWorkerService, { CoWorkerInviteOutputModel, GetMyCoWorkerInfoResponse, GetMyCoWorkerWithEmailInfoResponse } from '@/services/api/CoWorkerService';
+import usersService from '@/services/api/UsersService';
+
+interface AuditLogEntry {
+  id: number;
+  userId?: number | null;
+  coWorkerId?: number | null;
+  timestamp: string;
+  action: string;
+}
 
 export function InvitePage() {
   const { user, refreshUser } = useUser();
@@ -20,6 +29,8 @@ export function InvitePage() {
   const [pageLoading, setPageLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
   const [sendLoading, setSendLoading] = useState(false);
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
 
   const [emailInput, setEmailInput] = useState('');
 
@@ -49,27 +60,45 @@ export function InvitePage() {
   const loadPageData = useCallback(async () => {
     try {
       setPageLoading(true);
+      setAuditLoading(true);
+
       if (isOwner || isCoWorker) {
-        const [sent, team] = await Promise.all([
+        const [sent, team, audit] = await Promise.all([
           coWorkerService.getSentInvites(),
-          coWorkerService.getMyTeam()
+          coWorkerService.getMyTeam(),
+          usersService.getAuditLogs(1, 8)
         ]);
         setSentInvites(sent);
         setTeamMembers(team);
+        setAuditLogs(audit?.items ?? []);
       } else if (user?.role === 'justUser') {
-        const received = await coWorkerService.getReceivedInvites();
+        const [received, audit] = await Promise.all([
+          coWorkerService.getReceivedInvites(),
+          usersService.getAuditLogs(1, 8)
+        ]);
         setReceivedInvites(received.filter(inv => inv.status === 'WAITING'));
+        setAuditLogs(audit?.items ?? []);
       }
     } catch (error) {
       console.error("Error loading team/invite data:", error);
     } finally {
       setPageLoading(false);
+      setAuditLoading(false);
     }
   }, [isOwner, isCoWorker, user?.role]);
 
   useEffect(() => {
+    if (!isOwner) {
+      setPageLoading(false);
+      setAuditLogs([]);
+      setSentInvites([]);
+      setTeamMembers([]);
+      setReceivedInvites([]);
+      return;
+    }
+
     loadPageData();
-  }, [loadPageData]);
+  }, [isOwner, loadPageData]);
 
   async function handleAccept(inviteId: number) {
     setActionLoadingId(inviteId);
@@ -116,16 +145,27 @@ export function InvitePage() {
   }
 
   if (pageLoading) {
-
-    console.log("user para ver os nomes", user?.email)
-    console.log("user para ver os nomes", user?.ownerInfo?.email)
-
     return (
       <div className="flex min-h-[400px] items-center justify-center text-white">
         <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
       </div>
     );
   }
+
+  const formatAuditTimestamp = (value: string) => {
+    try {
+      return new Intl.DateTimeFormat('en', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      }).format(new Date(value));
+    } catch {
+      return value;
+    }
+  };
+
+  const formatAuditAction = (action: string) => {
+    return action.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
+  };
 
   const TeamGraphComponent = () => (
     <Card className="bg-[#2A2A2A] border-zinc-800 text-white rounded-[25px] p-6">
@@ -202,6 +242,10 @@ export function InvitePage() {
     </Card>
   );
 
+  if (!isOwner && user?.role !== 'coworker' && user?.role !== 'justUser') {
+    return null;
+  }
+
   return (
     <div className="text-white max-w-4xl mx-auto px-4 py-8">
       <Card className="border-zinc-800 bg-zinc-950/80 shadow-2xl">
@@ -218,6 +262,41 @@ export function InvitePage() {
 
         <CardContent className="p-6">
           <div className="w-full opacity-30 h-[1px] bg-zinc-500 mb-8"></div>
+
+          <Card className="mb-8 border-zinc-800 bg-[#1F1F1F] text-white">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Audit Logs</CardTitle>
+              <CardDescription className="text-zinc-400">
+                Latest account activity recorded by the platform.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {auditLoading ? (
+                <div className="flex items-center justify-center py-6 text-zinc-400">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading activity...
+                </div>
+              ) : auditLogs.length === 0 ? (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 text-sm text-zinc-500">
+                  No audit activity has been recorded yet.
+                </div>
+              ) : (
+                auditLogs.slice(0, 8).map((log) => (
+                  <div key={log.id} className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-zinc-200">{formatAuditAction(log.action)}</p>
+                        <p className="text-xs text-zinc-500">
+                          {log.coWorkerId ? `Co-worker ID: ${log.coWorkerId}` : 'User activity'}
+                        </p>
+                      </div>
+                      <span className="text-xs text-zinc-400">{formatAuditTimestamp(log.timestamp)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
 
       {/* RENDERIZAÇÃO CONSOANTE A ROLE */}
       {isOwner && (
