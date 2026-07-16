@@ -5,42 +5,42 @@ public class AuditFormatter
     // Dicionário de templates: A chave é a Action, o valor é a string com placeholders
     private static readonly Dictionary<string, string> ActionTemplates = new()
     {
-        { "CreateConversation", "Uma conversa com {UserName} foi criada pelo {UserEmail}." },
-        { "SendMessage", "Uma mensagem '{Message}' foi enviada por {UserEmail} na conversa com {ReceiverName}." },
-        { "EditMessage", "Uma mensagem foi editada para '{NewMessage}', pelo user {UserEmail} na conversa com {ReceiverName}." },
-        { "DeleteMessage", "A mensagem '{Message}' foi removida pelo user {UserEmail} na conversa com {ReceiverName}." },
-        { "CreateTag", "A etiqueta '{TagReference}' foi criada pelo user {UserEmail} ." },
-        { "UpdateTag", "A etiqueta '{TagReference}' foi atualizada pelo user {UserEmail}." },
-        { "DeleteTag", "A etiqueta '{TagReference}' foi removida pelo user {UserEmail}." },
-        { "AssignTag", "A etiqueta '{TagReference}' foi atribuída pelo user {UserEmail} à uma conversa com {ReceiverName} ." },
-        { "UntagConversation", "A etiqueta foi removida pelo user {UserEmail} da conversa com {ReceiverName} ." },
+        { "CreateConversation", "A conversation with {UserName} was created by {UserEmail}." },
+        { "SendMessage", "A message '{Message}' was sent by {UserEmail} in the conversation with {ReceiverName}." },
+        { "EditMessage", "A message was edited to '{NewMessage}' by user {UserEmail} in the conversation with {ReceiverName}." },
+        { "DeleteMessage", "The message '{Message}' was deleted by user {UserEmail} in the conversation with {ReceiverName}." },
+        { "CreateTag", "The tag '{TagReference}' was created by user {UserEmail}." },
+        { "UpdateTag", "The tag '{TagReference}' was updated by user {UserEmail}." },
+        { "DeleteTag", "The tag '{TagReference}' was deleted by user {UserEmail}." },
+        { "AssignTag", "The tag '{TagReference}' was assigned by user {UserEmail} to a conversation with {ReceiverName}." },
+        { "UntagConversation", "The tag was removed by user {UserEmail} from the conversation with {ReceiverName}." },
         {
             "EditCompany",
-            "O perfil da empresa '{CompanyName}' foi atualizado pelo user {UserEmail}.\n" +
-            "📝 Novos dados salvos:\n" +
-            "• Nome: {CompanyName}\n" +
-            "• Tamanho: {CompanySize}\n" +
+            "The company profile '{CompanyName}' was updated by user {UserEmail}.\n" +
+            "📝 New data saved:\n" +
+            "• Name: {CompanyName}\n" +
+            "• Size: {CompanySize}\n" +
             "• Website: {WebsiteLink}\n" +
-            "• Sede: {CountryHeadquarters}\n" +
-            "• Setores: {Sectors}\n" +
-            "• Descrição: {Description}"
+            "• Headquarters: {CountryHeadquarters}\n" +
+            "• Sectors: {Sectors}\n" +
+            "• Description: {Description}"
         },
-        { "UpdateStatus", "O estado de disponibilidade foi atualizado para '{Status}' pelo user {UserEmail}." },
-        { "AddSocialProfile", "Um perfil social chamado {SPName} foi adicionado pelo {UserEmail}." },
-        { "RemoveSocialProfile", "Um perfil social chamado {SPName} foi removido pelo {UserEmail}." },
-        { 
-            "EditCreatorSocialProfile", 
-            "O perfil social de criador '{UserName}' foi atualizado pelo user {UserEmail}.\n" +
-            "📝 Novos dados guardados:\n" +
+        { "UpdateStatus", "The availability status was updated to '{Status}' by user {UserEmail}." },
+        { "AddSocialProfile", "A social profile named {SPName} was added by {UserEmail}." },
+        { "RemoveSocialProfile", "A social profile named {SPName} was removed by {UserEmail}." },
+        {
+            "EditCreatorSocialProfile",
+            "The creator social profile '{UserName}' was updated by user {UserEmail}.\n" +
+            "📝 New data saved:\n" +
             "• Link: {Link}\n" +
-            "• Seguidores: {FollowersCount}\n" +
-            "• Preço: Mín {PriceMin}€ | Máx {PriceMax}€\n" +
-            "• Setores: {Sectors}\n" +
-            "• Descrição: {Description}" 
-        },    
-        { "ViewCreatorProfile", "O perfil do criador '{CreatorName}' foi visualizado pelo user {UserEmail}." },
-        { "ViewCreatorSocialProfile", "O perfil social '{SPName}' foi visualizado pelo user {UserEmail}." },
-        { "EditCreatorProfile", "O nome artístico do criador foi atualizado para '{ArtisticName}' pelo user {UserEmail}." },
+            "• Followers: {FollowersCount}\n" +
+            "• Price: Min {PriceMin}€ | Max {PriceMax}€\n" +
+            "• Sectors: {Sectors}\n" +
+            "• Description: {Description}"
+        },
+        { "ViewCreatorProfile", "The creator profile '{CreatorName}' was viewed by user {UserEmail}." },
+        { "ViewCreatorSocialProfile", "The social profile '{SPName}' was viewed by user {UserEmail}." },
+        { "EditCreatorProfile", "The creator artistic name was updated to '{ArtisticName}' by user {UserEmail}." },
         }; public string Format(string action, object? payload, int? userId, int? coWorkerId)
     {
         string template = ActionTemplates.GetValueOrDefault(action, $"Ação de auditoria '{action}' executada.");
