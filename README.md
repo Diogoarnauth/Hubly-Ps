@@ -87,7 +87,7 @@ To validate isolated business logic and domain constraints, the project includes
 
 ```bash
 # If you are already inside the repository root:
-cd code/api/Hubly.Services/tests
+cd code/api/Hubly.Services
 
 # Run the test execution runner:
 dotnet test
